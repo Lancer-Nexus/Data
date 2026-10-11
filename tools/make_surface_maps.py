@@ -54,7 +54,15 @@ NORMALS = {
     'bw_dig_site_16':   ('Models/bases/generic/bw_pygar_airlock.cmp', 'dig_site_16.tga', 3.0, 1, 'Stationshülle Bretonia, Metallpaneele'),
     'bw_dig_site_18':   ('Models/bases/generic/bw_pygar_airlock.cmp', 'dig_site_18.tga', 3.0, 1, 'Stationshülle Bretonia, Metallpaneele'),
     'li_ceiling_gen01': ('Models/bases/liberty/li_manhattan_trader02.cmp', 'ceiling_gen01.tga021111195321', 2.5, 1, 'Deckenplatten einer Liberty-Basis'),
+    'ku_k_panel01':     ('Material/ships/kusari/ku_playerships.mat', 'k_panel01_256.tga', 2.5, 1, 'Rumpfpaneele eines Kusari-Spielerschiffs'),
+    'ku_k_wings':       ('Material/ships/kusari/ku_playerships.mat', 'k_wings.tga', 2.5, 1, 'Tragflächen eines Kusari-Schiffs'),
+    'ku_metal03':       ('Material/ships/kusari/ku_playerships.mat', 'metal03.tga', 2.5, 1, 'allgemeine Metallfläche'),
+    'br_player01':      ('Material/ships/bretonia/br_playerships.mat', 'b_player01_256.tga', 2.5, 1, 'Rumpf eines Bretonia-Spielerschiffs'),
+    # Asteroiden (Gesteinsoberfläche; Billboards wie asteroid_belt_04 und Stadtkulissen sind ungeeignet)
+    'ast_rock_4':       ('Material/solar/asteroids/rock_roids.txm', 'asteroid_rock_4', 3.0, 1, 'Gesteinsoberfläche eines Asteroiden'),
     # Planeten und Solar
+    'planet_ice':       ('Material/solar/planets/detailmap_ice.txm', 'detailmap_ice', 3.0, 1, 'kachelnde Eisdetailkarte'),
+    'planet_lava':      ('Material/solar/planets/detailmap_lava.txm', 'detailmap_lava', 3.0, 1, 'kachelnde Lavadetailkarte'),
     'planet_rock01':    ('Material/solar/planets/detailmap_rock01.txm', 'detailmap_rock01', 3.0, 1, 'kachelnde Felsdetailkarte eines Planeten'),
     'planet_crater_hi': ('Material/solar/planets/detailmap_crater_high.txm', 'detailmap_crater_high', 3.0, 1, 'kachelnde Kraterdetailkarte'),
     'planet_ground01':  ('Material/solar/planets/detailmap_ground01.txm', 'detailmap_ground01', 2.5, 1, 'kachelnde Bodendetailkarte'),
@@ -133,6 +141,64 @@ def encode_normal(n):
         rgb = np.clip((lv * 0.5 + 0.5) * 255 + 0.5, 0, 255).astype(np.uint8)
         body += np.ascontiguousarray(rgb[:, :, ::-1]).tobytes()   # B, G, R
     return dds_header(n.shape[1], n.shape[0], len(levels), 24, (0xFF0000, 0xFF00, 0xFF, 0)) + bytes(body)
+
+
+# ---- Bewertung und Anpassung -----------------------------------------------
+
+TARGET_P95 = 28.0          # Ziel: 95 % der Pixel neigen höchstens so viel (Grad)
+GOOD_P95 = (12.0, 40.0)
+
+
+def _blur3(a):
+    return (a + np.roll(a, 1, 0) + np.roll(a, -1, 0) + np.roll(a, 1, 1) + np.roll(a, -1, 1)) / 5
+
+
+def grad_mag(h):
+    dx = (np.roll(h, -1, 1) - np.roll(h, 1, 1)) * 0.5
+    dy = (np.roll(h, -1, 0) - np.roll(h, 1, 0)) * 0.5
+    return np.hypot(dx, dy)
+
+
+def metrics(h, strength):
+    g = grad_mag(h) * strength * 8.0
+    tilt = np.degrees(np.arctan(g))
+    b3 = _blur3(h)
+    b15 = b3
+    for _ in range(5):
+        b15 = _blur3(b15)
+    grain = float(np.std(h - b3) / max(np.std(b3 - b15), 1e-6))
+    inner = np.abs(np.diff(h, axis=1)).mean() + 1e-6
+    seam = float(max(np.abs(h[:, 0] - h[:, -1]).mean(), np.abs(h[0] - h[-1]).mean()) / inner)
+    return {'mean': float(tilt.mean()), 'p95': float(np.percentile(tilt, 95)),
+            'steep': float((tilt > 60).mean()), 'flat': float((tilt < 1).mean()),
+            'grain': grain, 'seam': seam}
+
+
+def verdict(m, tiling=False):
+    issues = []
+    if m['p95'] < GOOD_P95[0]:
+        issues.append('zu flach')
+    if m['p95'] > GOOD_P95[1]:
+        issues.append('zu steil')
+    if m['steep'] > 0.01:
+        issues.append('über 1 % Pixel steiler als 60°')
+    if m['flat'] > 0.85:
+        issues.append('kaum Relief')
+    if m['grain'] > 1.5:
+        issues.append('körnig')
+    if tiling and m['seam'] > 2.5:
+        issues.append('sichtbare Naht beim Kacheln')
+    return issues or ['gut']
+
+
+def tune(h):
+    """Stärke so wählen, dass p95 der Neigung bei TARGET_P95 liegt; bei Körnung eine Glättung mehr."""
+    g = grad_mag(h) * 8.0
+    g95, g99 = float(np.percentile(g, 95)), float(np.percentile(g, 99))
+    if g95 <= 1e-9:
+        return 1.0
+    s = min(np.tan(np.radians(TARGET_P95)) / g95, np.tan(np.radians(60.0)) / max(g99, 1e-9))   # p99 höchstens 60°
+    return float(np.clip(s, NORMAL_LIMITS['strength'][0], NORMAL_LIMITS['strength'][1]))
 
 
 # ---- Cube Maps ------------------------------------------------------------
@@ -387,6 +453,74 @@ def load_params():
     return {}
 
 
+INI_HEADER = """; SurfaceMaps.ini - Zusatzkarten (Normal Maps, Cube Maps) zu Texturen.
+; Nachbau fuer Lancer Nexus, im Original-Freelancer nicht vorhanden. Der Original-Client ignoriert diese Datei.
+; Wird von tools/make_surface_maps.py erzeugt (Werte aus tools/surface_maps_params.json).
+; Einlesen und Anwenden: Aufgabe der Engine (siehe TODO-surface-maps.md, Client/docs/surface-maps.md).
+;
+; [Texture]    Bibliothek, aus der Karten stammen (wie in den Shape-INIs).
+;   file       Pfad der .txm
+;   name       Name der Bibliothek, auf den [NormalMap] verweist
+; [NormalMap]  Normal Map zu einer Diffuse-Textur (Dt_name im Material)
+;   texture    Name der Diffuse-Textur (ohne Beachtung der Gross-/Kleinschreibung)
+;   library    Name aus [Texture]
+;   map        Texturknoten in der Bibliothek (tangentiale Normalen, RGB, +Y oben, Z nach aussen)
+;   strength   Staerke der Abweichung, 1.0 = unveraendert, 0 = aus
+; [CubeMap]    Cube Map als Umgebungsspiegelung. Bindung ueber vorhandene Schluessel in
+;              ships\\Shiparch.ini und solar\\SolarArch.ini:
+;                material_library = <file>
+;                envmap_material  = <nickname>
+;   nickname   Name des Texturknotens in der .mat (= envmap_material)
+;   file       Pfad der .mat (= material_library)
+;   kind       Hinweis: space | sun | nebula
+;   strength   Vorschlag fuer die Staerke der Spiegelung (0..1)
+
+[Texture]
+file = fx\\normalmaps.txm
+name = surface_normalmaps
+"""
+CUBE_STRENGTH = {'space': 0.35, 'sun': 0.5, 'nebula': 0.4}
+
+
+def write_ini(path, normals, cubes):
+    """normals: {key: (Textur, Beschreibung, params)}, cubes: {name: params}."""
+    out = [INI_HEADER]
+    for key, (tex, desc, pr) in normals.items():
+        out.append(f"\n; {desc}\n[NormalMap]\ntexture = {tex}\nlibrary = surface_normalmaps\n"
+                   f"map = nm_{key}\nstrength = {pr['strength']:g}\n")
+    for name, pr in cubes.items():
+        out.append(f"\n[CubeMap]\nnickname = {name}\nfile = fx\\{name}.mat\nkind = {pr['kind']}\n"
+                   f"strength = {CUBE_STRENGTH[pr['kind']]:g}\n")
+    with open(path, 'w', encoding='utf-8', newline='\n') as f:
+        f.write(''.join(out))
+
+
+def write_report(rows, tuned, path):
+    L = ['# Bewertung der Normal Maps', '',
+         'Erzeugt von `tools/make_surface_maps.py --evaluate` bzw. `--tune`. Die Kennzahlen beschreiben die erzeugten Karten, nicht ihre Wirkung im Spiel.', '',
+         '| Kennzahl | Bedeutung | Zielbereich |', '|---|---|---|',
+         '| Neigung Mittel / p95 | Winkel der Normalen gegen die Fläche (Grad); p95 = 95 % der Pixel neigen höchstens so | p95 12 bis 40 (Ziel 28) |',
+         '| steil | Anteil der Pixel mit mehr als 60° | höchstens 1 % |',
+         '| flach | Anteil der Pixel mit weniger als 1° | höchstens 85 % |',
+         '| Körnung | Energie des Pixelrauschens im Verhältnis zur mittleren Struktur | höchstens 1,5 |',
+         '| Naht | Kantenunterschied beim Kacheln im Verhältnis zum Nachbarpixel; nur für die kachelnden Planetenkarten bewertet | höchstens 2,5 |', '',
+         '| Karte | Quelle | Stärke | Glättung | Neigung Mittel / p95 | steil | flach | Körnung | Naht | Urteil |',
+         '|---|---|---:|---:|---|---:|---:|---:|---:|---|']
+    for key, tex, base, m0, pr, m1 in rows:
+        m = m1
+        L.append(f"| `{key}` | `{tex}` | {pr['strength']:.2f} | {pr['smooth']} | {m['mean']:.1f}° / {m['p95']:.1f}° | "
+                 f"{m['steep'] * 100:.1f} % | {m['flat'] * 100:.0f} % | {m['grain']:.2f} | "
+                 f"{(format(m['seam'], '.2f') if key.startswith('planet_') else '–')} | {', '.join(verdict(m, key.startswith('planet_')))} |")
+    if tuned:
+        L += ['', '## Vor der Anpassung', '',
+              '| Karte | Stärke → | Glättung → | p95 vorher → nachher | Urteil vorher |', '|---|---|---|---|---|']
+        for key, tex, base, m0, pr, m1 in rows:
+            L.append(f"| `{key}` | {base['strength']:.2f} → {pr['strength']:.2f} | {base['smooth']} → {pr['smooth']} | "
+                     f"{m0['p95']:.1f}° → {m1['p95']:.1f}° | {', '.join(verdict(m0))} |")
+    open(path, 'w', encoding='utf-8', newline='\n').write('\n'.join(L) + '\n')
+    print('Bericht:', path)
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument('--preview', help='Ordner für Vorschaubilder (PNG)')
@@ -395,6 +529,8 @@ def main():
     ap.add_argument('--vision', action='store_true', help='Bild an ein Vision-Modell mitsenden (nur mit --llm)')
     ap.add_argument('--cube-desc', action='append', default=[], metavar='NAME=TEXT',
                     help='Beschreibung einer Cube Map für das Sprachmodell, mehrfach möglich')
+    ap.add_argument('--evaluate', action='store_true', help='Karten bewerten, Bericht surface-maps-bewertung.md schreiben')
+    ap.add_argument('--tune', action='store_true', help='Stärke und Glättung nach der Bewertung anpassen (impliziert --evaluate)')
     ap.add_argument('--no-params', action='store_true', help='gespeicherte Parameter ignorieren (Standardwerte)')
     a = ap.parse_args()
     params = {} if a.no_params else load_params()
@@ -416,6 +552,7 @@ def main():
     nm = {}
     previews = {}
     chosen = {}
+    report = []
     for key, (container, tex, strength, smooth, desc) in NORMALS.items():
         img = read_texture(container, tex)
         base = {'strength': strength, 'smooth': smooth}
@@ -430,8 +567,21 @@ def main():
                 print(f'  {key}: LLM -> {pr}')
             except Exception as e:  # noqa: BLE001
                 print(f'  {key}: LLM-Antwort verworfen ({str(e)[:80]}), Standard {pr}')
+        h = height_from(img, pr['smooth'])
+        m0 = metrics(h, pr['strength'])
+        before = dict(pr)
+        if a.tune:
+            pr = dict(pr)
+            pr['strength'] = round(tune(h), 2)
+            h = height_from(img, pr['smooth'])
+            if metrics(h, pr['strength'])['grain'] > 1.5 and pr['smooth'] < NORMAL_LIMITS['smooth'][1]:
+                pr['smooth'] += 1
+                h = height_from(img, pr['smooth'])
+                pr['strength'] = round(tune(h), 2)
+        m1 = metrics(h, pr['strength'])
+        report.append((key, tex, before, m0, pr, m1))
         chosen.setdefault('normal', {})[key] = pr
-        n = normal_from_height(height_from(img, pr['smooth']), pr['strength'])
+        n = normal_from_height(h, pr['strength'])
         nm['nm_' + key] = encode_normal(n)
         previews[key] = np.clip((n * 0.5 + 0.5) * 255, 0, 255).astype(np.uint8)
     header, root = build_library(nm, 'MIPS')
@@ -458,7 +608,12 @@ def main():
         print(f'{c}.mat: {os.path.getsize(p) / 1e6:.2f} MB')
         previews[c] = faces
 
-    if llm or not os.path.isfile(PARAMS_FILE):
+    write_ini(os.path.join(ROOT, 'SDK', 'fx', 'SurfaceMaps.ini'),
+              {k: (NORMALS[k][1], NORMALS[k][4], chosen['normal'][k]) for k in NORMALS},
+              {c: chosen['cube'][c] for c in CUBES})
+    if a.evaluate or a.tune:
+        write_report(report, a.tune, os.path.join(ROOT, 'surface-maps-bewertung.md'))
+    if llm or a.tune or not os.path.isfile(PARAMS_FILE):
         chosen['_info'] = {'model': llm.model if llm else None, 'vision': bool(a.vision and llm)}
         with open(PARAMS_FILE, 'w', encoding='utf-8', newline='\n') as f:
             json.dump(chosen, f, indent=1, ensure_ascii=False)
@@ -478,7 +633,10 @@ def main():
                     cross[r * s:(r + 1) * s, c * s:(c + 1) * s] = v[i]
                 Image.fromarray((np.clip(cross, 0, 1) * 255).astype(np.uint8)).save(os.path.join(a.preview, k + '.png'))
             else:
-                Image.fromarray(v).resize((512, 512), Image.LANCZOS).save(os.path.join(a.preview, k + '.png'))
+                nv = v.astype(np.float32) / 255 * 2 - 1
+                lit = np.clip(nv @ np.array([-0.5, 0.5, 0.7], np.float32) / 0.95, 0, 1)
+                both = np.concatenate([v, np.repeat((lit * 255).astype(np.uint8)[..., None], 3, axis=2)], axis=1)
+                Image.fromarray(both).resize((1024, 512), Image.LANCZOS).save(os.path.join(a.preview, k + '.png'))
 
 
 if __name__ == '__main__':

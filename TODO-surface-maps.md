@@ -7,14 +7,42 @@ Ziel: Zu Texturen lassen sich zusätzliche Normal Maps und Cube Maps (Umgebungss
 | Teil | Ergebnis |
 |---|---|
 | Generator | `tools/make_surface_maps.py` (Pillow, numpy), reproduzierbar aus dem NAP |
-| Normal Maps | 9 Karten in `NAP/Material/fx/normalmaps.txm` (je 1024 × 1024, DDS 24 Bit mit Mip-Kette, 37,8 MB): 3 Schiffe (Liberty), 3 Stationen/Basen, 3 Planeten-Detailkarten (kachelnd) |
+| Normal Maps | 16 Karten in `NAP/Material/fx/normalmaps.txm` (je 1024 × 1024, DDS 24 Bit mit Mip-Kette, 67,1 MB): 7 Schiffe (Liberty, Kusari, Bretonia), 2 Stationen/Basen, 1 Asteroid, 6 Planeten-Detailkarten (kachelnd, Eis, Lava, Fels, Krater, Boden) |
 | Cube Maps | `NAP/Material/fx/envcube_space.mat`, `envcube_sun.mat`, `envcube_nebula.mat` (je 256 px, DDS A8R8G8B8 mit Mips, 2,1 MB), Aufbau wie `envmapbasic.mat` (Knoten `CUBE`) |
-| INI | `SDK/fx/SurfaceMaps.ini` mit `[Texture]`, `[NormalMap]`, `[CubeMap]` |
+| INI | `SDK/fx/SurfaceMaps.ini` mit `[Texture]`, `[NormalMap]`, `[CubeMap]`, vom Generator erzeugt |
+| Bewertung | `surface-maps-bewertung.md` (Kennzahlen je Karte, vorher/nachher) |
 | Schutz | `tools/extra_maps.txt` (`build_nap.py` überschreibt oder löscht die Dateien nicht) |
 
 Die Normal Maps sind **aus der Helligkeit der Textur abgeleitet** (Höhenkarte → Sobel), keine echte Geometrie. Sie geben Rillen, Fugen und Nieten Tiefe, falsche Schatten im Bild können als Relief erscheinen. Die Cube Maps sind **prozedural** (Sterne, Sonne, Nebel), keine Abbildung echter Systeme.
 
 Technische Beschreibung der Dateien, der INI-Syntax und der Engine-Anbindung mit Aufgabenliste für den Client: `Client/docs/surface-maps.md`.
+
+## 1a. Bewertung und Anpassung (2026-10-12)
+
+`make_surface_maps.py --evaluate` bewertet jede Karte, `--tune` passt Stärke und Glättung an. Bericht: `surface-maps-bewertung.md`.
+
+| Kennzahl | Zielbereich |
+|---|---|
+| Neigung der Normalen p95 | 12° bis 40° (Ziel 28°) |
+| Anteil über 60° | höchstens 1 % |
+| Anteil unter 1° | höchstens 85 % |
+| Körnung (Pixelrauschen zu Struktur) | höchstens 1,5 |
+| Naht beim Kacheln (nur Planetenkarten) | höchstens 2,5 |
+
+**Erster Lauf** (Stärken 2,0 bis 3,5, geschätzt): 14 von 17 Karten waren zu steil, 10 hatten mehr als 1 % Pixel über 60°. Die Planetenkarten kachelten sauber (Naht 0,8 bis 1,0), die Körnung war überall niedrig (0,3 bis 0,4).
+
+**Anpassung:** Die Stärke wird so gesetzt, dass p95 bei 28° liegt und p99 höchstens 60° erreicht. Ergebnis: Stärken zwischen 0,5 und 2,8, 6,0 nur beim glatten Asteroidengestein. Alle 16 Karten liegen danach im Zielbereich. Zwei Karten haben die Untergrenze 0,5 erreicht (`li_engine_grill`, `ku_k_panel01`), dort ist die Textur selbst sehr kontrastreich.
+
+**Sichtprüfung der Normalen und einer Beleuchtung von links oben:**
+- Rumpf-, Gitter- und Paneelkarten: Fugen, Nieten und Lamellen lesbar, nach der Anpassung dezent.
+- Kachelnde Planetenkarten: gleichmäßiges Relief ohne sichtbare Naht.
+- **Ausgeschieden:** `asteroid_belt_04` (ein Billboard mit verstreuten Brocken) und die Stadtkulisse `background_city` (Bild mit beleuchteten Fenstern, daraus entstehen Punkte als Relief). Beide sind keine Oberflächen. Ersatz: `asteroid_rock_4`.
+
+**Grenzen der Bewertung:**
+- Die Zielwerte sind unsere Festlegung, nicht aus der Engine oder aus Messungen im Spiel abgeleitet. Die Kennzahlen belegen nur, dass die Karten in dieser Spanne liegen.
+- Die Körnungskennzahl trennt kaum (alle 0,3 bis 0,4) und hat noch keine Aussagekraft.
+- Die Wirkung hängt von Tangenten, Shaderpfad und Beleuchtung in der Engine ab und ist ungeprüft.
+- Aus der Helligkeit abgeleitete Karten zeigen auch Farbwechsel als Relief (z. B. aufgemalte Linien).
 
 ## 2. Was die Engine heute schon kann (Client, geprüft im Quelltext)
 
