@@ -113,6 +113,9 @@ Die Klasse einer INI richtet sich nach ihrem Hauptordner (`audio` → `Sounds`, 
 | `utf_textures.py` | Maße und Format der Texturen in UTF-Dateien (`.txm`, `.mat`, `.3db` …) lesen | `python3 tools/utf_textures.py NAP/Material/solar/rings/rings.txm` |
 | `check_textures.py` | Texturmaße und Verweise prüfen, schreibt `textur-pruefung.md` | `python3 tools/check_textures.py` |
 | `extract_textures.py` | Originaltexturen als PNG herauslösen (für KI-Hochskalierung), mit `manifest.csv` | `python3 tools/extract_textures.py --out <Ordner>` (braucht Pillow) |
+| `utf_write.py` | UTF-Container laden, ändern, neu schreiben (Bibliothek, `--selftest`) | `python3 tools/utf_write.py --selftest <datei>` |
+| `upscale_textures.py` | Texturen eines Containers per KI um Faktor 4 hochskalieren, selbes Format zurückschreiben | `python3 tools/upscale_textures.py <container> --out <Ordner>` (braucht torch, spandrel, etcpak) |
+| `verify_upscaled.py` | Hochskalierten Container gegen das Original prüfen (Größe, PSNR) | `python3 tools/verify_upscaled.py <original> <neu>` |
 
 ### Textur-Prüfung (`check_textures.py`)
 

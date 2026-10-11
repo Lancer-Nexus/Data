@@ -69,8 +69,8 @@ Alle drei laufen über `spandrel` und PyTorch (CUDA 12.8) auf der RTX 5060, je T
 ## 6. Offen
 
 - [x] Größerer Test an 42 Texturen quer durch die Gruppen (siehe 7).
-- [ ] UTF-Schreiber und DXT-Kompression (z. B. `texconv`, `nvcompress` oder `ImageMagick`) auswählen und testen.
-- [ ] Kachelnde Texturen: Nahtprüfung.
+- [x] UTF-Schreiber (`tools/utf_write.py`) und DXT-Kompression (Python-Paket `etcpak`: BC1 für DXT1, BC3 für DXT5, DXT3 aus BC1-Farbe plus explizitem Alpha) umgesetzt, siehe 8.
+- [ ] Kachelnde Texturen: Nahtprüfung (Wrap-Padding ist eingebaut, aber noch nicht an einer Kachel geprüft).
 - [ ] Entscheiden, ob die 77 Duplikate gemeinsam bleiben (gleiche Pixel, mehrere Container) oder pro Container gerechnet werden.
 - [ ] Nachweis, dass die Engine die größeren Texturen im selben Container lädt (Speicher, Mip-Stufen).
 - [ ] Namensnennung für GTAV-Modell (CC-BY-4.0), falls eingesetzt.
@@ -97,3 +97,14 @@ PBRify liegt in allen 42 Fällen vor x4plus, bei großen Backdrops und Kacheln m
 **Angepasste Zuordnung:** PBRify für alles außer Interface und Neuronet; dort x4plus (Alpha getrennt). GTAV entfällt als Standard.
 
 **Weiter offen:** Zurückschreiben (UTF-Schreiber, DXT-Kompression), Alpha-Behandlung, Wrap-Padding für dtl, Engine-Ladeprüfung.
+
+## 8. Werkzeuge und erster Durchlauf
+
+- `tools/utf_write.py`: lädt einen UTF-Container als Baum, ersetzt Blätter, schreibt Baum, Namenstabelle und Daten neu (Kopf übernommen, Namen und Daten auf 4 Byte ausgerichtet). `--selftest <datei>` prüft Laden, Speichern, Laden auf identische Knoten und Daten.
+- `tools/upscale_textures.py <container> --out <Ordner>`: skaliert alle Texturen eines Containers um Faktor 4 und schreibt ihn neu. Format bleibt erhalten: DXT1/DXT3/DXT5, DDS unkomprimiert, TGA 32/24/16 mit voller Mip-Kette, TGA8 als Palette (Median-Cut) ohne Mips wie im Original. Container aus `hd_overrides.txt` werden übersprungen. Identische Texturen werden nur einmal gerechnet.
+- `tools/verify_upscaled.py <original> <neu>`: gleiche Textur-Menge, Faktor 4, Rückrechnung als PSNR (Farbe nach Alpha gewichtet).
+- Sonderfall: Texturen, bei denen mehr als 30 % der Pixel (Alpha < 250) durchscheinend sind (Glows, Sprites), werden **bikubisch** vergrößert, nicht per Modell. PBRify verwandelte die weichen Verläufe von `tr_r_27` in Körnung.
+
+Erster Durchlauf an sechs Containern (Backdrop, drei Basen-Container, Atmosphäre, FX): 105 Texturen, alle Container ohne Fehler geschrieben und wieder lesbar, Faktor 4 überall; PSNR der Rückrechnung im Mittel 35 bis 45 dB, schlechtester Wert 30 dB. Sichtprüfung an vier Texturen unauffällig.
+
+**Nicht geprüft:** Ob Freelancer die neu geschriebenen Container lädt (kein Spieltest in dieser Umgebung). Vorher nicht auf das ganze NAP anwenden; erst einen einzelnen Container im Spiel prüfen.
