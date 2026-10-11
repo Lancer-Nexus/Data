@@ -8,7 +8,7 @@ Ergänzung zu make_surface_maps.py (handgewählte Beispielkarten). Ablauf:
      zuordenbar), Texturen, die schon eine Karte aus make_surface_maps.py haben.
   3. Je Karte: Höhenkarte aus Helligkeit, Stärke so, dass p95 der Neigung bei 28° und p99 höchstens
      bei 60° liegt (wie `--tune`), BC5. Karten ohne erkennbares Relief (über 90 % unter 1°) entfallen.
-  4. Bibliotheken `Shader/fx/normalmaps_<gruppe>_<nr>.txm` (höchstens 48 MB je Datei),
+  4. Bibliotheken `Surface/fx/normalmaps_<gruppe>_<nr>.txm` (höchstens 48 MB je Datei),
      INI `SDK/fx/SurfaceMapsShips.ini` und `SurfaceMapsBases.ini`, Parameter `tools/surface_maps_auto.json`,
      Schutzliste `tools/extra_maps_auto.txt`, Bericht `surface-maps-auto-bewertung.md`.
 
@@ -215,9 +215,9 @@ def main():
 
     made, ini = [], []
     lib_names = {}
-    for old in os.listdir(os.path.join(NAP, 'Shader', 'fx')) if os.path.isdir(os.path.join(NAP, 'Shader', 'fx')) else []:
+    for old in os.listdir(os.path.join(NAP, 'Surface', 'fx')) if os.path.isdir(os.path.join(NAP, 'Surface', 'fx')) else []:
         if re.match(r'normalmaps_(ships_auto|bases|solar_auto)_', old):   # frühere Läufe
-            os.remove(os.path.join(NAP, 'Shader', 'fx', old))
+            os.remove(os.path.join(NAP, 'Surface', 'fx', old))
     for (group, sset), items in sorted(libs.items()):
         idx, cur, cur_bytes = 1, {}, 0
         chunks = []
@@ -238,10 +238,10 @@ def main():
             lname = f'normalmaps_{group}_{sset}_{i}' if sset != 'all' else f'normalmaps_{group}_auto_{i}'
             lname = re.sub(r'[^a-z0-9_]+', '_', lname.lower())
             header, root = M.build_library({k: v[1] for k, v in ch.items()}, 'MIPS')
-            path = os.path.join(NAP, 'Shader', 'fx', lname + '.txm')
+            path = os.path.join(NAP, 'Surface', 'fx', lname + '.txm')
             os.makedirs(os.path.dirname(path), exist_ok=True)
             W.save(path, header, root)
-            made.append(f'Shader/fx/{lname}.txm')
+            made.append(f'Surface/fx/{lname}.txm')
             ini.append(f'\n[Texture]\nfile = fx\\{lname}.txm\nname = surface_{lname}\n')
             for k, (c, _) in ch.items():
                 lib_names[c['key']] = 'surface_' + lname

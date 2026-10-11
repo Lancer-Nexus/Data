@@ -36,7 +36,7 @@ Alle Änderungen gegenüber der CD sind in `SDK/changelog.md` dokumentiert.
 NAP/Sounds/audio/…/x.ogg   →   im Spiel: audio/…/x.ogg
 ```
 
-Die Klassen sind in [`classes.md`](classes.md) beschrieben: `Models`, `Sounds`, `Script`, `UI`, `Effects`, `Material`, `Video`, `Equipment`, `Shader`, `Mission`, `System`, `World`.
+Die Klassen sind in [`classes.md`](classes.md) beschrieben: `Models`, `Sounds`, `Script`, `UI`, `Effects`, `Material`, `Video`, `Equipment`, `Surface`, `Mission`, `System`, `World`.
 
 Von `NAP/` werden nur die Klassenordner ins Repo übernommen (mit einer leeren `.gitkeep`). Die Dateien darin stammen aus der Original-CD und dem HD-Pack, sind groß (rund 5,5 GB) und bleiben per `.gitignore` außerhalb.
 
