@@ -1,2 +1,4 @@
-# Spieldaten (Container NAP) nicht ins Repo
-/NAP/
+# Spieldaten (Container NAP): Inhalt nicht ins Repo, nur die Klassenordner
+/NAP/**
+!/NAP/*/
+!/NAP/*/.gitkeep
