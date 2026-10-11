@@ -1,0 +1,28 @@
+#include <winver.h>
+
+VS_VERSION_INFO VERSIONINFO
+FILEVERSION     0,0,2,1
+PRODUCTVERSION  0,0,2,1
+FILEOS          VOS__WINDOWS32
+FILETYPE        VFT_DLL
+{
+    BLOCK "StringFileInfo"
+    {
+        BLOCK "040904B0"
+        {
+            VALUE "CompanyName",      "BC46"
+            VALUE "FileDescription",  "Cyrillic Chat"
+            VALUE "FileVersion",      "0.2.1"
+            VALUE "InternalName",     "Cyrillic Chat"
+            VALUE "LegalCopyright",   "Copyright 2025 BC46"
+            VALUE "OriginalFilename", "cyrillic_chat.dll"
+            VALUE "ProductName",      "Freelancer"
+            VALUE "ProductVersion",   "0, 0, 2, 1"
+        }
+    }
+
+    BLOCK "VarFileInfo"
+    {
+        VALUE "Translation", 0x0409, 0x1200
+    }
+}

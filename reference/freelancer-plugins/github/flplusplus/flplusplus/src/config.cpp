@@ -1,0 +1,155 @@
+#include "config.h"
+
+#include "Common.h"
+
+config::ConfigData conf;
+
+config::ConfigData& config::get_config()
+{
+    return conf;
+}
+
+bool config::is_wine()
+{
+    static HMODULE ntDllModule = LoadLibraryA("ntdll.dll");
+    static bool isWine = GetProcAddress(ntDllModule, "wine_get_version") != nullptr;
+    return isWine;
+}
+
+void config::init_defaults()
+{
+    conf.lodscale = 1.0f;
+    conf.pbubblescale = 1.0f;
+    conf.characterdetailscale = 1.0f;
+    conf.asteroiddistscale = 1.0f;
+    conf.savefoldername = "Freelancer";
+    conf.saveindirectory = false;
+    conf.screenshotsfoldername = "FreelancerShots";
+    conf.screenshotsindirectory = false;
+    conf.altfullscreenscreenshots = is_wine();
+    conf.altwindowedscreenshots = false;
+    conf.removestartlocationwarning = true;
+    conf.logtoconsole = false;
+    conf.shippreviewscrollingspeed = 3.0f;
+    conf.shippreviewscrollinginverse = false;
+    conf.shippreviewscrollingmindistance = 0.0f;
+    conf.shippreviewscrollingmaxdistance = 100.0f;
+    conf.alwaysregeneraterestartfile = true;
+    conf.failedtoinitsavesdirids = 1849;
+    conf.touchpadsupport = false;
+    conf.confinecursor = false;
+    conf.vsync = true;
+    conf.maxfps = 200.0f;
+}
+void config::init_from_file(const char *filename)
+{
+    INI_Reader reader{};
+
+    if (!reader.open(filename, false))
+        return;
+
+    while (reader.read_header())
+    {
+        if (reader.is_header("flplusplus"))
+        {
+            while (reader.read_value())
+            {
+                if (reader.is_value("lod_scale"))
+                    conf.lodscale = reader.get_value_float(0);
+
+                if (reader.is_value("pbubble_scale"))
+                    conf.pbubblescale = reader.get_value_float(0);
+
+                if (reader.is_value("character_detail_scale"))
+                    conf.characterdetailscale = reader.get_value_float(0);
+
+                if (reader.is_value("asteroid_dist_scale"))
+                    conf.asteroiddistscale = reader.get_value_float(0);
+
+                if (reader.is_value("save_folder_name"))
+                    conf.savefoldername = std::string(reader.get_value_string(0));
+
+                if (reader.is_value("save_in_directory"))
+                    conf.saveindirectory = reader.get_value_bool(0);
+
+                if (reader.is_value("screenshots_folder_name"))
+                    conf.screenshotsfoldername = std::string(reader.get_value_string(0));
+
+                if (reader.is_value("screenshots_in_directory"))
+                    conf.screenshotsindirectory = reader.get_value_bool(0);
+
+                if (reader.is_value("alternative_fullscreen_screenshots_code"))
+                    conf.altfullscreenscreenshots = reader.get_value_bool(0);
+
+                if (reader.is_value("alternative_windowed_screenshots_code"))
+                    conf.altwindowedscreenshots = reader.get_value_bool(0);
+
+                if (reader.is_value("remove_start_location_warning"))
+                    conf.removestartlocationwarning = reader.get_value_bool(0);
+
+                if (reader.is_value("log_to_console"))
+                    conf.logtoconsole = reader.get_value_bool(0);
+
+                if (reader.is_value("ship_preview_scrolling_speed"))
+                    conf.shippreviewscrollingspeed = reader.get_value_float(0);
+
+                if (reader.is_value("ship_preview_scrolling_inverse"))
+                    conf.shippreviewscrollinginverse = reader.get_value_bool(0);
+
+                if (reader.is_value("ship_preview_scrolling_min_distance"))
+                    conf.shippreviewscrollingmindistance = reader.get_value_float(0);
+
+                if (reader.is_value("ship_preview_scrolling_max_distance"))
+                    conf.shippreviewscrollingmaxdistance = reader.get_value_float(0);
+
+                if (reader.is_value("always_regenerate_restart_file"))
+                    conf.alwaysregeneraterestartfile = reader.get_value_bool(0);
+
+                if (reader.is_value("failed_to_init_saves_dir_ids"))
+                    conf.failedtoinitsavesdirids = reader.get_value_int(0);
+
+                if (reader.is_value("touchpad_support"))
+                    conf.touchpadsupport = reader.get_value_bool(0);
+
+                if (reader.is_value("confine_cursor"))
+                    conf.confinecursor = reader.get_value_bool(0);
+
+                if (reader.is_value("vsync"))
+                    conf.vsync = reader.get_value_bool(0);
+
+                if (reader.is_value("max_fps"))
+                    conf.maxfps = reader.get_value_float(0);
+            }
+        }
+        else if (reader.is_header("direct_ips"))
+        {
+            while (reader.read_value())
+            {
+                conf.directips.emplace_back(reader.get_name_ptr());
+            }
+        }
+    }
+
+    reader.close();
+}
+
+void config::read_font_files(const char *filename) {
+    INI_Reader reader{};
+
+    if (!reader.open(filename, false))
+        return;
+
+    while (reader.read_header())
+    {
+        if (!reader.is_header("FontFiles"))
+            continue;
+
+        while (reader.read_value())
+        {
+            if (reader.is_value("path"))
+                conf.fontfiles.emplace_back(reader.get_value_string(0));
+        }
+    }
+
+    reader.close();
+}

@@ -1,0 +1,66 @@
+# Prerequisites
+*.d
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+*.smod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+
+# CMake
+**/CMakeCache.txt
+**/Makefile
+**/*.cmake
+**/CMakeFiles/**
+**/reflect-cpp-tests
+/build/**
+**/build_clang/**
+CMakePresets.json
+
+# Output files
+*.bson
+*.cbor
+*.json
+*.fb
+*.xml
+bin/
+obj/
+
+# IDE Files
+*.iml
+*.user
+**/.vs/
+.idea/
+.venv/
+__pycache__/
+
+# Docs
+docs/_build/
+
+build.conf
+dist/
+build.zip

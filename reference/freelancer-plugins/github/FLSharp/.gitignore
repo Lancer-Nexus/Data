@@ -1,0 +1,50 @@
+# Prerequisites
+*.d
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+obj/*
+bin/*
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+*.smod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Export libraries
+*.exp
+
+# Executables
+*.exe
+*.out
+*.app
+
+# Debug symbols
+*.pdb
+
+# Resource file
+*.RES
+
+# CLion
+.idea
+
+# Catch2
+test/catch_amalgamated.cpp
+test/catch_amalgamated.hpp

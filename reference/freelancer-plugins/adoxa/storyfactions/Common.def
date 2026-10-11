@@ -1,0 +1,8 @@
+EXPORTS
+??0INI_Reader@@QAE@XZ
+??1INI_Reader@@QAE@XZ
+?close@INI_Reader@@QAEXXZ
+?get_name_ptr@INI_Reader@@QAEPBDXZ
+?open@INI_Reader@@QAE_NPBD_N@Z
+?read_header@INI_Reader@@QAE_NXZ
+?read_value@INI_Reader@@QAE_NXZ

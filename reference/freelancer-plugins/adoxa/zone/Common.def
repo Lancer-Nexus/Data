@@ -1,0 +1,8 @@
+EXPORTS
+
+??1FmtStr@@QAE@XZ
+?append_system@FmtStr@@QAEXABI@Z
+?append_zone_id@FmtStr@@QAEXABI@Z
+?begin_mad_lib@FmtStr@@QAEXI@Z
+?end_mad_lib@FmtStr@@QAEXXZ
+?get_zone@Universe@@YAPBUIZone@1@I@Z

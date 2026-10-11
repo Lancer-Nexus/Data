@@ -1,0 +1,65 @@
+#include "Freelancer.h"
+#include "Common.h"
+#include <cstdlib>
+
+CShip* GetShip()
+{
+    typedef IObjInspectImpl* GetPlayerIObjInspectImpl();
+    IObjInspectImpl* playerIObjInspect = ((GetPlayerIObjInspectImpl*) OF_GET_PLAYER_INSPECT_IMPL)();
+
+    return !playerIObjInspect ? nullptr : playerIObjInspect->ship;
+}
+
+std::wstring GetSystemName()
+{
+    UINT currentSystemId = *((PUINT) OF_CURRENT_SYSTEM_ID);
+
+    if (!currentSystemId)
+        return {};
+
+    UINT systemIds = Universe::get_system(currentSystemId)->idsName;
+
+    if (!systemIds)
+        return {};
+
+    WCHAR buffer[64] = { 0 };
+    GetFlString(systemIds, buffer, _countof(buffer));
+
+    return std::wstring(buffer);
+}
+
+std::wstring GetBaseName()
+{
+    UINT currentBaseId = *((PUINT) OF_CURRENT_BASE_ID);
+
+    if (!currentBaseId)
+        return {};
+
+    UINT baseIds = Universe::get_base(currentBaseId)->idsName;
+
+    if (!baseIds)
+        return {};
+
+    WCHAR buffer[64] = { 0 };
+    GetFlString(baseIds, buffer, _countof(buffer));
+
+    return std::wstring(buffer);
+}
+
+std::wstring GetShipName()
+{
+    UINT currentShipId = GetShipId();
+
+    if (!currentShipId)
+        return {};
+
+    Archetype::Ship* shiparch = Archetype::GetShip(currentShipId);
+
+    if (!shiparch)
+        return {};
+
+    WCHAR buffer[64] = { 0 };
+    GetFlString(shiparch->idsName, buffer, _countof(buffer));
+
+    return std::wstring(buffer);
+}
