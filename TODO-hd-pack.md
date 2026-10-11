@@ -18,5 +18,10 @@ Phase 2 (Daten nach `NAP/`) und Phase 3 (INIs nach `SDK/`) des Plans `PLAN-hd-pa
 
 ## Offen
 
-- [ ] Phase 5: Texturmaße (256 gegenüber 1024) und richtige Textur prüfen.
+- [x] Phase 5 (Texturmaße und Texturen) ist geprüft, Bericht in `textur-pruefung.md`, Werkzeuge `tools/utf_textures.py` und `tools/check_textures.py`:
+  - 394 Texturen in 112 Bibliotheken. 302 haben eine andere Größe als im CD-Original (vor allem 256 → 2048: 106, 128 → 512: 102, 64 → 256: 45, 256 → 1024: 33).
+  - 81 Formen (`[Shape]` mit `x`, `y`, `w`, `h`) geprüft: keine liegt außerhalb ihrer Textur, keine deckt nur die Hälfte ab. Die INIs passen also zu den vorhandenen Texturen.
+  - Alle 825 Texturnamen in Materialien lösen sich auf (Bibliotheken, eingebettete Texturen, `.tga`).
+  - Offen: `solar/asteroids/roids.txm` und `interface/hud/hudtarget.txm` fehlen (siehe `missing.md`), deshalb sind die Formen in `solar/asteroids/Shapes.ini` und `interface/hud/HudTarget.ini` ohne Textur.
+- [ ] Im Spiel prüfen, ob die Engine 2048×2048-Texturen (DXT5) verträgt, besonders bei Planeten.
 - [ ] 42 Verweise lösen sich nicht auf (`missing.md`).
