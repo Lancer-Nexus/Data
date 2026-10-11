@@ -27,3 +27,5 @@ Material/fx/normalmaps_bases_rheinland_4.txm
 Material/fx/normalmaps_bases_rheinland_5.txm
 Material/fx/normalmaps_ships_auto_1.txm
 Material/fx/normalmaps_ships_auto_2.txm
+Material/fx/normalmaps_solar_auto_1.txm
+Material/fx/normalmaps_solar_auto_2.txm

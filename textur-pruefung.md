@@ -1,6 +1,6 @@
 # Texturprüfung (Phase 5)
 
-Geprüft: 144 Texturbibliotheken (`.txm`), 7187 Texturen, 81 Formen, 825 Texturnamen in Materialien.
+Geprüft: 146 Texturbibliotheken (`.txm`), 7394 Texturen, 81 Formen, 825 Texturnamen in Materialien.
 
 ## Zusammenfassung
 

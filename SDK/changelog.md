@@ -46,9 +46,9 @@ Die INIs des HD-Packs (`FLHDE/freelancer-hd-edition`, `DATA/`) wurden mit `tools
 
 Neue Datei mit `[Texture]` (vier Bibliotheken), `[NormalMap]` (55 Normal Maps zu Diffuse-Texturen, BC5) und `[CubeMap]` (3 Umgebungskarten). Daten: `Material/fx/normalmaps_ships.txm`, `normalmaps_bases.txm`, `normalmaps_solar.txm`, `normalmaps_planets.txm`, `envcube_space.mat`, `envcube_sun.mat`, `envcube_nebula.mat`. Im Original nicht vorhanden; Auswertung ist Aufgabe der Engine (`TODO-surface-maps.md`).
 
-### Zusatzkarten: `fx/SurfaceMapsShips.ini`, `fx/SurfaceMapsBases.ini`
+### Zusatzkarten: `fx/SurfaceMapsShips.ini`, `fx/SurfaceMapsBases.ini`, `fx/SurfaceMapsSolar.ini`
 
-Automatisch erzeugte Normal Maps für Schiffs- und Basistexturen (49 und 2621 Karten, `normalmaps_ships_auto_*.txm`, `normalmaps_bases_<satz>_<n>.txm`), Syntax wie `SurfaceMaps.ini`. Lade-Profile minimal/Standard/voll: `TODO-surface-maps.md`, Abschnitt 1b. Alle drei INIs enthalten für Schiffe, Basen und Solar-Objekte zusätzlich `roughness_map`/`roughness` und `metallic_map`/`metallic` (BC4, abgeleitet aus der Diffuse-Textur, Abschnitt 1c).
+Automatisch erzeugte Normal Maps für Schiffs- und Basistexturen (46, 2620 und 85 Karten, `normalmaps_ships_auto_*.txm`, `normalmaps_bases_<satz>_<n>.txm`, `normalmaps_solar_auto_*.txm`; Solar umfasst Tore, Trade Lanes, Docks, Stationen, Asteroiden und Trümmer), Syntax wie `SurfaceMaps.ini`. Lade-Profile minimal/Standard/voll: `TODO-surface-maps.md`, Abschnitt 1b. Alle drei INIs enthalten für Schiffe, Basen und Solar-Objekte zusätzlich `roughness_map`/`roughness` und `metallic_map`/`metallic` (BC4, abgeleitet aus der Diffuse-Textur, Abschnitt 1c).
 
 ### Audio: WAV → Ogg Vorbis / FLAC
 

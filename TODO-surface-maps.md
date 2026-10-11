@@ -83,7 +83,7 @@ Technische Beschreibung der Dateien, der INI-Syntax und der Engine-Anbindung mit
 | Profil | INIs | Karten | Größe der Bibliotheken |
 |---|---|---:|---:|
 | minimal | `SurfaceMaps.ini` | 55 (Beispielsatz: Schiffe, Basen, Solar, Planeten) | 77 MB |
-| Standard | + `SurfaceMapsShips.ini` | + 49 (alle Schiffstexturen) | + 68 MB |
+| Standard | + `SurfaceMapsShips.ini`, `SurfaceMapsSolar.ini` | + 46 (Schiffstexturen) + 85 (Tore, Trade Lanes, Docks, Asteroiden, Trümmer) | + 0,2 GB |
 | voll | + `SurfaceMapsBases.ini` | + 2621 (alle Basistexturen) | + 0,88 GB |
 
 Die Engine liest nur die INIs des gewählten Profils und lädt eine Bibliothek erst, wenn eine passende Diffuse-Textur gebunden wird. Die Textur-zu-Bibliothek-Zuordnung steht in den INIs.
@@ -119,6 +119,28 @@ Die Karten-Pipeline erzeugt zusätzlich zu jeder Normal Map (außer bei Planeten
 - Metallische Flächen haben im PBR-Pfad **kein Diffuslicht** (`diffuseColor *= 1 - metallic`), sie spiegeln nur. Ohne Umgebungsreflexion (Image-Based Lighting, siehe `renderer-roadmap.md`) wirken sie dunkel. Deshalb sind die Mittelwerte niedrig gehalten; mit den Cube Maps `envcube_*` als `envmap_material` wird es besser, ist aber nicht geprüft.
 - Der PBR-Pfad ändert die gesamte Beleuchtung des Materials, nicht nur die Karten. Ob das für Freelancer-Materialien gewünscht ist, ist eine Entscheidung der Engine-Seite.
 - Planetenkarten haben weder Roughness noch Metallic.
+
+## 1d. Tore, Trümmer und Solar-Objekte (2026-10-12)
+
+Der Massenlauf deckt jetzt auch `Material/solar/*.mat` (nicht die Unterordner Planeten, Nebel, Ringe, Schwarzes Loch) und `Models/solar/{dockable,misc,asteroids}` ab. Ergebnis: `SDK/fx/SurfaceMapsSolar.ini` mit **85 Karten** in `normalmaps_solar_auto_1/2.txm` (85 MB).
+
+| Gruppe | Beispiele |
+|---|---|
+| Sprungtore, Tunnelringe, Docks (`solar_mat_ring`, `solar_mat_dockable01…03`, `solar_mat_misc02`) | `gtdtl_128`, `stadtl1_256`, `stadtl3_256`, `stadtls2_128`, `et`, `arch_tile1`, `lib_pal_02`, `track_tube_128` |
+| Trade Lanes (`solar_mat_tlr`) | `tlr_map_green`, `tlr_map_vents` |
+| Weltraumstationen und Träger | `space_cap`, `space_girder`, `space_tank`, `sanctum_interior_wall01/02`, `stawin2_128` |
+| Asteroiden, Gestein, Eis (`ast_*.mat`) | `rock3b`, `rock3c`, `rock3d128`, `rock_detail`, `ice_block`, `ice_carbon`, `lavastroid`, `lair_rock01/02` |
+| Trümmer | `debris_detail2` |
+
+**Anpassungen gegenüber Schiffen und Basen:**
+- Das Wort `debris` im Namen wird bei Solar-Objekten zugelassen. Bei Schiffen bleibt es gesperrt, dort sind es Trümmerstücke und Schadensflächen.
+- Billboard-Gürtel (`*belt*`, `*dust*`, `*_cap`: `asteroid_belt_04`, `asteroid_icebelt_04`, `debris_field`) bleiben ausgeschlossen. Das sind Bildflächen mit verstreuten Brocken, keine Oberflächen.
+- Schadens- und Lichtvarianten (`tlr_damage`, `tlr_map_grndmg`, `tlr_map_ventdmg`, `stawinillum`) bleiben gesperrt.
+- Asteroiden, Trümmer und Gestein (`ast_*.mat`, `Models/solar/asteroids`) sind als `rock` eingestuft: Normal Map 512 px, Roughness hoch (Mittel 0,85), **kein Metallic** (`metallic = 0`).
+
+**Nicht abgedeckt, weil der Name nicht eindeutig ist:** Texturen gleichen Namens mit verschiedenem Inhalt in Schiffen, Basen und Solar-Objekten (z. B. `stadtls1_128`, `x_pnl_a`, `debris-1`, `lib_pal_05`). Die INI ordnet Karten über den Texturnamen zu, also werden sie weggelassen (144 Namen insgesamt). Dadurch hat der Massenlauf für Schiffe jetzt 46 statt 49 Karten. Eine Lösung wäre die Zuordnung zusätzlich nach Material (`Dt_name` plus Materialname). Das ist eine Engine-Entscheidung.
+
+**Ergebnis gesamt:** 2751 automatische Karten (46 Schiffe, 2620 Basen, 85 Solar) in 30 Bibliotheken, 1,25 GB.
 
 ## 2. Was die Engine heute schon kann (Client, geprüft im Quelltext)
 

@@ -40,16 +40,24 @@ import utf_write as W  # noqa: E402
 
 ROOT = M.ROOT
 NAP = M.NAP
-ROOTS = [('ships', 'Material/ships', 1024), ('ships', 'Models/ships', 1024), ('bases', 'Models/bases', 512)]
+# (Gruppe, Pfad, Größe, rekursiv)
+ROOTS = [('ships', 'Material/ships', 1024, True), ('ships', 'Models/ships', 1024, True),
+         ('bases', 'Models/bases', 512, True),
+         # Solar: Tore, Handelsrouten-Ringe, Docks (solar_mat_*.mat), Asteroiden und Trümmer (ast_*.mat)
+         ('solar', 'Material/solar', 1024, False), ('solar', 'Models/solar/dockable', 1024, True),
+         ('solar', 'Models/solar/misc', 1024, True), ('solar', 'Models/solar/asteroids', 512, True)]
 BAD = re.compile(r'illum|light|alpha|banner|sign|window|glass|plasma|\.avi|fade|neon|sky|city|debris|damage|'
                  r'dmg|logo|text|number|flag|glow|lamp|beam|fx_|^sun|star|cloud|atmo|flare|decal|arrow|icon|'
                  r'inv_|nav_|hud|font|_lod|mask|shadow|cockpit|pilot|face|head|skin|map_|billboard|screen|'
                  r'monitor|tv|video|poster|ad_|advert|sprite|particle', re.I)
+# Solar-Objekte: Trümmer sind hier Gestein, nicht Schiffsschaden; Billboard-Gürtel (verstreute Brocken) bleiben draußen
+BAD_SOLAR = re.compile(BAD.pattern.replace('debris|', '').replace('map_|', '') + r'|belt|dust|_cap$', re.I)
 MAX_FILE_BYTES = 48 * 1024 * 1024
 PARAMS_JSON = os.path.join(HERE, 'surface_maps_auto.json')
 EXTRA_LIST = os.path.join(HERE, 'extra_maps_auto.txt')
 INI_PATHS = {'ships': os.path.join(ROOT, 'SDK', 'fx', 'SurfaceMapsShips.ini'),
-             'bases': os.path.join(ROOT, 'SDK', 'fx', 'SurfaceMapsBases.ini')}
+             'bases': os.path.join(ROOT, 'SDK', 'fx', 'SurfaceMapsBases.ini'),
+             'solar': os.path.join(ROOT, 'SDK', 'fx', 'SurfaceMapsSolar.ini')}
 REPORT = os.path.join(ROOT, 'surface-maps-auto-bewertung.md')
 
 
@@ -66,9 +74,11 @@ def scan():
     stat = collections.Counter()
     curated = {v[1].lower() for v in M.NORMALS.values()}
     cands = []
-    for group, rel, size in ROOTS:
+    for group, rel, size, rec in ROOTS:
         base = os.path.join(NAP, rel)
-        for r, _, fs in os.walk(base):
+        for r, dirs, fs in os.walk(base):
+            if not rec:
+                dirs[:] = []
             for f in sorted(fs):
                 if not f.lower().endswith(('.mat', '.txm', '.cmp', '.3db')):
                     continue
@@ -93,7 +103,7 @@ def scan():
                     if min(w, h) < 256:
                         stat['unter 256 px'] += 1
                         continue
-                    if BAD.search(name):
+                    if (BAD_SOLAR if group == 'solar' else BAD).search(name):
                         stat['Name aussortiert'] += 1
                         continue
                     if name.lower() in curated:
@@ -104,8 +114,11 @@ def scan():
                         stat['Duplikat'] += 1
                         continue
                     seen_md5[md5] = 1
-                    cands.append({'group': group, 'set': sset, 'container': os.path.relpath(p, NAP).replace(os.sep, '/'),
-                                  'name': name, 'size': size, 'md5': md5})
+                    cont = os.path.relpath(p, NAP).replace(os.sep, '/')
+                    rock = group == 'solar' and (os.path.basename(p).lower().startswith('ast') or '/asteroids' in cont.lower())
+                    cands.append({'group': group, 'set': sset, 'container': cont, 'name': name,
+                                  'size': 512 if rock and size > 512 else size, 'md5': md5,
+                                  'rm': 'rock' if rock else group})
     # Namen mit verschiedenem Inhalt lassen sich über die INI nicht zuordnen
     amb = {n for n, s in by_name.items() if len(s) > 1}
     out = []
@@ -118,7 +131,7 @@ def scan():
 
 
 def work(job):
-    container, name, size, group = job
+    container, name, size, group = job   # group = Profil für Roughness/Metallic (ships, bases, solar, rock)
     _, tree = W.load(os.path.join(NAP, container))
     img = None
     for trail, leaf in W.walk(tree):
@@ -168,7 +181,7 @@ def main():
         return
     results = {}
     with cf.ProcessPoolExecutor(a.jobs) as ex:
-        futs = {ex.submit(work, (c['container'], c['name'], c['size'], c['group'])): c for c in cands}
+        futs = {ex.submit(work, (c['container'], c['name'], c['size'], c['rm'])): c for c in cands}
         for i, f in enumerate(cf.as_completed(futs), 1):
             c = futs[f]
             try:
@@ -269,13 +282,13 @@ def write_report(cands, stat, skipped, params, libs, made):
     for k, v in skipped.most_common():
         L.append(f'| übersprungen: {k} | {v} |')
     L += ['', '## Ergebnis', '', f'- Dateien: {len(made)}, zusammen {total / 1e6:.0f} MB',
-          f"- Schiffe: {sum(1 for v in params.values() if v['size'] == 1024)} Karten (1024 px), Basen: {sum(1 for v in params.values() if v['size'] == 512)} (512 px)",
+          f"- Gruppen: Schiffe {sum(1 for k in params if k.startswith('ships_'))}, Basen {sum(1 for k in params if k.startswith('bases_'))}, Solar {sum(1 for k in params if k.startswith('solar_'))}; 1024 px: {sum(1 for v in params.values() if v['size'] == 1024)}, 512 px: {sum(1 for v in params.values() if v['size'] == 512)}",
           f'- Stärke: Median {np.median(s):.2f}, Spanne {s.min():.2f} bis {s.max():.2f}; an der Untergrenze 0,5: {(s <= 0.5).sum()}, an der Obergrenze 6,0: {(s >= 6.0).sum()}',
           f'- p95 der Neigung: Median {np.median(p95):.1f}°, Spanne {p95.min():.1f}° bis {p95.max():.1f}°; unter 12° (flach): {(p95 < 12).sum()}, über 40°: {(p95 > 40).sum()}',
           '', '## Roughness und Metallic', '',
-          'Aus der Diffuse-Textur abgeleitet (Helligkeit, Detail, Sättigung), als BC4. Schiffe 512 px, Basen 256 px.', '',
+          'Aus der Diffuse-Textur abgeleitet (Helligkeit, Detail, Sättigung), als BC4. Schiffe 512 px, Basen und Solar 256 px.', '',
           '| Gruppe | Karten | Roughness Mittel | Roughness Streuung | Metallic Mittel | Metallic Streuung | ohne Metallic-Karte (Mittel unter 0,05, Faktor 0) |', '|---|---:|---:|---:|---:|---:|---:|']
-    for g in ('ships', 'bases'):
+    for g in ('ships', 'bases', 'solar'):
         vs = [v for k, v in params.items() if k.startswith(g + '_') and 'rough_mean' in v]
         if vs:
             L.append(f"| {g} | {len(vs)} | {np.mean([v['rough_mean'] for v in vs]):.2f} | {np.mean([v['rough_std'] for v in vs]):.2f} | "

@@ -217,6 +217,7 @@ RM_PROFILE = {
     'ships': {'rough': 0.45, 'metal': 0.35, 'size': 512},
     'bases': {'rough': 0.60, 'metal': 0.25, 'size': 256},
     'solar': {'rough': 0.55, 'metal': 0.30, 'size': 256},
+    'rock': {'rough': 0.85, 'metal': 0.0, 'size': 256},   # Asteroiden, Trümmer, Gestein: kein Metall
 }
 METAL_MIN_MEAN = 0.05   # darunter wird keine Metallic-Karte gespeichert, der Faktor ist 0
 
