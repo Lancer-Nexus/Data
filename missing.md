@@ -8,7 +8,7 @@ Dateien, auf die die INIs im SDK verweisen, die aber nicht in `NAP/` liegen. Erz
 
 | Ziel | Verwendet in | Bemerkung |
 |---|---|---|
-| `dx_s059x_0101_blix.wav` | `audio/StorySounds.ini` | liegt unter audio/dialogue/blix/, Verweis ohne Ordner |
+| `dx_s059x_0101_blix.ogg` | `audio/StorySounds.ini` | liegt unter audio/dialogue/blix/, Verweis ohne Ordner |
 | `exit.tga` | `interface/Intro.ini` |  |
 | `interface/baseside/unknown.3db` | `interface/baseside/Navbar.ini` |  |
 | `interface/hud/hudtarget.txm` | `interface/hud/HudTarget.ini` |  |

@@ -28,6 +28,10 @@ Die 16 Dateien `music_bar_br04`, `music_bar_generic04` usw. sind inzwischen einz
 
 Ein Raum soll **mehrere Musiktitel** haben, die **wechseln** (z. B. zufällig oder der Reihe nach). Das Ändern dieser Liste soll **in der INI** möglich sein, ohne Code anzupassen.
 
+## Audioformat
+
+Seit der Konvertierung liegt die Musik als Ogg Vorbis vor (`.ogg`, siehe `WISSEN.md`, Abschnitt 15). Das Audit des Clients nennt keine Loop-Start/Ende-Metadaten; Schleifen gelten für den ganzen Track. Für Bar-Musik mit mehreren Titeln ist das Format also unkritisch, die Auswahl der Titel bleibt Aufgabe des Gamecodes.
+
 ## Aufgaben für den Gamecode
 
 - [ ] Prüfen, wie `[Room_Sound]` `music` heute ausgewertet wird (Engine, nicht Teil dieses Repos).

@@ -33,7 +33,7 @@ Alle Änderungen gegenüber der CD sind in `SDK/changelog.md` dokumentiert.
 `NAP/` ist der Container der Spieldaten. Das Spiel lädt alle Klassencontainer in einen virtuellen Root, in dem die Pfade wie im Original liegen. Der Klassenname ist also nicht Teil des Pfads:
 
 ```
-NAP/Sounds/audio/…/x.wav   →   im Spiel: audio/…/x.wav
+NAP/Sounds/audio/…/x.ogg   →   im Spiel: audio/…/x.ogg
 ```
 
 Die Klassen sind in [`classes.md`](classes.md) beschrieben: `Models`, `Sounds`, `Script`, `UI`, `Effects`, `Material`, `Video`, `Equipment`, `Mission`, `System`, `World`.
@@ -113,6 +113,7 @@ Die Klasse einer INI richtet sich nach ihrem Hauptordner (`audio` → `Sounds`, 
 | `utf_textures.py` | Maße und Format der Texturen in UTF-Dateien (`.txm`, `.mat`, `.3db` …) lesen | `python3 tools/utf_textures.py NAP/Material/solar/rings/rings.txm` |
 | `check_textures.py` | Texturmaße und Verweise prüfen, schreibt `textur-pruefung.md` | `python3 tools/check_textures.py` |
 | `extract_textures.py` | Originaltexturen als PNG herauslösen (für KI-Hochskalierung), mit `manifest.csv` | `python3 tools/extract_textures.py --out <Ordner>` (braucht Pillow) |
+| `convert_audio.py` | WAV-Dateien in FLAC (PCM) bzw. Ogg Vorbis (MP3-in-WAV) wandeln, INI-Verweise umstellen | `python3 tools/convert_audio.py --stage <Ordner> [--apply --backup <Ordner>]` (braucht ffmpeg) |
 | `check_refs.py` | Alle Datei-Verweise der INIs gegen `NAP/` prüfen, schreibt `missing.md` | `python3 tools/check_refs.py` |
 | `scale_shape_inis.py` | `[Shape]`-Koordinaten in INIs an hochskalierte Texturen anpassen | `python3 tools/scale_shape_inis.py` (`--dry-run`) |
 | `upscale_textures_test.py` | Modellvergleich an 42 zufälligen Texturen (Kontaktbögen) | `python3 tools/upscale_textures_test.py` |
@@ -136,6 +137,7 @@ Der Bericht gilt für den jeweiligen Stand. Nach Änderungen an Texturen oder IN
 ## Bekannte Grenzen
 
 - **Fehlende Dateien:** 32 Ziele, auf die die INIs verweisen, fehlen in `NAP/` (Kollisionsmodelle `*_col.cmp`, 17 `spacepop`-INIs, einige Modelle und Grafiken). Sie stehen in `missing.md`; `tools/check_refs.py` erzeugt die Liste neu.
+- **Audioformate:** Alle 1700 WAV-Dateien der CD sind in Ogg Vorbis (1620) und FLAC (80) gewandelt, die INIs zeigen auf die neuen Endungen. Der Original-Client kann diese Dateien nicht laden; LibreLancer muss sie nach Inhalt oder Endung dekodieren (nicht im Spiel geprüft). Sicherung: `~/Dokumente/Freelancer-Backup-Audio-vor-Konvertierung/`, Zuordnung `tools/audio_converted.csv`.
 - **Hochskalierte Texturen:** Nicht im Spiel geprüft. Sicherung der Originale und Zurückholen: `TODO-texturen-upscale.md`, Abschnitt 9. Vollbildgrafiken (`startupscreen.tga` u. a.) sind nicht hochskaliert.
 - **HD-Pack und Plugins:** Die HD-Plugin-DLLs (`storyfactions`, `Territory`, `ranks`, `HudShift`) gehören nicht zu den Daten; ihre INIs sind wirkungslos, solange die DLLs fehlen (`TODO-plugins.md`).
 - **Programmdateien:** `exe/` und `dlls/` der CD sind nicht Teil von `NAP/`. Sie liegen nur im lokalen Ordner `Freelancer-Daten` und werden von den Skripten nicht verarbeitet.

@@ -18,7 +18,7 @@ import re
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.normpath(os.path.join(HERE, '..'))
 NAP, SDK = os.path.join(ROOT, 'NAP'), os.path.join(ROOT, 'SDK')
-EXTS = ('3db', 'cmp', 'mat', 'txm', 'tga', 'dds', 'bmp', 'jpg', 'wav', 'utf', 'mp3', 'thn', 'ale', 'pte',
+EXTS = ('3db', 'cmp', 'mat', 'txm', 'tga', 'dds', 'bmp', 'jpg', 'wav', 'ogg', 'flac', 'utf', 'mp3', 'thn', 'ale', 'pte',
         'anm', 'dfm', 'sph', 'vms', 'wmv', 'ini', 'page', 'sur', 'dll')
 TOKEN = re.compile(r'^[\w\-./\\ ]+\.(' + '|'.join(EXTS) + r')$', re.I)
 

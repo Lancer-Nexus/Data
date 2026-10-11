@@ -38,9 +38,21 @@ EXCLUDE = {
 OVERRIDES_FILE = os.path.join(HERE, 'hd_overrides.txt')
 
 
+CONVERTED_FILE = os.path.join(HERE, 'audio_converted.csv')
+
+
+def load_converted():
+    """{alter Pfad: neuer Pfad} der in FLAC/Ogg Vorbis gewandelten Audiodateien (tools/convert_audio.py)."""
+    if not os.path.isfile(CONVERTED_FILE):
+        return {}
+    with open(CONVERTED_FILE, encoding='utf-8') as f:
+        rows = [l.rstrip('\n').split(',', 1) for l in f.readlines()[1:] if l.strip()]
+    return {a: b for a, b in rows}
+
+
 def load_overrides():
-    """HD-Pack-Dateien und per KI hochskalierte Container (beide werden nicht überschrieben/gelöscht)."""
-    out = set()
+    """HD-Pack-Dateien, hochskalierte Container und gewandelte Audiodateien (nicht überschreiben/löschen)."""
+    out = set(load_converted().values())
     for fn in (OVERRIDES_FILE, os.path.join(os.path.dirname(OVERRIDES_FILE), 'upscaled_containers.txt')):
         if os.path.isfile(fn):
             with open(fn, encoding='utf-8') as f:
@@ -194,12 +206,15 @@ def main():
         print('Quelle:', ', '.join(os.path.basename(c) for c in cabs))
         extract_root = extract_data(cabs, work)
         items = collect(extract_root)
+        converted = load_converted()
         target = {}
         for rel, src in items.items():
             if rel in EXCLUDE:
                 continue
             out = rename(rel)
             key = f'{classify(rel)}/{out}'
+            if key in converted:   # liegt als .ogg/.flac vor, die .wav aus der CD wird nicht angelegt
+                continue
             if key in target:
                 sys.exit(f'Kollision nach Umbenennung: {key}')
             target[key] = src

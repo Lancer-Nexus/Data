@@ -33,10 +33,10 @@ Die INIs sagen dem Spiel, **welche** Daten es lädt und **wie** sie verwendet we
 Das Spiel lädt alle Klassenordner in einen **virtuellen Root**. Dort liegen die Dateien so, wie die INIs sie erwarten. Der Klassenname gehört nicht zum Pfad:
 
 ```
-NAP/Sounds/audio/sounds/fx/debri_explo_1.wav   ->   im Spiel: audio/sounds/fx/debri_explo_1.wav
+NAP/Sounds/audio/sounds/fx/debri_explo_1.ogg   ->   im Spiel: audio/sounds/fx/debri_explo_1.ogg
 ```
 
-Deshalb verweisen die INIs auf Pfade wie `audio\sounds\fx\debri_explo_1.wav`, ohne Klasse.
+Deshalb verweisen die INIs auf Pfade wie `audio\sounds\fx\debri_explo_1.ogg`, ohne Klasse.
 
 ## 4. Verweise: wie INIs auf Dateien zeigen
 
@@ -139,3 +139,19 @@ Texturen, die das HD-Pack nicht anfasst (343 Container, 605 Texturen), sind mit 
 - **INIs:** `scale_shape_inis.py` hat 40 Formen in zwei INIs ×4 genommen.
 - **Sicherung:** `~/Dokumente/Freelancer-Backup-NAP-vor-Upscale/` (nicht im Repo). Liste der Container: `tools/upscaled_containers.txt`.
 - **Offen:** Spieltest; Vollbildgrafiken. Einzelheiten und Zahlen: `TODO-texturen-upscale.md`.
+
+## 15. Audioformate
+
+Die CD liefert 1700 `.wav`: 1620 davon sind **MP3 in einem WAV-Container** (Formatkennung 85, Freelancer-spezifisch), 80 unkomprimierte PCM-Dateien. Sie sind gewandelt (`tools/convert_audio.py`, 254 MB → 216 MB):
+
+| Quelle | Ziel | Anzahl | Begründung |
+|---|---|---:|---|
+| PCM-WAV | FLAC (verlustfrei) | 80 | kleiner, ohne Verlust |
+| MP3-in-WAV | Ogg Vorbis, Bitrate wie die MP3-Quelle (48 bis 256 kbit/s), Kanäle und Abtastrate unverändert | 1620 | Standardformat, lückenlose Schleifen (kein MP3-Padding), kein Sonderformat im WAV-Container |
+
+- **Warum nicht Opus:** Nach dem Audit des Clients (`Client/docs/asset-packages/audio-pipeline.md`) lädt `libopusfile` unter Linux nicht (32/64-Bit) und die Windows-Bibliothek fehlt im Build.
+- **Qualität:** Die MP3-Quellen sind schon verlustbehaftet; Vorbis ist eine zweite Generation. Bei gleicher Bitrate ist der Unterschied klein, bringt aber keinen Qualitätsgewinn. Der Gewinn liegt in Format und Schleifen, nicht in der Qualität.
+- **Prüfung:** Je Datei Kanäle, Abtastrate und dekodierte Dauer (Abweichung höchstens 0,1 s). Alle 1700 bestanden.
+- **INIs:** 7 INIs in `SDK/audio/` zeigen auf `.ogg` bzw. `.flac`, ein `.thn` (`s059x_nrml_jonner_rh_01_bar_01.thn`, gleiche Länge `.wav` → `.ogg`).
+- **Folge:** Der Original-Client kann die Dateien nicht laden. Für LibreLancer gilt: nicht im Spiel geprüft; es gibt noch keine Loop-Start/Ende-Metadaten (siehe Audit).
+- **Rückweg:** `~/Dokumente/Freelancer-Backup-Audio-vor-Konvertierung/` (Originale, die sieben INIs, die `.thn`), Zuordnung `tools/audio_converted.csv`. `build_nap.py` legt die `.wav` nicht neu an und schützt die neuen Dateien.

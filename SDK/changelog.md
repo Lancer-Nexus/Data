@@ -42,6 +42,20 @@ Die INIs des HD-Packs (`FLHDE/freelancer-hd-edition`, `DATA/`) wurden mit `tools
 - `characters` (1): `NewCharacter.ini`
 - `exe` (1): `Freelancer.ini`
 
+### Audio: WAV → Ogg Vorbis / FLAC
+
+Alle 1700 `.wav` wurden gewandelt (`tools/convert_audio.py`): 1620 MP3-in-WAV → `.ogg`, 80 PCM-WAV → `.flac`. Die Verweise in sieben INIs zeigen jetzt auf die neuen Endungen:
+
+| Datei | Verweise geändert |
+|---|---:|
+| `audio/StorySounds.ini` | 963 |
+| `audio/GfSounds.ini` | 254 |
+| `audio/Sounds.ini` | 206 |
+| `audio/Music.ini` | 188 |
+| `audio/EngineSounds.ini` | 124 |
+| `audio/InterfaceSounds.ini` | 62 |
+| `audio/AmbienceSounds.ini` | 23 |
+
 ### Texturen: KI-Hochskalierung (Formkoordinaten)
 
 Die im NAP noch originalen Texturen (343 Container, 605 Texturen) wurden um Faktor 4 hochskaliert (`tools/upscale_textures.py`, siehe `TODO-texturen-upscale.md`). Die Formkoordinaten folgen der Textur (`tools/scale_shape_inis.py`):
