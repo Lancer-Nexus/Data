@@ -122,6 +122,63 @@ Serverseitig lädt das Pack zusätzlich `FLHook.dll` (TheStarport, GPL-3.0). Nic
 | `missions/Ranks.ini` | `ranks.dll` | keine |
 | `interface/HudShift.ini` | `HudShift.dll` | keine |
 
+## 6a. Priorisierung für die Portierung
+
+Grundlage: Lancer Nexus ist ein Mehrspielerprojekt mit serverseitiger Autorität (Gateway, Coordinator, Instanz). Die Einstufung ist ein **Vorschlag** und hängt davon ab, was die neue Engine schon mitbringt. Das ist hier nicht geprüft.
+
+### A. Muss: Daten und INIs hängen davon ab
+
+Ohne diese Funktionen sind die HD-INIs wirkungslos oder die Daten falsch.
+
+| Funktion | Plugin | Warum | Konfiguration |
+|---|---|---|---|
+| Story-Fraktionen aus der Reputationsliste ausblenden | Story Factions | Welche Fraktionen der Spieler sieht, ist Spielinhalt | `Storyfactions.ini` |
+| Territorien und Meldung beim Systemeintritt, Häuser auf der Nav-Map | Territory | Die Systeme gehören zu Häusern, im Original fest eingebaut | `universe/Territory.ini` |
+| Rangnamen zum Level | Ranks | Progression, im Mehrspielermodus je Fraktion | `missions/Ranks.ini` |
+| HUD-Layout je Seitenverhältnis | HUD Shift | ohne diese Funktion ist das HUD bei Breitbild falsch platziert | `interface/HudShift.ini` |
+
+### B. Sollte: Mehrspieler und Spielbarkeit
+
+| Funktion | Plugin | Warum |
+|---|---|---|
+| Reputation vom Server abfragen für politische Zonen, Patrouillen, Schiffskauf | MP Rep | Das Original wertet die Reputation clientseitig aus, im Mehrspielermodus sieht der Client sie nicht. Bei einer Serverarchitektur ist das ein Protokollpunkt. |
+| Namen benannter Zonen beim Betreten anzeigen | Zone | Orientierung, Farbe nach Gefahr (`property_flags`) |
+| Mausrad in Fenstern, Turmkamera | Wheel Scroll, Turret Zoom | Bedienung, kleiner Aufwand |
+| Fehlerkorrekturen | FLSharp | siehe unten |
+| Konfigurierbare Sichtweite/LOD, TTF-Schriften, Speicher- und Screenshot-Pfad, FPS-Limit | flplusplus | HD-Daten brauchen oft größere Sichtweite und eigene Schriften |
+| Auflösungsliste und Hauptmonitor als Standard | FLSharp | Bei Breitbild und HD nötig |
+
+**FLSharp-Fehler, die der neue Code nicht wiederholen darf:** Handelsrouten-Lichter bleiben aus, Wegpunkte werden im falschen System gelöscht, Mehrfachlauf-Waffen (Mündungsfeuer, Ton, Munitionszähler), `use_animation` aus `weapon_equip.ini`, Client-Server-Updates (mindestens alle 2 s, 40 ms Minimum, 750 ms in der Handelsroute), Rotationssperre beim Start, Kopieren/Einfügen in Eingabefeldern, Abstürze bei fehlerhaften Spielständen, Infokarten für dynamische Solare.
+
+### C. Kann: Komfort
+
+| Funktion | Plugin |
+|---|---|
+| HUD per Taste ausblenden | HUDless |
+| Taste für Hail | Hail |
+| Mehr als drei Intro-Bildschirme, zufällig | MultiIntro (GPL-3.0) |
+| Waffen-Abklingzeit in der Kontaktliste | DelayDisplay |
+| Dynamische Zielansicht | TargetScreen |
+| Trefferpunkte numerisch | Numeric Damage |
+
+### D. Entfällt oder gehört woanders hin
+
+| Plugin | Grund |
+|---|---|
+| MP3 Codec Fix | Behebt Meldungen des alten Fraunhofer-Codecs, im neuen Audiosystem kein Thema |
+| Lighting Bug Fix, cyrillic_chat | im HD-Pack deaktiviert, hängen am alten Renderer bzw. Eingabesystem |
+| Console | Entwicklerwerkzeug für den Einzelspielermodus, im Mehrspielermodus nicht vorgesehen |
+| JFLP.DLL | Sammelpatch für Steuerung und Anzeige, Funktionen einzeln bewerten |
+| FLHook | Serverseitiges Framework, gehört zur Serverarchitektur und wird nicht portiert |
+
+### Reihenfolge
+
+1. **Schritt 1:** Funktionen aus A mit ihren vier INIs im neuen Code umsetzen, dabei die Formate unverändert lassen.
+2. **Schritt 2:** MP Rep als Protokollpunkt mit dem Gateway abstimmen (Reputation, Besitz, Lease).
+3. **Schritt 3:** Die Fehlerliste aus FLSharp als Abnahmetests übernehmen.
+4. **Schritt 4:** Komfort (Zone, Wheel Scroll, Turret Zoom, flplusplus-Optionen).
+5. **Schritt 5:** Optionales aus C nach Bedarf.
+
 ## 7. Aufgaben für die Portierung
 
 - [ ] Entscheiden, welche Plugin-Funktionen im neuen Quellcode übernommen werden (Priorität: Story Factions, Territory, Ranks, HUD-Layout für Breitbild).
