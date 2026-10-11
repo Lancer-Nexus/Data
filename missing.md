@@ -1,6 +1,6 @@
 # Fehlende Dateien
 
-Dateien, auf die die INIs im SDK verweisen, die aber nicht in `NAP/` liegen. Erzeugt von `tools/check_refs.py` (alle Datei-Verweise in `SDK/**/*.ini` ohne `exe/`, 19712 Verweise, Groß-/Kleinschreibung ignoriert).
+Dateien, auf die die INIs im SDK verweisen, die aber nicht in `NAP/` liegen. Erzeugt von `tools/check_refs.py` (alle Datei-Verweise in `SDK/**/*.ini` ohne `exe/`, 19716 Verweise, Groß-/Kleinschreibung ignoriert).
 
 **32 fehlende Ziele**, dazu 10 Verweise ohne Ordner, deren Datei an anderer Stelle liegt.
 

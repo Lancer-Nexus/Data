@@ -1,0 +1,5 @@
+# Von tools/make_surface_maps.py erzeugte Zusatzkarten (Klasse/Pfad), nicht aus der CD
+Material/fx/normalmaps.txm
+Material/fx/envcube_space.mat
+Material/fx/envcube_sun.mat
+Material/fx/envcube_nebula.mat

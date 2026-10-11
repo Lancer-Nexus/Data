@@ -42,6 +42,10 @@ Die INIs des HD-Packs (`FLHDE/freelancer-hd-edition`, `DATA/`) wurden mit `tools
 - `characters` (1): `NewCharacter.ini`
 - `exe` (1): `Freelancer.ini`
 
+### Zusatzkarten: `fx/SurfaceMaps.ini`
+
+Neue Datei mit `[Texture]`, `[NormalMap]` (9 Normal Maps zu Diffuse-Texturen) und `[CubeMap]` (3 Umgebungskarten). Daten: `Material/fx/normalmaps.txm`, `envcube_space.mat`, `envcube_sun.mat`, `envcube_nebula.mat`. Im Original nicht vorhanden; Auswertung ist Aufgabe der Engine (`TODO-surface-maps.md`).
+
 ### Audio: WAV → Ogg Vorbis / FLAC
 
 Alle 1700 `.wav` wurden gewandelt (`tools/convert_audio.py`): 1620 MP3-in-WAV → `.ogg`, 80 PCM-WAV → `.flac`. Die Verweise in sieben INIs zeigen jetzt auf die neuen Endungen:
