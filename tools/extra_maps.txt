@@ -1,8 +1,8 @@
 # Von tools/make_surface_maps.py erzeugte Zusatzkarten (Klasse/Pfad), nicht aus der CD
-Material/fx/normalmaps_ships.txm
-Material/fx/normalmaps_bases.txm
-Material/fx/normalmaps_solar.txm
-Material/fx/normalmaps_planets.txm
-Material/fx/envcube_space.mat
-Material/fx/envcube_sun.mat
-Material/fx/envcube_nebula.mat
+Shader/fx/normalmaps_ships.txm
+Shader/fx/normalmaps_bases.txm
+Shader/fx/normalmaps_solar.txm
+Shader/fx/normalmaps_planets.txm
+Shader/fx/envcube_space.mat
+Shader/fx/envcube_sun.mat
+Shader/fx/envcube_nebula.mat

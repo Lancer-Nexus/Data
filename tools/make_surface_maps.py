@@ -4,10 +4,10 @@
 Normal Maps: aus der Helligkeit einer vorhandenen Textur abgeleitet (Höhenkarte -> Sobel,
 tangentiale Normalen, +Y oben, Z nach außen), kachelbar (wrap), BC5 (ATI2N, nur X und Y) mit
 Mip-Kette (Normalen beim Verkleinern renormiert). Eine Bibliothek je Gruppe
-(NAP/Material/fx/normalmaps_<ships|bases|solar|planets>.txm), je Karte ein Texturknoten `nm_<name>` mit einem Blatt `MIPS`.
+(NAP/Shader/fx/normalmaps_<ships|bases|solar|planets>.txm), je Karte ein Texturknoten `nm_<name>` mit einem Blatt `MIPS`.
 
 Cube Maps: prozedural (Sterne, Sonne, Nebel), 256 px je Fläche, DDS A8R8G8B8 mit Mip-Kette,
-Flächenfolge +X -X +Y -Y +Z -Z. Je Karte eine Materialbibliothek NAP/Material/fx/<name>.mat mit
+Flächenfolge +X -X +Y -Y +Z -Z. Je Karte eine Materialbibliothek NAP/Shader/fx/<name>.mat mit
 einem Texturknoten `<name>` und einem Blatt `CUBE` (wie `envmapbasic.mat`).
 
 Die Zuordnung steht in SDK/fx/SurfaceMaps.ini (diese Datei wird nicht erzeugt, nur geprüft).
@@ -45,7 +45,7 @@ NAP = os.path.join(ROOT, 'NAP')
 TEMPLATE = os.path.join(NAP, 'Material', 'fx', 'envmapbasic.mat')
 
 # name -> (Container (NAP-relativ), Texturname, Stärke, Glättung, Beschreibung für das Sprachmodell, Gruppe)
-# Gruppe = Bibliothek: ships | bases | solar | planets  ->  Material/fx/normalmaps_<Gruppe>.txm
+# Gruppe = Bibliothek: ships | bases | solar | planets  ->  Shader/fx/normalmaps_<Gruppe>.txm
 # Stärke und Glättung sind Ausgangswerte, `--tune` setzt sie nach der Bewertung neu.
 def _n(c, t, d, g, s=2.5):
     return (c, t, s, 1, d, g)
@@ -711,7 +711,8 @@ def main():
             k, v = kv.split('=', 1)
             if k in CUBE_DEFAULTS:
                 CUBE_DEFAULTS[k]['desc'] = v
-    out_dir = os.path.join(NAP, 'Material', 'fx')
+    out_dir = os.path.join(NAP, 'Shader', 'fx')
+    os.makedirs(out_dir, exist_ok=True)
     made = []
 
     nm = {g: {} for g in GROUPS}
@@ -763,16 +764,16 @@ def main():
                 nm[group]['mt_' + key] = encode_bc4(mt)
             chosen['normal'][key] = pr
         previews[key] = np.clip((n * 0.5 + 0.5) * 255, 0, 255).astype(np.uint8)
-    old = os.path.join(out_dir, 'normalmaps.txm')   # frühere Einzelbibliothek
-    if os.path.isfile(old):
-        os.remove(old)
+    for old in (os.path.join(out_dir, 'normalmaps.txm'), os.path.join(NAP, 'Material', 'fx', 'normalmaps.txm')):
+        if os.path.isfile(old):   # frühere Einzelbibliothek
+            os.remove(old)
     for g in GROUPS:
         if not nm[g]:
             continue
         header, root = build_library(nm[g], 'MIPS')
         p = os.path.join(out_dir, f'normalmaps_{g}.txm')
         W.save(p, header, root)
-        made.append(f'Material/fx/normalmaps_{g}.txm')
+        made.append(f'Shader/fx/normalmaps_{g}.txm')
         print(f'normalmaps_{g}.txm: {len(nm[g])} Karten, {os.path.getsize(p) / 1e6:.1f} MB')
 
     for c in CUBES:
@@ -789,7 +790,7 @@ def main():
         header, root = build_library({c: encode_cube(faces)}, 'CUBE')
         p = os.path.join(out_dir, c + '.mat')
         W.save(p, header, root)
-        made.append(f'Material/fx/{c}.mat')
+        made.append(f'Shader/fx/{c}.mat')
         print(f'{c}.mat: {os.path.getsize(p) / 1e6:.2f} MB')
         previews[c] = faces
 

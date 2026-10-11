@@ -42,6 +42,10 @@ Die INIs des HD-Packs (`FLHDE/freelancer-hd-edition`, `DATA/`) wurden mit `tools
 - `characters` (1): `NewCharacter.ini`
 - `exe` (1): `Freelancer.ini`
 
+### Zusatzkarten: eigene Klasse `Shader`
+
+Die Zusatzkarten (Normal-, Roughness-, Metallic- und Cube Maps: `normalmaps_*.txm`, `envcube_*.mat`) und die INIs `fx/SurfaceMaps*.ini` liegen in `NAP/Shader/fx/`. Die Pfade im virtuellen Root bleiben `fx/…`, die INI-Verweise sind unverändert.
+
 ### Zusatzkarten: `fx/SurfaceMaps.ini`
 
 Neue Datei mit `[Texture]` (vier Bibliotheken), `[NormalMap]` (55 Normal Maps zu Diffuse-Texturen, BC5) und `[CubeMap]` (3 Umgebungskarten). Daten: `Material/fx/normalmaps_ships.txm`, `normalmaps_bases.txm`, `normalmaps_solar.txm`, `normalmaps_planets.txm`, `envcube_space.mat`, `envcube_sun.mat`, `envcube_nebula.mat`. Im Original nicht vorhanden; Auswertung ist Aufgabe der Engine (`TODO-surface-maps.md`).

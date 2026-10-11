@@ -28,7 +28,7 @@ Die INIs sagen dem Spiel, **welche** Daten es lädt und **wie** sie verwendet we
 
 ## 3. Klassencontainer und virtueller Root
 
-`NAP/` enthält elf Klassenordner: `Effects`, `Equipment`, `Material`, `Mission`, `Models`, `Script`, `Sounds`, `System`, `UI`, `Video`, `World`. Die Zuordnung steht in `classes.md`. Sie folgt der Dateiendung und sonst dem Hauptordner.
+`NAP/` enthält zwölf Klassenordner: `Effects`, `Equipment`, `Shader`, `Material`, `Mission`, `Models`, `Script`, `Sounds`, `System`, `UI`, `Video`, `World`. Die Zuordnung steht in `classes.md`. Sie folgt der Dateiendung und sonst dem Hauptordner.
 
 Das Spiel lädt alle Klassenordner in einen **virtuellen Root**. Dort liegen die Dateien so, wie die INIs sie erwarten. Der Klassenname gehört nicht zum Pfad:
 
