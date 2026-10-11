@@ -48,7 +48,7 @@ Neue Datei mit `[Texture]` (vier Bibliotheken), `[NormalMap]` (55 Normal Maps zu
 
 ### Zusatzkarten: `fx/SurfaceMapsShips.ini`, `fx/SurfaceMapsBases.ini`
 
-Automatisch erzeugte Normal Maps für Schiffs- und Basistexturen (49 und 2621 Karten, `normalmaps_ships_auto_*.txm`, `normalmaps_bases_<satz>_<n>.txm`), Syntax wie `SurfaceMaps.ini`. Lade-Profile minimal/Standard/voll: `TODO-surface-maps.md`, Abschnitt 1b.
+Automatisch erzeugte Normal Maps für Schiffs- und Basistexturen (49 und 2621 Karten, `normalmaps_ships_auto_*.txm`, `normalmaps_bases_<satz>_<n>.txm`), Syntax wie `SurfaceMaps.ini`. Lade-Profile minimal/Standard/voll: `TODO-surface-maps.md`, Abschnitt 1b. Alle drei INIs enthalten für Schiffe, Basen und Solar-Objekte zusätzlich `roughness_map`/`roughness` und `metallic_map`/`metallic` (BC4, abgeleitet aus der Diffuse-Textur, Abschnitt 1c).
 
 ### Audio: WAV → Ogg Vorbis / FLAC
 

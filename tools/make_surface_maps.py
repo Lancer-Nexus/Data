@@ -209,6 +209,98 @@ def encode_normal_rgb(n):
     return dds_header(n.shape[1], n.shape[0], len(levels), 24, (0xFF0000, 0xFF00, 0xFF, 0)) + bytes(body)
 
 
+
+# ---- Roughness und Metallic (aus der Diffuse-Textur abgeleitet) ------------
+
+# Zielwerte je Gruppe: Mittel der Roughness, Mittel des Metallic, Größe der Karten
+RM_PROFILE = {
+    'ships': {'rough': 0.45, 'metal': 0.35, 'size': 512},
+    'bases': {'rough': 0.60, 'metal': 0.25, 'size': 256},
+    'solar': {'rough': 0.55, 'metal': 0.30, 'size': 256},
+}
+METAL_MIN_MEAN = 0.05   # darunter wird keine Metallic-Karte gespeichert, der Faktor ist 0
+
+
+def rm_ini_lines(key, rm):
+    """INI-Zeilen für Roughness und Metallic. Ohne Metallic-Karte steht `metallic = 0`, sonst wäre der
+    Standardwert der Engine 1 (alles Metall)."""
+    out = f"roughness_map = rt_{key}\nroughness = 1\n"
+    if rm['metal_mean'] >= METAL_MIN_MEAN:
+        out += f"metallic_map = mt_{key}\nmetallic = 1\n"
+    else:
+        out += "metallic = 0\n"
+    return out
+
+
+def _blur(a, n=2):
+    for _ in range(n):
+        a = _blur3(a)
+    return a
+
+
+def derive_rm(img, group):
+    """img: PIL RGB. Gibt (roughness, metallic) als float-Arrays 0..1 in Größe RM_PROFILE[group]['size'] zurück.
+
+    Roughness: dunkle und detailreiche (verschmutzte, zerkratzte) Bereiche rauer, helle glatte Flächen glatter.
+    Metallic: wenig gesättigte Flächen mittlerer Helligkeit gelten als Metall, bunte Farbflächen und sehr dunkle
+    Bereiche (Glas, Öffnungen) nicht. Beides ist eine Schätzung aus dem Bild, keine Materialmessung.
+    """
+    prof = RM_PROFILE[group]
+    sz = prof['size']
+    a = np.asarray(img.resize((sz, sz), Image.LANCZOS), np.float32) / 255
+    lum = a @ np.array([0.299, 0.587, 0.114], np.float32)
+    mx, mn = a.max(-1), a.min(-1)
+    sat = (mx - mn) / (mx + 1e-3)
+    detail = np.abs(lum - _blur(lum, 2))
+    detail = _blur(detail, 2)
+    detail = np.clip(detail / max(np.percentile(detail, 95), 1e-6), 0, 1.5)
+    rough = np.clip(0.75 - 0.45 * lum + 0.35 * detail, 0.1, 1.0)
+    rough = _blur(rough, 1)
+    # Mittel auf den Zielwert schieben, Kontrast erhalten (Standardabweichung mindestens 0,10)
+    std = float(rough.std())
+    if std < 0.10 and std > 1e-6:
+        rough = (rough - rough.mean()) * (0.10 / std) + rough.mean()
+    rough = np.clip(rough - rough.mean() + prof['rough'], 0.08, 1.0)
+
+    def smooth(x, lo, hi):
+        t = np.clip((x - lo) / (hi - lo), 0, 1)
+        return t * t * (3 - 2 * t)
+
+    metal = (1 - smooth(sat, 0.15, 0.55)) * smooth(lum, 0.10, 0.35)
+    metal = _blur(metal, 1)
+    target = prof['metal']
+    if metal.mean() > target:   # zu viel Metall: Werte so herunterskalieren, dass das Mittel das Ziel trifft
+        metal = metal * (target / float(metal.mean()))
+    return rough.astype(np.float32), np.clip(metal, 0, 1).astype(np.float32)
+
+
+def rm_stats(rough, metal):
+    return {'rough_mean': float(rough.mean()), 'rough_std': float(rough.std()),
+            'metal_mean': float(metal.mean()), 'metal_std': float(metal.std())}
+
+
+def encode_bc4(a):
+    """Einkanal-Karte (0..1) als BC4 / ATI1N, Mips bis 4 x 4. Die Engine liest den R-Kanal."""
+    import etcpak
+    levels = [a]
+    while levels[-1].shape[0] > 4:
+        p = levels[-1]
+        levels.append((p[0::2, 0::2] + p[1::2, 0::2] + p[0::2, 1::2] + p[1::2, 1::2]) / 4)
+    body = bytearray()
+    for lv in levels:
+        h_, w_ = lv.shape
+        rgba = np.zeros((h_, w_, 4), np.uint8)
+        rgba[..., 0] = np.clip(lv * 255 + 0.5, 0, 255)
+        rgba[..., 3] = 255
+        body += etcpak.compress_bc4(rgba.tobytes(), w_, h_)
+    top = levels[0]
+    hd = struct.pack('<4s7I44s', b'DDS ', 124, 0x1 | 0x2 | 0x4 | 0x1000 | 0x20000 | 0x80000,
+                     top.shape[0], top.shape[1], top.shape[0] * top.shape[1] // 2, 0, len(levels), b'\0' * 44)
+    pf = struct.pack('<8I', 32, 0x4, struct.unpack('<I', b'ATI1')[0], 0, 0, 0, 0, 0)
+    caps = struct.pack('<5I', 0x1000 | 0x8 | 0x400000, 0, 0, 0, 0)
+    return hd + pf + caps + bytes(body)
+
+
 # ---- Bewertung und Anpassung -----------------------------------------------
 
 TARGET_P95 = 28.0          # Ziel: 95 % der Pixel neigen höchstens so viel (Grad)
@@ -532,6 +624,9 @@ INI_HEADER = """; SurfaceMaps.ini - Zusatzkarten (Normal Maps, Cube Maps) zu Tex
 ;   library    Name aus [Texture]
 ;   map        Texturknoten in der Bibliothek (tangentiale Normalen, RGB, +Y oben, Z nach aussen)
 ;   strength   Staerke der Abweichung, 1.0 = unveraendert, 0 = aus
+;   roughness_map, metallic_map   optionale Einkanalkarten (R-Kanal) in derselben Bibliothek
+;   roughness, metallic           Faktor auf die Karte (1 = unveraendert); mit einer der Karten
+;                                 wird der PBR-Pfad der Engine benutzt
 ; [CubeMap]    Cube Map als Umgebungsspiegelung. Bindung ueber vorhandene Schluessel in
 ;              ships\\Shiparch.ini und solar\\SolarArch.ini:
 ;                material_library = <file>
@@ -552,8 +647,11 @@ def write_ini(path, normals, cubes):
         if any(v[2] == g for v in normals.values()):
             out.append(f"\n[Texture]\nfile = fx\\normalmaps_{g}.txm\nname = surface_normalmaps_{g}\n")
     for key, (tex, desc, group, pr) in normals.items():
+        extra = ''
+        if 'rm' in pr:
+            extra = rm_ini_lines(key, pr['rm'])
         out.append(f"\n; {desc}\n[NormalMap]\ntexture = {tex}\nlibrary = surface_normalmaps_{group}\n"
-                   f"map = nm_{key}\nstrength = {pr['strength']:g}\n")
+                   f"map = nm_{key}\nstrength = {pr['strength']:g}\n{extra}")
     for name, pr in cubes.items():
         out.append(f"\n[CubeMap]\nnickname = {name}\nfile = fx\\{name}.mat\nkind = {pr['kind']}\n"
                    f"strength = {CUBE_STRENGTH[pr['kind']]:g}\n")
@@ -655,6 +753,14 @@ def main():
         chosen.setdefault('normal', {})[key] = pr
         n = normal_from_height(h, pr['strength'])
         nm[group]['nm_' + key] = encode_normal(n)
+        if group in RM_PROFILE:
+            rg, mt = derive_rm(img, group)
+            nm[group]['rt_' + key] = encode_bc4(rg)
+            pr = dict(pr)
+            pr['rm'] = {k: round(v, 3) for k, v in rm_stats(rg, mt).items()}
+            if pr['rm']['metal_mean'] >= METAL_MIN_MEAN:
+                nm[group]['mt_' + key] = encode_bc4(mt)
+            chosen['normal'][key] = pr
         previews[key] = np.clip((n * 0.5 + 0.5) * 255, 0, 255).astype(np.uint8)
     old = os.path.join(out_dir, 'normalmaps.txm')   # frühere Einzelbibliothek
     if os.path.isfile(old):

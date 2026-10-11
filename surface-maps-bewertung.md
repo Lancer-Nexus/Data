@@ -75,55 +75,55 @@ Erzeugt von `tools/make_surface_maps.py --evaluate` bzw. `--tune`. Die Kennzahle
 | `li_elite_hull` | 0.62 → 0.62 | 1 → 1 | 28.2° → 28.2° | gut |
 | `li_engine_grill` | 0.50 → 0.50 | 1 → 1 | 28.3° → 28.3° | gut |
 | `li_equip_gen` | 0.62 → 0.62 | 1 → 1 | 28.1° → 28.1° | gut |
-| `li_freighter1` | 2.50 → 0.56 | 1 → 1 | 67.1° → 27.9° | zu steil, über 1 % Pixel steiler als 60° |
-| `li_fighter` | 2.50 → 1.15 | 1 → 1 | 49.2° → 28.1° | zu steil, über 1 % Pixel steiler als 60° |
+| `li_freighter1` | 0.56 → 0.56 | 1 → 1 | 27.9° → 27.9° | gut |
+| `li_fighter` | 1.15 → 1.15 | 1 → 1 | 28.1° → 28.1° | gut |
 | `ku_k_panel01` | 0.50 → 0.50 | 1 → 1 | 28.9° → 28.9° | gut |
 | `ku_k_wings` | 0.72 → 0.72 | 1 → 1 | 27.9° → 27.9° | gut |
 | `ku_metal03` | 2.23 → 2.23 | 1 → 1 | 28.0° → 28.0° | gut |
 | `br_player01` | 1.16 → 1.16 | 1 → 1 | 28.1° → 28.1° | gut |
-| `br_player02` | 2.50 → 0.96 | 1 → 1 | 54.1° → 28.0° | zu steil, über 1 % Pixel steiler als 60° |
-| `br_player03` | 2.50 → 0.68 | 1 → 1 | 63.0° → 28.1° | zu steil, über 1 % Pixel steiler als 60° |
-| `br_cap_dtl1` | 2.50 → 0.50 | 1 → 1 | 71.4° → 30.7° | zu steil, über 1 % Pixel steiler als 60° |
-| `br_cap_dtl2` | 2.50 → 0.50 | 1 → 1 | 75.0° → 36.8° | zu steil, über 1 % Pixel steiler als 60° |
-| `co_p_fighter01` | 2.50 → 0.75 | 1 → 1 | 60.7° → 28.1° | zu steil, über 1 % Pixel steiler als 60° |
-| `co_p_fighter02` | 2.50 → 0.84 | 1 → 1 | 57.8° → 28.1° | zu steil, über 1 % Pixel steiler als 60° |
-| `cv_g_fighter01` | 2.50 → 0.50 | 1 → 1 | 70.7° → 29.7° | zu steil, über 1 % Pixel steiler als 60° |
-| `cv_g_fighter02` | 2.50 → 0.80 | 1 → 1 | 59.1° → 28.1° | zu steil, über 1 % Pixel steiler als 60° |
-| `or_equip_mstr` | 2.50 → 0.94 | 1 → 1 | 54.7° → 28.0° | zu steil, über 1 % Pixel steiler als 60° |
-| `or_liberty1` | 2.50 → 0.63 | 1 → 1 | 64.7° → 28.1° | zu steil, über 1 % Pixel steiler als 60° |
-| `or_weaponplate2` | 2.50 → 0.59 | 1 → 1 | 66.1° → 28.0° | zu steil, über 1 % Pixel steiler als 60° |
-| `ut_panels01` | 2.50 → 0.51 | 1 → 1 | 68.9° → 27.9° | zu steil, über 1 % Pixel steiler als 60° |
-| `ut_liner1` | 2.50 → 0.50 | 1 → 1 | 70.3° → 29.2° | zu steil, über 1 % Pixel steiler als 60° |
+| `br_player02` | 0.96 → 0.96 | 1 → 1 | 28.0° → 28.0° | gut |
+| `br_player03` | 0.68 → 0.68 | 1 → 1 | 28.1° → 28.1° | gut |
+| `br_cap_dtl1` | 0.50 → 0.50 | 1 → 1 | 30.7° → 30.7° | gut |
+| `br_cap_dtl2` | 0.50 → 0.50 | 1 → 1 | 36.8° → 36.8° | gut |
+| `co_p_fighter01` | 0.75 → 0.75 | 1 → 1 | 28.1° → 28.1° | gut |
+| `co_p_fighter02` | 0.84 → 0.84 | 1 → 1 | 28.1° → 28.1° | gut |
+| `cv_g_fighter01` | 0.50 → 0.50 | 1 → 1 | 29.7° → 29.7° | gut |
+| `cv_g_fighter02` | 0.80 → 0.80 | 1 → 1 | 28.1° → 28.1° | gut |
+| `or_equip_mstr` | 0.94 → 0.94 | 1 → 1 | 28.0° → 28.0° | gut |
+| `or_liberty1` | 0.63 → 0.63 | 1 → 1 | 28.1° → 28.1° | gut |
+| `or_weaponplate2` | 0.59 → 0.59 | 1 → 1 | 28.0° → 28.0° | gut |
+| `ut_panels01` | 0.51 → 0.51 | 1 → 1 | 27.9° → 27.9° | gut |
+| `ut_liner1` | 0.50 → 0.50 | 1 → 1 | 29.2° → 29.2° | gut |
 | `bw_dig_site_16` | 0.73 → 0.73 | 1 → 1 | 27.9° → 27.9° | gut |
 | `bw_dig_site_18` | 1.09 → 1.09 | 1 → 1 | 27.9° → 27.9° | gut |
-| `bw_dig_site_20` | 3.00 → 4.48 | 1 → 1 | 19.6° → 28.0° | gut |
+| `bw_dig_site_20` | 4.48 → 4.48 | 1 → 1 | 28.0° → 28.0° | gut |
 | `li_ceiling_gen01` | 2.30 → 2.30 | 1 → 1 | 28.0° → 28.0° | gut |
-| `bw_pygar_door` | 2.50 → 2.39 | 1 → 1 | 29.1° → 28.0° | gut |
-| `bw_pygar_generator` | 2.50 → 0.95 | 1 → 1 | 54.6° → 28.1° | zu steil, über 1 % Pixel steiler als 60° |
-| `bw_pygar_fan` | 2.50 → 3.80 | 1 → 1 | 19.3° → 28.0° | gut |
-| `bw_concrete_base` | 2.50 → 4.26 | 1 → 1 | 17.3° → 28.0° | gut |
-| `bw_catwalk` | 2.50 → 0.88 | 1 → 1 | 56.6° → 28.1° | zu steil, über 1 % Pixel steiler als 60° |
-| `bw_grate` | 2.50 → 0.85 | 1 → 1 | 57.5° → 28.0° | zu steil, über 1 % Pixel steiler als 60° |
-| `bw_landing_pad` | 2.50 → 0.51 | 1 → 1 | 69.0° → 28.0° | zu steil, über 1 % Pixel steiler als 60° |
-| `bw_tunnel_panel` | 2.50 → 2.95 | 1 → 1 | 24.3° → 28.0° | gut |
+| `bw_pygar_door` | 2.39 → 2.39 | 1 → 1 | 28.0° → 28.0° | gut |
+| `bw_pygar_generator` | 0.95 → 0.95 | 1 → 1 | 28.1° → 28.1° | gut |
+| `bw_pygar_fan` | 3.80 → 3.80 | 1 → 1 | 28.0° → 28.0° | gut |
+| `bw_concrete_base` | 4.26 → 4.26 | 1 → 1 | 28.0° → 28.0° | gut |
+| `bw_catwalk` | 0.88 → 0.88 | 1 → 1 | 28.1° → 28.1° | gut |
+| `bw_grate` | 0.85 → 0.85 | 1 → 1 | 28.0° → 28.0° | gut |
+| `bw_landing_pad` | 0.51 → 0.51 | 1 → 1 | 28.0° → 28.0° | gut |
+| `bw_tunnel_panel` | 2.95 → 2.95 | 1 → 1 | 28.0° → 28.0° | gut |
 | `ast_rock_4` | 6.00 → 6.00 | 1 → 1 | 16.1° → 16.1° | gut |
-| `ast_rock_r04` | 3.00 → 1.90 | 1 → 1 | 40.1° → 28.1° | zu steil |
-| `eq_turret_mturret` | 2.50 → 1.26 | 1 → 1 | 46.5° → 28.0° | zu steil |
-| `eq_turret_wins` | 2.50 → 0.50 | 1 → 1 | 70.8° → 29.8° | zu steil, über 1 % Pixel steiler als 60° |
-| `eq_torpedo` | 2.50 → 0.82 | 1 → 1 | 58.2° → 27.9° | zu steil, über 1 % Pixel steiler als 60° |
-| `no_dtl2` | 2.50 → 0.87 | 1 → 1 | 56.8° → 28.0° | zu steil, über 1 % Pixel steiler als 60° |
+| `ast_rock_r04` | 1.90 → 1.90 | 1 → 1 | 28.1° → 28.1° | gut |
+| `eq_turret_mturret` | 1.26 → 1.26 | 1 → 1 | 28.0° → 28.0° | gut |
+| `eq_turret_wins` | 0.50 → 0.50 | 1 → 1 | 29.8° → 29.8° | gut |
+| `eq_torpedo` | 0.82 → 0.82 | 1 → 1 | 27.9° → 27.9° | gut |
+| `no_dtl2` | 0.87 → 0.87 | 1 → 1 | 28.0° → 28.0° | gut |
 | `planet_rock01` | 1.01 → 1.01 | 1 → 1 | 28.0° → 28.0° | gut |
 | `planet_crater_hi` | 1.43 → 1.43 | 1 → 1 | 28.0° → 28.0° | gut |
-| `planet_crater_mid` | 3.00 → 1.90 | 1 → 1 | 40.0° → 28.0° | gut |
-| `planet_crater_low` | 3.00 → 2.86 | 1 → 1 | 29.2° → 28.0° | gut |
+| `planet_crater_mid` | 1.90 → 1.90 | 1 → 1 | 28.0° → 28.0° | gut |
+| `planet_crater_low` | 2.86 → 2.86 | 1 → 1 | 28.0° → 28.0° | gut |
 | `planet_ground01` | 0.93 → 0.93 | 1 → 1 | 28.0° → 28.0° | gut |
 | `planet_ice` | 2.80 → 2.80 | 1 → 1 | 28.0° → 28.0° | gut |
 | `planet_lava` | 1.28 → 1.28 | 1 → 1 | 27.9° → 27.9° | gut |
-| `planet_ocean` | 2.00 → 6.00 | 1 → 1 | 10.0° → 28.0° | zu flach |
-| `pbody_mercury01` | 3.00 → 1.02 | 1 → 1 | 57.5° → 28.1° | zu steil, über 1 % Pixel steiler als 60° |
-| `pbody_cratermoon` | 3.00 → 1.35 | 1 → 1 | 49.7° → 27.9° | zu steil, über 1 % Pixel steiler als 60° |
-| `pbody_desert01` | 3.00 → 6.00 | 1 → 1 | 11.0° → 21.2° | zu flach |
-| `pbody_desert_rock` | 3.00 → 4.47 | 1 → 1 | 19.6° → 28.0° | gut |
-| `pbody_icegrey01` | 3.00 → 1.47 | 1 → 1 | 47.4° → 28.1° | zu steil |
-| `pbody_icewhiteblue` | 3.00 → 1.56 | 1 → 1 | 45.6° → 28.0° | zu steil |
-| `pbody_indust01` | 3.00 → 0.97 | 1 → 1 | 58.7° → 28.0° | zu steil, über 1 % Pixel steiler als 60° |
+| `planet_ocean` | 6.00 → 6.00 | 1 → 1 | 28.0° → 28.0° | gut |
+| `pbody_mercury01` | 1.02 → 1.02 | 1 → 1 | 28.1° → 28.1° | gut |
+| `pbody_cratermoon` | 1.35 → 1.35 | 1 → 1 | 27.9° → 27.9° | gut |
+| `pbody_desert01` | 6.00 → 6.00 | 1 → 1 | 21.2° → 21.2° | gut |
+| `pbody_desert_rock` | 4.47 → 4.47 | 1 → 1 | 28.0° → 28.0° | gut |
+| `pbody_icegrey01` | 1.47 → 1.47 | 1 → 1 | 28.1° → 28.1° | gut |
+| `pbody_icewhiteblue` | 1.56 → 1.56 | 1 → 1 | 28.0° → 28.0° | gut |
+| `pbody_indust01` | 0.97 → 0.97 | 1 → 1 | 28.0° → 28.0° | gut |

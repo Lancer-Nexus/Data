@@ -88,6 +88,38 @@ Technische Beschreibung der Dateien, der INI-Syntax und der Engine-Anbindung mit
 
 Die Engine liest nur die INIs des gewählten Profils und lädt eine Bibliothek erst, wenn eine passende Diffuse-Textur gebunden wird. Die Textur-zu-Bibliothek-Zuordnung steht in den INIs.
 
+## 1c. Roughness und Metallic (2026-10-12)
+
+Die Karten-Pipeline erzeugt zusätzlich zu jeder Normal Map (außer bei Planeten) eine **Roughness-** und eine **Metallic-Karte**, abgeleitet aus der Diffuse-Textur. Beide liegen in derselben Bibliothek wie die Normal Map (`rt_<name>`, `mt_<name>`).
+
+| Teil | Wert |
+|---|---|
+| Format | BC4 (ATI1N), ein Kanal; die Engine liest den R-Kanal (`PBR.frag.hlsl`) und kennt `ATI1N` als `Rgtc1` |
+| Größe | Schiffe 512 px, Basen und Solar 256 px (die Karten sind niederfrequent) |
+| Karten | 40 kuratierte Sätze (Schiffe, Basen, Solar), 2670 automatische (49 Schiffe, 2621 Basen) |
+| Speicher | Bibliotheken jetzt zusammen 1,2 GB (vorher 1,0 GB) |
+
+**Ableitung** (`derive_rm` in `make_surface_maps.py`):
+- *Roughness:* dunkle und detailreiche Bereiche rauer, helle glatte Flächen glatter. Mittel je Gruppe (Schiffe 0,45, Basen 0,60, Solar 0,55), Streuung mindestens 0,10.
+- *Metallic:* wenig gesättigte Flächen mittlerer Helligkeit gelten als Metall, bunte Farbflächen und sehr dunkle Bereiche (Glas, Öffnungen) nicht. Obergrenze für das Mittel je Gruppe (Schiffe 0,35, Basen 0,25, Solar 0,30), damit Flächen im Spiel nicht zu dunkel werden (siehe unten).
+- Ohne Metallic-Karte (Mittel unter 0,05; bei Basen 1346 von 2621, 3 von 49 Schiffskarten) steht in der INI `metallic = 0`, denn der Standardwert der Engine ohne Karte ist 1 (`Metallic ?? 1.0f`).
+
+**INI:** In `[NormalMap]` kommen die optionalen Schlüssel `roughness_map`, `roughness` (Faktor), `metallic_map`, `metallic` (Faktor) hinzu. Sobald eine der Karten gesetzt ist, benutzt die Engine den PBR-Pfad (`BasicMaterial`: `pbr = (Rt || Mt || Roughness || Metallic) && lights.Enabled`).
+
+**Ergebnis (Mittel über die Karten):**
+
+| Gruppe | Karten | Roughness Mittel | Roughness Streuung | Metallic Mittel | Metallic Streuung |
+|---|---:|---:|---:|---:|---:|
+| Schiffe (automatisch) | 49 | 0,45 | 0,12 | 0,32 | 0,11 |
+| Basen (automatisch) | 2621 | 0,60 | 0,10 | 0,10 | 0,11 |
+| kuratiert | 40 | 0,51 | – | 0,29 | – |
+
+**Einschränkungen (wichtig):**
+- Die Karten sind **Schätzungen aus dem Bild**, keine Materialdaten. Metall und Rauheit werden aus Helligkeit, Sättigung und Detail erraten. Die Metallic-Karten sind oft nahezu einheitlich (Streuung 0,06 bis 0,11), der Unterschied ergibt sich vor allem aus dem Faktor.
+- Metallische Flächen haben im PBR-Pfad **kein Diffuslicht** (`diffuseColor *= 1 - metallic`), sie spiegeln nur. Ohne Umgebungsreflexion (Image-Based Lighting, siehe `renderer-roadmap.md`) wirken sie dunkel. Deshalb sind die Mittelwerte niedrig gehalten; mit den Cube Maps `envcube_*` als `envmap_material` wird es besser, ist aber nicht geprüft.
+- Der PBR-Pfad ändert die gesamte Beleuchtung des Materials, nicht nur die Karten. Ob das für Freelancer-Materialien gewünscht ist, ist eine Entscheidung der Engine-Seite.
+- Planetenkarten haben weder Roughness noch Metallic.
+
 ## 2. Was die Engine heute schon kann (Client, geprüft im Quelltext)
 
 - `BasicMaterial` kennt `Nm_name` (Normal Map), `Mt_name`, `Rt_name`, `Bt_name` im `.mat`. Der PBR-Pfad wertet sie aus; der Shader liest nur die Kanäle R und G und braucht eine dritte UV-Menge/Tangenten (Original-Modelle haben diese vermutlich nicht, nicht geprüft).

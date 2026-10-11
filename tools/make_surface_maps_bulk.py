@@ -13,7 +13,8 @@ Ergänzung zu make_surface_maps.py (handgewählte Beispielkarten). Ablauf:
      Schutzliste `tools/extra_maps_auto.txt`, Bericht `surface-maps-auto-bewertung.md`.
 
 Schiffskarten 1024 px, Basiskarten 512 px (die Texturen sind größtenteils KI-hochskaliert,
-mehr Auflösung bringt der Normal Map nichts).
+mehr Auflösung bringt der Normal Map nichts). Dazu je Karte eine Roughness- und eine Metallic-Karte
+(BC4; Schiffe 512 px, Basen 256 px, abgeleitet aus der Diffuse-Textur).
 
   python3 tools/make_surface_maps_bulk.py [--limit N] [--jobs 8] [--dry-run]
 Voraussetzung: Pillow, numpy, etcpak.
@@ -117,7 +118,7 @@ def scan():
 
 
 def work(job):
-    container, name, size = job
+    container, name, size, group = job
     _, tree = W.load(os.path.join(NAP, container))
     img = None
     for trail, leaf in W.walk(tree):
@@ -143,7 +144,14 @@ def work(job):
     if m['p95'] < 8.0:   # selbst mit der größten Stärke kaum Neigung: nur verstärktes Rauschen
         return {'skip': 'zu flach (p95 unter 8°)', 'metrics': m, 'strength': st}
     n = M.normal_from_height(h2, st)
-    return {'data': M.encode_normal(n), 'strength': st, 'smooth': smooth, 'metrics': m, 'size': size}
+    out = {'data': M.encode_normal(n), 'strength': st, 'smooth': smooth, 'metrics': m, 'size': size}
+    if group in M.RM_PROFILE:
+        rg, mt = M.derive_rm(img, group)
+        out['rm'] = {k: round(v, 3) for k, v in M.rm_stats(rg, mt).items()}
+        out['rt'] = M.encode_bc4(rg)
+        if out['rm']['metal_mean'] >= M.METAL_MIN_MEAN:
+            out['mt'] = M.encode_bc4(mt)
+    return out
 
 
 def main():
@@ -160,7 +168,7 @@ def main():
         return
     results = {}
     with cf.ProcessPoolExecutor(a.jobs) as ex:
-        futs = {ex.submit(work, (c['container'], c['name'], c['size'])): c for c in cands}
+        futs = {ex.submit(work, (c['container'], c['name'], c['size'], c['group'])): c for c in cands}
         for i, f in enumerate(cf.as_completed(futs), 1):
             c = futs[f]
             try:
@@ -189,6 +197,8 @@ def main():
         params[key] = {'texture': c['name'], 'container': c['container'], 'md5': c['md5'], 'strength': r['strength'],
                        'smooth': r['smooth'], 'size': r['size'],
                        'p95': round(r['metrics']['p95'], 1), 'flat': round(r['metrics']['flat'], 3)}
+        if 'rm' in r:
+            params[key].update(r['rm'])
 
     made, ini = [], []
     lib_names = {}
@@ -196,11 +206,16 @@ def main():
         idx, cur, cur_bytes = 1, {}, 0
         chunks = []
         for c, r in items:
-            if cur and cur_bytes + len(r['data']) > MAX_FILE_BYTES:
+            nbytes = len(r['data']) + len(r.get('rt', b'')) + len(r.get('mt', b''))
+            if cur and cur_bytes + nbytes > MAX_FILE_BYTES:
                 chunks.append(cur)
                 cur, cur_bytes = {}, 0
             cur['nm_' + c['key']] = (c, r['data'])
-            cur_bytes += len(r['data'])
+            if 'rt' in r:
+                cur['rt_' + c['key']] = (c, r['rt'])
+            if 'mt' in r:
+                cur['mt_' + c['key']] = (c, r['mt'])
+            cur_bytes += nbytes
         if cur:
             chunks.append(cur)
         for i, ch in enumerate(chunks, 1):
@@ -221,8 +236,11 @@ def main():
             if g != group:
                 continue
             for c, r in items:
+                extra = ''
+                if 'rt' in r:
+                    extra = M.rm_ini_lines(c['key'], r['rm'])
                 body.append(f"\n[NormalMap]\ntexture = {c['name']}\nlibrary = {lib_names[c['key']]}\n"
-                            f"map = nm_{c['key']}\nstrength = {r['strength']:g}\n")
+                            f"map = nm_{c['key']}\nstrength = {r['strength']:g}\n{extra}")
         with open(path, 'w', encoding='utf-8', newline='\n') as f:
             f.write(f'; SurfaceMaps{group.capitalize()}.ini - automatisch erzeugte Normal Maps fuer {"Schiffs" if group == "ships" else "Basis"}texturen.\n'
                     '; Syntax wie SurfaceMaps.ini. Erzeugt von tools/make_surface_maps_bulk.py, nicht von Hand aendern.\n'
@@ -254,7 +272,15 @@ def write_report(cands, stat, skipped, params, libs, made):
           f"- Schiffe: {sum(1 for v in params.values() if v['size'] == 1024)} Karten (1024 px), Basen: {sum(1 for v in params.values() if v['size'] == 512)} (512 px)",
           f'- Stärke: Median {np.median(s):.2f}, Spanne {s.min():.2f} bis {s.max():.2f}; an der Untergrenze 0,5: {(s <= 0.5).sum()}, an der Obergrenze 6,0: {(s >= 6.0).sum()}',
           f'- p95 der Neigung: Median {np.median(p95):.1f}°, Spanne {p95.min():.1f}° bis {p95.max():.1f}°; unter 12° (flach): {(p95 < 12).sum()}, über 40°: {(p95 > 40).sum()}',
-          '', '## Bibliotheken', '', '| Datei | Größe |', '|---|---:|']
+          '', '## Roughness und Metallic', '',
+          'Aus der Diffuse-Textur abgeleitet (Helligkeit, Detail, Sättigung), als BC4. Schiffe 512 px, Basen 256 px.', '',
+          '| Gruppe | Karten | Roughness Mittel | Roughness Streuung | Metallic Mittel | Metallic Streuung | ohne Metallic-Karte (Mittel unter 0,05, Faktor 0) |', '|---|---:|---:|---:|---:|---:|---:|']
+    for g in ('ships', 'bases'):
+        vs = [v for k, v in params.items() if k.startswith(g + '_') and 'rough_mean' in v]
+        if vs:
+            L.append(f"| {g} | {len(vs)} | {np.mean([v['rough_mean'] for v in vs]):.2f} | {np.mean([v['rough_std'] for v in vs]):.2f} | "
+                     f"{np.mean([v['metal_mean'] for v in vs]):.2f} | {np.mean([v['metal_std'] for v in vs]):.2f} | {sum(1 for v in vs if v['metal_mean'] < 0.05)} |")
+    L += ['', '## Bibliotheken', '', '| Datei | Größe |', '|---|---:|']
     for m in made:
         L.append(f'| `{m}` | {os.path.getsize(os.path.join(NAP, m)) / 1e6:.1f} MB |')
     open(REPORT, 'w', encoding='utf-8', newline='\n').write('\n'.join(L) + '\n')
