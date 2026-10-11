@@ -54,7 +54,8 @@ def load_overrides():
     """HD-Pack-Dateien, hochskalierte Container und gewandelte Audiodateien (nicht überschreiben/löschen)."""
     out = set(load_converted().values())
     for fn in (OVERRIDES_FILE, os.path.join(os.path.dirname(OVERRIDES_FILE), 'upscaled_containers.txt'),
-               os.path.join(os.path.dirname(OVERRIDES_FILE), 'extra_maps.txt')):
+               os.path.join(os.path.dirname(OVERRIDES_FILE), 'extra_maps.txt'),
+               os.path.join(os.path.dirname(OVERRIDES_FILE), 'extra_maps_auto.txt')):
         if os.path.isfile(fn):
             with open(fn, encoding='utf-8') as f:
                 out |= {line.strip() for line in f if line.strip() and not line.startswith('#')}

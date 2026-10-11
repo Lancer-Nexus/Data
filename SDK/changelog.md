@@ -46,6 +46,10 @@ Die INIs des HD-Packs (`FLHDE/freelancer-hd-edition`, `DATA/`) wurden mit `tools
 
 Neue Datei mit `[Texture]` (vier Bibliotheken), `[NormalMap]` (55 Normal Maps zu Diffuse-Texturen, BC5) und `[CubeMap]` (3 Umgebungskarten). Daten: `Material/fx/normalmaps_ships.txm`, `normalmaps_bases.txm`, `normalmaps_solar.txm`, `normalmaps_planets.txm`, `envcube_space.mat`, `envcube_sun.mat`, `envcube_nebula.mat`. Im Original nicht vorhanden; Auswertung ist Aufgabe der Engine (`TODO-surface-maps.md`).
 
+### Zusatzkarten: `fx/SurfaceMapsAuto.ini`
+
+Automatisch erzeugte Normal Maps für Schiffs- und Basistexturen (2670 Karten, `normalmaps_ships_auto_*.txm`, `normalmaps_bases_<satz>_<n>.txm`), Syntax wie `SurfaceMaps.ini`. Siehe `TODO-surface-maps.md`, Abschnitt 1b.
+
 ### Audio: WAV → Ogg Vorbis / FLAC
 
 Alle 1700 `.wav` wurden gewandelt (`tools/convert_audio.py`): 1620 MP3-in-WAV → `.ogg`, 80 PCM-WAV → `.flac`. Die Verweise in sieben INIs zeigen jetzt auf die neuen Endungen:

@@ -40,7 +40,7 @@ def model_for(container, tex):
 def overrides(redo=False):
     """Geschützte Container: HD-Pack und bereits hochskalierte (bei redo nur HD-Pack)."""
     out = set()
-    for fn in ('hd_overrides.txt', 'extra_maps.txt') if redo else ('hd_overrides.txt', 'upscaled_containers.txt', 'extra_maps.txt'):
+    for fn in ('hd_overrides.txt', 'extra_maps.txt', 'extra_maps_auto.txt') if redo else ('hd_overrides.txt', 'upscaled_containers.txt', 'extra_maps.txt', 'extra_maps_auto.txt'):
         p = os.path.join(REPO, 'tools', fn)
         if os.path.exists(p):
             out |= {l.strip().lower() for l in open(p, encoding='utf-8') if l.strip() and not l.startswith('#')}

@@ -50,6 +50,34 @@ Technische Beschreibung der Dateien, der INI-Syntax und der Engine-Anbindung mit
 - Die Wirkung hängt von Tangenten, Shaderpfad und Beleuchtung in der Engine ab und ist ungeprüft.
 - Aus der Helligkeit abgeleitete Karten zeigen auch Farbwechsel als Relief (z. B. aufgemalte Linien).
 
+## 1b. Massenlauf für alle Schiffe und Basen (2026-10-12)
+
+`tools/make_surface_maps_bulk.py` erzeugt Normal Maps für alle geeigneten Texturen aus `Material/ships`, `Models/ships` und `Models/bases`. Bericht: `surface-maps-auto-bewertung.md`, Parameter: `tools/surface_maps_auto.json`, INI: `SDK/fx/SurfaceMapsAuto.ini`.
+
+| Schritt | Texturen |
+|---|---:|
+| gelesen (alle Container) | 4057 |
+| Name aussortiert (Lichter, Fenster, Schilder, Kulissen, Schäden u. ä.) | 730 |
+| unter 256 px | 76 |
+| schon als kuratierte Karte vorhanden | 91 |
+| gleicher Inhalt (MD5) | 364 |
+| Name mit verschiedenem Inhalt (über die INI nicht zuordenbar) | 98 |
+| kaum Relief (über 90 % unter 1°) | 10 |
+| zu flach (p95 unter 8° selbst bei größter Stärke) | 18 |
+| **erzeugt** | **2670** |
+
+- **Schiffe:** 49 Karten (1024 px) in `normalmaps_ships_auto_1/2.txm`. Zusammen mit den 22 kuratierten sind es 71 Schiffskarten. Schiffstexturen liegen in `Material/ships/*.mat` (etwa 80 Texturen), nicht in den Modellen.
+- **Basen:** 2621 Karten (512 px) in 23 Bibliotheken nach Gruppe: `normalmaps_bases_<generic|liberty|bretonia|kusari|rheinland|pirate|backdrops>_<n>.txm`, je höchstens 50 MB.
+- **Größe:** 946 MB im NAP (BC5), nichts davon im Git. Im Git liegen nur die Skripte, die INI (370 KB) und die Parameterdatei (650 KB).
+- **Auflösung:** Basen 512 px, weil die Texturen großteils KI-hochskaliert sind (`TODO-texturen-upscale.md`) und die Karten aus der Helligkeit abgeleitet werden. Mehr Auflösung brächte kein zusätzliches Detail.
+- **Zuordnung:** Eine Karte gilt für eine Textur gleichen Namens. Namen, hinter denen verschiedene Bilder liegen, wurden ausgelassen (98), damit keine falsche Karte zugeordnet wird.
+- **Stärke:** Median 1,5, Spanne 0,5 bis 6,0; p95 der Neigung durchgehend 15° bis 40°.
+
+**Nicht geprüft:**
+- Die Namensfilter sind eine Heuristik. Im Lauf stecken vermutlich einzelne ungeeignete Texturen (Stadtkulissen, Schilder), die nicht im Namen erkennbar sind. Eine Stichprobe von acht Karten sah plausibel aus.
+- Ob die Engine Bibliotheken dieser Größe (bis 50 MB je Datei, insgesamt viele) zügig lädt, ist offen. Eine Bibliothek wird in der Engine möglicherweise erst beim Zugriff geladen; das ist nicht geprüft.
+- Die Wirkung im Spiel hängt weiter von Tangenten und Shaderpfad ab.
+
 ## 2. Was die Engine heute schon kann (Client, geprüft im Quelltext)
 
 - `BasicMaterial` kennt `Nm_name` (Normal Map), `Mt_name`, `Rt_name`, `Bt_name` im `.mat`. Der PBR-Pfad wertet sie aus; der Shader liest nur die Kanäle R und G und braucht eine dritte UV-Menge/Tangenten (Original-Modelle haben diese vermutlich nicht, nicht geprüft).

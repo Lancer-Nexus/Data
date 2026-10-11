@@ -50,7 +50,7 @@ def cd_index(cd):
 
 def load_overrides():
     s = set()
-    for fn in ('hd_overrides.txt', 'upscaled_containers.txt', 'extra_maps.txt'):
+    for fn in ('hd_overrides.txt', 'upscaled_containers.txt', 'extra_maps.txt', 'extra_maps_auto.txt'):
         p = os.path.join(HERE, fn)
         if os.path.isfile(p):
             for l in open(p, encoding='utf-8'):

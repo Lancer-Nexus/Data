@@ -1,0 +1,26 @@
+# Von tools/make_surface_maps_bulk.py erzeugte Normal-Map-Bibliotheken (Klasse/Pfad)
+Material/fx/normalmaps_bases_backdrops_1.txm
+Material/fx/normalmaps_bases_bretonia_1.txm
+Material/fx/normalmaps_bases_bretonia_2.txm
+Material/fx/normalmaps_bases_bretonia_3.txm
+Material/fx/normalmaps_bases_bretonia_4.txm
+Material/fx/normalmaps_bases_generic_1.txm
+Material/fx/normalmaps_bases_generic_2.txm
+Material/fx/normalmaps_bases_kusari_1.txm
+Material/fx/normalmaps_bases_kusari_2.txm
+Material/fx/normalmaps_bases_kusari_3.txm
+Material/fx/normalmaps_bases_kusari_4.txm
+Material/fx/normalmaps_bases_kusari_5.txm
+Material/fx/normalmaps_bases_liberty_1.txm
+Material/fx/normalmaps_bases_liberty_2.txm
+Material/fx/normalmaps_bases_liberty_3.txm
+Material/fx/normalmaps_bases_liberty_4.txm
+Material/fx/normalmaps_bases_liberty_5.txm
+Material/fx/normalmaps_bases_pirate_1.txm
+Material/fx/normalmaps_bases_pirate_2.txm
+Material/fx/normalmaps_bases_rheinland_1.txm
+Material/fx/normalmaps_bases_rheinland_2.txm
+Material/fx/normalmaps_bases_rheinland_3.txm
+Material/fx/normalmaps_bases_rheinland_4.txm
+Material/fx/normalmaps_ships_auto_1.txm
+Material/fx/normalmaps_ships_auto_2.txm
