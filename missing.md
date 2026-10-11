@@ -1,8 +1,8 @@
 # Fehlende Dateien
 
-Dateien, auf die die INIs im SDK verweisen, die aber nicht in `NAP/` liegen. Prüfung: alle Asset-Verweise (`.3db`, `.cmp`, `.wav`, `.thn`, …) in `SDK/**/*.ini`, Vergleich mit dem Inhalt von `NAP/` (Groß-/Kleinschreibung ignoriert).
+Dateien, auf die die INIs im SDK verweisen, die aber nicht in `NAP/` liegen. Geprüft wurden alle Asset-Verweise (`.3db`, `.cmp`, `.wav`, `.txm`, `.tga`, …) in `SDK/**/*.ini` gegen den virtuellen Root von `NAP/` (Groß-/Kleinschreibung ignoriert). Die Liste gilt für den Stand nach dem Ersatz der Explosionsgeräusche durch `audio/null.wav`.
 
-**32 fehlende Ziele** mit insgesamt **55 Fundstellen**.
+**28 fehlende Ziele** mit insgesamt **43 Fundstellen**.
 
 Die Dateien stammen von der Original-CD (`CAB1.CAB`, `CAB2.CAB`). Ein Eintrag bedeutet: Die Datei fehlt auf der CD oder liegt an einem anderen Pfad.
 
@@ -12,7 +12,7 @@ Die Dateien stammen von der Original-CD (`CAB1.CAB`, `CAB2.CAB`). Ein Eintrag be
 |---|---:|
 | `.cmp` | 11 |
 | `.3db` | 9 |
-| `.wav` | 8 |
+| `.wav` | 4 |
 | `.tga` | 2 |
 | `.txm` | 2 |
 
@@ -20,10 +20,6 @@ Die Dateien stammen von der Original-CD (`CAB1.CAB`, `CAB2.CAB`). Ein Eintrag be
 
 | Ziel | Verwendet in (INI:Zeile) |
 |---|---|
-| `1.wav` | `audio/GfSounds.ini:211`, `audio/Sounds.ini:906`, `audio/Sounds.ini:938` |
-| `2.wav` | `audio/GfSounds.ini:261`, `audio/Sounds.ini:914`, `audio/Sounds.ini:946` |
-| `3.wav` | `audio/GfSounds.ini:268`, `audio/Sounds.ini:922`, `audio/Sounds.ini:954` |
-| `4.wav` | `audio/GfSounds.ini:275`, `audio/Sounds.ini:930`, `audio/Sounds.ini:962` |
 | `acquired.wav` | `audio/InterfaceSounds.ini:34`, `audio/InterfaceSounds.ini:208` |
 | `exit.tga` | `interface/Intro.ini:4` |
 | `interface/baseside/elite.3db` | `interface/baseside/Navbar.ini:39` |
@@ -55,6 +51,19 @@ Die Dateien stammen von der Original-CD (`CAB1.CAB`, `CAB2.CAB`). Ein Eintrag be
 
 ## Hinweise
 
-- Einige Ziele sind Kollisionsmodelle (`*_col.cmp`) und Sprachdateien (`*.wav`), die auf der Disc fehlen.
-- Bei Verweisen ohne Pfad (z. B. `1.wav` in `Sounds.ini`) ist der Zielordner im INI nicht angegeben. Geprüft wurde nur der Dateiname.
+- Kollisionsmodelle (`*_col.cmp`) fehlen auf der CD. Sie werden für die Kollisionsabfrage von Schiffen und Stationen benötigt.
+- Einige Verweise zeigen auf Dateien mit anderer Schreibweise im Dateinamen (z. B. `HUD_TargetingElement` statt `hudtarget.txm`). Diese Stellen sind offen.
+- Die Explosionsgeräusche `debri explo` und `med explo` sind durch `audio/null.wav` ersetzt (siehe `SDK/changelog.md`).
 - Verweise auf Windows-Entwicklerpfade (`\\lancer\project\…`) sind nicht enthalten.
+
+## Recherche (Verbleib der Dateien)
+
+Stand: Websuche nach den fehlenden Dateien. Es wurde keine Quelle gefunden, die belegt, wo `*_col.cmp` oder die Dateien in `interface/baseside/`, `solar/dockable/` und `ships/` außerhalb der CD liegen.
+
+- **Schwache Hinweise:**
+  - Ein Forum-Beitrag berichtet, dass defekte Collision-Gruppen in Mods als `.3db` statt `.cmp` vorlagen. Das ist nicht überprüft, würde aber erklären, warum `*_col.cmp` auf der CD nicht vorkommt. Quelle: [The Starport, Forum-Thread „Collision group docking crash“](https://the-starport.com/forums/topic/828/collision-group-docking-crash/7?post_id=6359&lang=en-US)
+  - Für eine Schiffsdefinition gehören `.cmp`, `.mat` und `.sur` zusammen, und die `[CollisionGroup]`-Einträge in `shiparch.ini` verweisen darauf. Quelle: [The Starport, Thread „Adding ships into FL Vanillia“](https://the-starport.com/forums/topic/5293/adding-ships-into-fl-vanillia)
+- **Werkzeuge zum Prüfen:** [FLCompanion](https://github.com/ItsRaisu/FLCompanion) liest die INIs und meldet Fehler in Mods. [treewyrm/freelancer](https://github.com/treewyrm/freelancer) ist eine Bibliothek für die Dateiformate.
+- **Mod-Community:** Die Discovery-Freelancer-Gemeinschaft ([DiscoveryGC](https://github.com/DiscoveryGC)) pflegt eigene Daten. Dort wäre der Verbleib der Collision-Modelle am ehesten zu klären. Das ist nicht geprüft.
+
+Weitere Suchen zu `debri explo`, `med explo` und dem Format der Explosionsgeräusche ergaben nichts Brauchbares.

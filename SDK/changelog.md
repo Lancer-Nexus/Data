@@ -20,6 +20,15 @@ Korrekturen gegenüber 1.3. Alle Änderungen betreffen Formatfehler, keine Spiel
 | `initialworld.ini` | Geschützte Leerzeichen (`0xA0`) in 53 Zeilen durch normale Leerzeichen ersetzt; Datei ist jetzt reines ASCII/UTF-8 |
 | `Universe/Systems/Li02/Bases/Rooms/Li02_01_cityscape.ini` | Tippfehler `:gap` → `gap` in `[FlashlightSet]` (Wert wurde nie gelesen) |
 
+### Ersatz fehlender Dateien
+
+Die Datei `audio\sounds\fx\debri explo 1–4.wav` und `audio\sounds\fx\med explo 1–4.wav` fehlt auf der CD. Die 12 Verweise zeigen jetzt auf `audio\null.wav` (stumme Datei, vorhanden in `NAP/Sounds/audio/`). Die Explosionen bleiben damit ohne Fehler, sind aber lautlos.
+
+| Datei | Zeilen | Änderung |
+|---|---|---|
+| `audio/Sounds.ini` | 906, 914, 922, 930, 938, 946, 954, 962 | `audio\sounds\fx\…explo N.wav` → `audio\null.wav` |
+| `audio/GfSounds.ini` | 211, 261, 268, 275 | `audio\sounds\fx\med explo N.wav` → `audio\null.wav` |
+
 ### Angleichung an die Original-CD
 
 Abweichungen zwischen dem 1.3-SDK und den BINI-Daten der CD, die im 1.3-Changelog nicht enthalten waren (kosmetisch, ohne Wirkung):
