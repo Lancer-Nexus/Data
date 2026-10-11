@@ -14,13 +14,24 @@ Die Zuordnung steht in SDK/fx/SurfaceMaps.ini (diese Datei wird nicht erzeugt, n
 Die erzeugten Dateien stehen in tools/extra_maps.txt (Schutz vor `build_nap.py`).
 
   python3 tools/make_surface_maps.py [--preview <Ordner>]
-Voraussetzung: Pillow, numpy.
+  python3 tools/make_surface_maps.py --llm http://localhost:1234/v1 [--llm-model NAME] [--vision]
+
+Parameter: Standardwerte stehen unten (NORMALS, CUBE_DEFAULTS). Gewählte Werte werden in
+tools/surface_maps_params.json gespeichert und bei späteren Läufen ohne `--llm` wiederverwendet
+(Läufe sind damit reproduzierbar). Mit `--llm` wählt ein Sprachmodell über eine OpenAI-kompatible
+API (z. B. LM Studio) die Parameter je Karte als JSON. Es erzeugt keine Pixel. Die Antwort wird
+gegen Grenzwerte geprüft, bei Fehlern oder ohne Server gelten die bisherigen Werte.
+Voraussetzung: Pillow, numpy (für `--llm` nichts weiter, nur urllib).
 """
 import argparse
+import base64
 import io
+import json
 import os
 import struct
 import sys
+import urllib.error
+import urllib.request
 
 import numpy as np
 from PIL import Image
@@ -33,24 +44,38 @@ ROOT = os.path.normpath(os.path.join(HERE, '..'))
 NAP = os.path.join(ROOT, 'NAP')
 TEMPLATE = os.path.join(NAP, 'Material', 'fx', 'envmapbasic.mat')
 
-# name -> (Container (NAP-relativ), Texturname, Stärke)
+# name -> (Container (NAP-relativ), Texturname, Stärke, Glättung, Beschreibung für das Sprachmodell)
 NORMALS = {
     # Schiffe
-    'li_elite_hull':    ('Material/ships/liberty/li_playerships.mat', 'elite_256.tga', 2.5),
-    'li_engine_grill':  ('Material/ships/liberty/li_playerships.mat', 'engine_grill01.tga', 3.5),
-    'li_equip_gen':     ('Material/ships/liberty/li_playerships.mat', 'equip_gen.tga', 2.5),
+    'li_elite_hull':    ('Material/ships/liberty/li_playerships.mat', 'elite_256.tga', 2.5, 1, 'Rumpfplatten eines Liberty-Spielerschiffs'),
+    'li_engine_grill':  ('Material/ships/liberty/li_playerships.mat', 'engine_grill01.tga', 3.5, 1, 'Triebwerksgitter, runde Öffnungen'),
+    'li_equip_gen':     ('Material/ships/liberty/li_playerships.mat', 'equip_gen.tga', 2.5, 1, 'Ausrüstungsplatten und Bedienfelder'),
     # Stationen und Basen
-    'bw_dig_site_16':   ('Models/bases/generic/bw_pygar_airlock.cmp', 'dig_site_16.tga', 3.0),
-    'bw_dig_site_18':   ('Models/bases/generic/bw_pygar_airlock.cmp', 'dig_site_18.tga', 3.0),
-    'li_ceiling_gen01': ('Models/bases/liberty/li_manhattan_trader02.cmp', 'ceiling_gen01.tga021111195321', 2.5),
+    'bw_dig_site_16':   ('Models/bases/generic/bw_pygar_airlock.cmp', 'dig_site_16.tga', 3.0, 1, 'Stationshülle Bretonia, Metallpaneele'),
+    'bw_dig_site_18':   ('Models/bases/generic/bw_pygar_airlock.cmp', 'dig_site_18.tga', 3.0, 1, 'Stationshülle Bretonia, Metallpaneele'),
+    'li_ceiling_gen01': ('Models/bases/liberty/li_manhattan_trader02.cmp', 'ceiling_gen01.tga021111195321', 2.5, 1, 'Deckenplatten einer Liberty-Basis'),
     # Planeten und Solar
-    'planet_rock01':    ('Material/solar/planets/detailmap_rock01.txm', 'detailmap_rock01', 3.0),
-    'planet_crater_hi': ('Material/solar/planets/detailmap_crater_high.txm', 'detailmap_crater_high', 3.0),
-    'planet_ground01':  ('Material/solar/planets/detailmap_ground01.txm', 'detailmap_ground01', 2.5),
+    'planet_rock01':    ('Material/solar/planets/detailmap_rock01.txm', 'detailmap_rock01', 3.0, 1, 'kachelnde Felsdetailkarte eines Planeten'),
+    'planet_crater_hi': ('Material/solar/planets/detailmap_crater_high.txm', 'detailmap_crater_high', 3.0, 1, 'kachelnde Kraterdetailkarte'),
+    'planet_ground01':  ('Material/solar/planets/detailmap_ground01.txm', 'detailmap_ground01', 2.5, 1, 'kachelnde Bodendetailkarte'),
 }
-CUBES = ('envcube_space', 'envcube_sun', 'envcube_nebula')
+# Cube Maps: Art und Parameter. Standardwerte entsprechen der ersten Fassung.
+CUBE_DEFAULTS = {
+    'envcube_space': {'kind': 'space', 'desc': 'dunkler Weltraum mit vielen Sternen, schwacher Sonne und blauem Hauch',
+                      'star_count': 3500, 'star_gain': 1.0, 'sun_dir': [0.6, 0.35, 0.72], 'sun_color': [0.5, 0.5, 0.55],
+                      'sun_exp': 400, 'ambient': [0.01, 0.012, 0.03], 'seed': 11},
+    'envcube_sun': {'kind': 'sun', 'desc': 'warme Sonne mit Schein, dunkler Umgebung, wenig Sternen',
+                    'star_count': 1200, 'star_gain': 0.6, 'sun_dir': [0.6, 0.35, 0.72], 'sun_color': [0.55, 0.38, 0.2],
+                    'sun_exp': 12, 'ambient': [0.016, 0.018, 0.024], 'seed': 11},
+    'envcube_nebula': {'kind': 'nebula', 'desc': 'violetter Nebel mit kühlen Blautönen und Sternen',
+                       'star_count': 3500, 'star_gain': 0.7, 'sun_dir': [0.6, 0.35, 0.72], 'sun_color': [0.55, 0.15, 0.7],
+                       'sun_exp': 12, 'ambient': [0.015, 0.015, 0.015], 'seed': 11,
+                       'nebula_a': [0.55, 0.15, 0.7], 'nebula_b': [0.2, 0.35, 0.1], 'nebula_cover': 0.35},
+}
+CUBES = tuple(CUBE_DEFAULTS)
 NORMAL_SIZE = 1024
 CUBE_SIZE = 256
+PARAMS_FILE = os.path.join(HERE, 'surface_maps_params.json')
 
 
 def read_texture(container, name):
@@ -61,13 +86,14 @@ def read_texture(container, name):
     raise KeyError(f'{name} in {container}')
 
 
-def height_from(img):
+def height_from(img, smooth=1):
     a = np.asarray(img.resize((NORMAL_SIZE, NORMAL_SIZE), Image.LANCZOS), np.float32) / 255
     lum = a @ np.array([0.299, 0.587, 0.114], np.float32)
     # leichte Glättung (wrap), damit Kompressionsrauschen keine Körnung ergibt
     k = np.array([1, 4, 6, 4, 1], np.float32) / 16
-    for ax in (0, 1):
-        lum = sum(w * np.roll(lum, s, axis=ax) for s, w in zip(range(-2, 3), k))
+    for _ in range(int(smooth)):
+        for ax in (0, 1):
+            lum = sum(w * np.roll(lum, s, axis=ax) for s, w in zip(range(-2, 3), k))
     return lum
 
 
@@ -184,34 +210,37 @@ def stars(dirs, size, count, seed, tint=(1, 1, 1)):
     return out
 
 
-def make_cube(name, size):
+def make_cube(size, p):
+    """p: Parameter (siehe CUBE_DEFAULTS). Art: space | sun | nebula."""
     dirs = face_dirs(size)
+    sun_dir = np.array(p['sun_dir'], np.float64)
+    sun_dir /= np.linalg.norm(sun_dir)
+    star_img = stars(dirs, size, int(p['star_count']), int(p['seed']))
+    amb = np.array(p['ambient'], np.float32)
+    sun_col = np.array(p['sun_color'], np.float32)
     faces = []
-    sun_dir = np.array([0.6, 0.35, 0.72]); sun_dir /= np.linalg.norm(sun_dir)
-    star_img = stars(dirs, size, 3500 if name != 'envcube_sun' else 1200, 11)
     for i, d in enumerate(dirs):
-        if name == 'envcube_space':
+        dot = np.clip(d @ sun_dir, -1, 1)
+        if p['kind'] == 'space':
             band = value_noise(d, 3, 2, 3)
-            base = np.stack([0.01 + 0.03 * band, 0.012 + 0.035 * band, 0.03 + 0.07 * band], -1)
-            img = base + star_img[i]
-            sun = np.clip(d @ sun_dir, 0, 1) ** 400
-            img += sun[..., None] * np.array([0.5, 0.5, 0.55])
-        elif name == 'envcube_sun':
-            dot = np.clip(d @ sun_dir, -1, 1)
+            img = amb + band[..., None] * np.array([0.03, 0.035, 0.07], np.float32)
+            img = img + star_img[i] * p['star_gain']
+            img += (np.clip(dot, 0, 1) ** p['sun_exp'])[..., None] * sun_col
+        elif p['kind'] == 'sun':
             core = np.clip((dot - 0.998) / 0.002, 0, 1)
-            glow = np.clip(dot, 0, 1) ** 12
-            amb = 0.02 + 0.03 * np.clip(-dot, 0, 1)
-            img = (np.stack([amb * 0.8, amb * 0.9, amb * 1.2], -1)
-                   + glow[..., None] * np.array([0.55, 0.38, 0.2])
+            glow = np.clip(dot, 0, 1) ** p['sun_exp']
+            img = (amb * (1 + 1.5 * np.clip(-dot, 0, 1))[..., None]
+                   + glow[..., None] * sun_col
                    + core[..., None] * np.array([1.0, 0.95, 0.85]) * 3.0
-                   + star_img[i] * 0.6)
+                   + star_img[i] * p['star_gain'])
         else:  # nebula
             n1 = value_noise(d, 5, 3, 5)
             n2 = value_noise(d, 9, 2, 4)
-            m = np.clip((n1 - 0.35) * 2.2, 0, 1)
-            col = np.stack([0.55 * m + 0.2 * n2 * m, 0.15 * m + 0.35 * n2 * m, 0.7 * m + 0.1 * n2], -1)
-            img = col * 0.45 + 0.015 + star_img[i] * 0.7
-        faces.append(np.clip(img, 0, 1))
+            m = np.clip((n1 - p.get('nebula_cover', 0.35)) * 2.2, 0, 1)
+            a_, b_ = np.array(p.get('nebula_a', sun_col), np.float32), np.array(p.get('nebula_b', [0.2, 0.35, 0.1]), np.float32)
+            col = m[..., None] * a_ + (n2 * m)[..., None] * b_
+            img = col * 0.45 + amb + star_img[i] * p['star_gain']
+        faces.append(np.clip(img, 0, 1).astype(np.float32))
     return faces
 
 
@@ -250,18 +279,159 @@ def build_library(textures, leaf_name):
     return header, W.Node(root.name, root.flags, children=[new_lib])
 
 
+# ---- Parameterwahl durch ein Sprachmodell (optional) ------------------------
+
+NORMAL_LIMITS = {'strength': (0.5, 6.0), 'smooth': (0, 3)}
+CUBE_LIMITS = {'star_count': (100, 8000), 'star_gain': (0.0, 1.5), 'sun_exp': (4, 600), 'seed': (0, 9999)}
+VEC_KEYS = {'sun_dir': (-1.0, 1.0), 'sun_color': (0.0, 1.0), 'ambient': (0.0, 0.2),
+            'nebula_a': (0.0, 1.0), 'nebula_b': (0.0, 1.0)}
+
+
+def clamp_normal(d, base):
+    out = dict(base)
+    for k, (lo, hi) in NORMAL_LIMITS.items():
+        try:
+            out[k] = min(max(float(d[k]), lo), hi)
+        except (KeyError, TypeError, ValueError):
+            pass
+    out['smooth'] = int(round(out['smooth']))
+    return out
+
+
+def clamp_cube(d, base):
+    out = dict(base)
+    if d.get('kind') in ('space', 'sun', 'nebula'):
+        out['kind'] = d['kind']
+    for k, (lo, hi) in CUBE_LIMITS.items():
+        try:
+            v = min(max(float(d[k]), lo), hi)
+            out[k] = int(v) if k in ('star_count', 'seed') else v
+        except (KeyError, TypeError, ValueError):
+            pass
+    for k, (lo, hi) in VEC_KEYS.items():
+        v = d.get(k)
+        if isinstance(v, list) and len(v) == 3:
+            try:
+                out[k] = [min(max(float(x), lo), hi) for x in v]
+            except (TypeError, ValueError):
+                pass
+    if all(abs(x) < 1e-6 for x in out['sun_dir']):
+        out['sun_dir'] = list(base['sun_dir'])
+    cov = d.get('nebula_cover')
+    if isinstance(cov, (int, float)):
+        out['nebula_cover'] = min(max(float(cov), 0.15), 0.7)
+    return out
+
+
+class Llm:
+    """Minimaler OpenAI-kompatibler Client (Chat Completions), z. B. LM Studio unter http://localhost:1234/v1."""
+
+    def __init__(self, base, model=None, timeout=180):
+        self.base = base.rstrip('/')
+        self.timeout = timeout
+        self.model = model or self._first_model()
+
+    def _req(self, path, body=None):
+        r = urllib.request.Request(self.base + path, data=None if body is None else json.dumps(body).encode(),
+                                   headers={'Content-Type': 'application/json'})
+        with urllib.request.urlopen(r, timeout=self.timeout) as f:
+            return json.loads(f.read().decode('utf-8'))
+
+    def _first_model(self):
+        data = self._req('/models').get('data') or []
+        if not data:
+            raise RuntimeError('der Server meldet kein geladenes Modell')
+        return data[0]['id']
+
+    def json_answer(self, system, user, image_png=None):
+        content = [{'type': 'text', 'text': user}]
+        if image_png:
+            content.append({'type': 'image_url',
+                            'image_url': {'url': 'data:image/png;base64,' + base64.b64encode(image_png).decode()}})
+        body = {'model': self.model, 'temperature': 0, 'max_tokens': 600,
+                'messages': [{'role': 'system', 'content': system},
+                             {'role': 'user', 'content': content if image_png else user}]}
+        text = self._req('/chat/completions', body)['choices'][0]['message']['content']
+        text = text.strip()
+        if text.startswith('```'):
+            text = text.strip('`')
+            text = text[text.index('{'):] if '{' in text else text
+        i, j = text.find('{'), text.rfind('}')
+        if i < 0 or j < i:
+            raise ValueError('keine JSON-Antwort')
+        return json.loads(text[i:j + 1])
+
+
+SYS_NORMAL = ('Du stellst Parameter für die Ableitung einer Normal Map aus einer Spieltextur ein (Raumschiff-Spiel). '
+              'Antworte nur mit einem JSON-Objekt: {"strength": Zahl 0.5-6, "smooth": ganze Zahl 0-3}. '
+              'strength: Tiefe des Reliefs (harte Paneele und Gitter 3-4, feine Körnung 1-2). '
+              'smooth: Glättungsdurchgänge gegen Rauschen (0 für scharfe Grafik, 2-3 für grobe Kompressionsartefakte).')
+SYS_CUBE = ('Du stellst Parameter für eine prozedurale Cube Map (Weltraum-Umgebungsspiegelung) ein. '
+            'Antworte nur mit einem JSON-Objekt mit den Schlüsseln: kind ("space"|"sun"|"nebula"), '
+            'star_count (100-8000), star_gain (0-1.5), sun_dir [x,y,z], sun_color [r,g,b] (0-1), sun_exp (4-600, '
+            'größer = kleinerer Schein), ambient [r,g,b] (0-0.2), nebula_a [r,g,b], nebula_b [r,g,b], '
+            'nebula_cover (0.15-0.7, kleiner = mehr Nebel). Nicht genannte Schlüssel weglassen.')
+
+
+def image_stats(img):
+    a = np.asarray(img.convert('L').resize((256, 256)), np.float32) / 255
+    gx = np.abs(np.diff(a, axis=1)).mean()
+    gy = np.abs(np.diff(a, axis=0)).mean()
+    return f'mittlere Helligkeit {a.mean():.2f}, Kontrast (Standardabweichung) {a.std():.2f}, Kantendichte {(gx + gy) / 2:.3f}'
+
+
+def load_params():
+    if os.path.isfile(PARAMS_FILE):
+        with open(PARAMS_FILE, encoding='utf-8') as f:
+            return json.load(f)
+    return {}
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument('--preview', help='Ordner für Vorschaubilder (PNG)')
+    ap.add_argument('--llm', metavar='URL', help='OpenAI-kompatible API, z. B. http://localhost:1234/v1 (LM Studio)')
+    ap.add_argument('--llm-model', help='Modellname (Standard: erstes geladenes Modell)')
+    ap.add_argument('--vision', action='store_true', help='Bild an ein Vision-Modell mitsenden (nur mit --llm)')
+    ap.add_argument('--cube-desc', action='append', default=[], metavar='NAME=TEXT',
+                    help='Beschreibung einer Cube Map für das Sprachmodell, mehrfach möglich')
+    ap.add_argument('--no-params', action='store_true', help='gespeicherte Parameter ignorieren (Standardwerte)')
     a = ap.parse_args()
+    params = {} if a.no_params else load_params()
+    llm = None
+    if a.llm:
+        try:
+            llm = Llm(a.llm, a.llm_model)
+            print('Sprachmodell:', llm.model)
+        except (urllib.error.URLError, OSError, RuntimeError, ValueError, KeyError) as e:
+            print('Warnung: Sprachmodell nicht erreichbar (%s), es gelten gespeicherte und Standardwerte' % e)
+    for kv in a.cube_desc:
+        if '=' in kv:
+            k, v = kv.split('=', 1)
+            if k in CUBE_DEFAULTS:
+                CUBE_DEFAULTS[k]['desc'] = v
     out_dir = os.path.join(NAP, 'Material', 'fx')
     made = []
 
     nm = {}
     previews = {}
-    for key, (container, tex, strength) in NORMALS.items():
+    chosen = {}
+    for key, (container, tex, strength, smooth, desc) in NORMALS.items():
         img = read_texture(container, tex)
-        n = normal_from_height(height_from(img), strength)
+        base = {'strength': strength, 'smooth': smooth}
+        pr = clamp_normal(params.get('normal', {}).get(key, {}), base)
+        if llm:
+            try:
+                buf = io.BytesIO()
+                img.resize((256, 256)).save(buf, 'PNG')
+                ans = llm.json_answer(SYS_NORMAL, f'Textur: {tex}\nBeschreibung: {desc}\nStatistik: {image_stats(img)}',
+                                      buf.getvalue() if a.vision else None)
+                pr = clamp_normal(ans, pr)
+                print(f'  {key}: LLM -> {pr}')
+            except Exception as e:  # noqa: BLE001
+                print(f'  {key}: LLM-Antwort verworfen ({str(e)[:80]}), Standard {pr}')
+        chosen.setdefault('normal', {})[key] = pr
+        n = normal_from_height(height_from(img, pr['smooth']), pr['strength'])
         nm['nm_' + key] = encode_normal(n)
         previews[key] = np.clip((n * 0.5 + 0.5) * 255, 0, 255).astype(np.uint8)
     header, root = build_library(nm, 'MIPS')
@@ -271,7 +441,16 @@ def main():
     print(f'normalmaps.txm: {len(nm)} Karten, {os.path.getsize(p) / 1e6:.1f} MB')
 
     for c in CUBES:
-        faces = make_cube(c, CUBE_SIZE)
+        pr = clamp_cube(params.get('cube', {}).get(c, {}), CUBE_DEFAULTS[c])
+        if llm:
+            try:
+                ans = llm.json_answer(SYS_CUBE, f'Cube Map {c}: {pr["desc"]}')
+                pr = clamp_cube(ans, pr)
+                print(f'  {c}: LLM -> {pr}')
+            except Exception as e:  # noqa: BLE001
+                print(f'  {c}: LLM-Antwort verworfen ({str(e)[:80]})')
+        chosen.setdefault('cube', {})[c] = pr
+        faces = make_cube(CUBE_SIZE, pr)
         header, root = build_library({c: encode_cube(faces)}, 'CUBE')
         p = os.path.join(out_dir, c + '.mat')
         W.save(p, header, root)
@@ -279,6 +458,11 @@ def main():
         print(f'{c}.mat: {os.path.getsize(p) / 1e6:.2f} MB')
         previews[c] = faces
 
+    if llm or not os.path.isfile(PARAMS_FILE):
+        chosen['_info'] = {'model': llm.model if llm else None, 'vision': bool(a.vision and llm)}
+        with open(PARAMS_FILE, 'w', encoding='utf-8', newline='\n') as f:
+            json.dump(chosen, f, indent=1, ensure_ascii=False)
+            f.write('\n')
     with open(os.path.join(HERE, 'extra_maps.txt'), 'w', encoding='utf-8', newline='\n') as f:
         f.write('# Von tools/make_surface_maps.py erzeugte Zusatzkarten (Klasse/Pfad), nicht aus der CD\n')
         f.write('\n'.join(made) + '\n')

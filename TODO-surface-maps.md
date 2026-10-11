@@ -65,4 +65,18 @@ LM Studio stellt unter `http://localhost:1234/v1` eine OpenAI-kompatible Schnitt
 - **Strikt validiert:** Die Antwort wird gegen ein festes Schema geprüft, außerhalb des Bereichs gilt der Standardwert. Ohne laufenden Server arbeitet das Skript unverändert regelbasiert.
 - Bilder selbst kämen aus einem Diffusionsserver (c), nicht aus LM Studio. Ein OpenAI-kompatibler Bildendpunkt (`/v1/images/generations`) wäre dann nur das Transportformat, falls ein Server ihn anbietet.
 
-Empfehlung: a) beibehalten, `--llm <URL>` als **optionale** Stufe aus d) ergänzen (Parameterwahl, keine Pixel), b) nur bei Bedarf an bemalten Texturen.
+Empfehlung: a) beibehalten, die LLM-Stufe aus d) optional nutzen, b) nur bei Bedarf an bemalten Texturen.
+
+### Umgesetzt: optionale LLM-Stufe im Generator
+
+```bash
+python3 tools/make_surface_maps.py --llm http://localhost:1234/v1 [--llm-model NAME] [--vision] \
+    [--cube-desc envcube_nebula="roter Nebel, heiße Sonne links"] [--preview <Ordner>]
+```
+
+- **Ablauf:** Je Normal Map schickt das Skript Textur, Beschreibung und Bildstatistik (Helligkeit, Kontrast, Kantendichte) an `POST /chat/completions` (Temperatur 0), bei `--vision` zusätzlich ein 256-px-Bild. Antwort: `strength` (0,5 bis 6) und `smooth` (0 bis 3). Je Cube Map kommt eine Textbeschreibung, Antwort: Art (`space`, `sun`, `nebula`), Sternzahl, Sonnenrichtung und -farbe, Umgebungslicht, Nebelfarben und -anteil.
+- **Absicherung:** Die Antwort wird aus Text oder Codeblock herausgelöst, jeder Wert auf feste Grenzen gekürzt, eine Nullrichtung oder ein fehlender Wert fällt auf den Standard zurück, eine nicht lesbare Antwort wird verworfen. Ohne Server läuft das Skript mit den gespeicherten Werten weiter.
+- **Reproduzierbar:** Die gewählten Werte stehen in `tools/surface_maps_params.json` (mit Modellname). Spätere Läufe ohne `--llm` verwenden sie; `--no-params` setzt auf die Standardwerte im Skript zurück.
+- **Geprüft:** Gegen einen lokalen Testserver (kein LM Studio): Standardlauf, Kürzen von Werten (`strength` 9 → 6, `star_count` 99999 → 8000), verworfene Antwort, Codeblock-Antwort und nicht erreichbarer Server. Mit einem echten Modell nicht ausprobiert; ob ein Modell brauchbare Werte liefert und `response_format` verträgt, ist offen.
+- **Grenze:** Das Modell wählt nur Parameter. Die Pixel entstehen weiter im Skript.
+

@@ -114,7 +114,7 @@ Die Klasse einer INI richtet sich nach ihrem Hauptordner (`audio` → `Sounds`, 
 | `check_textures.py` | Texturmaße und Verweise prüfen, schreibt `textur-pruefung.md` | `python3 tools/check_textures.py` |
 | `extract_textures.py` | Originaltexturen als PNG herauslösen (für KI-Hochskalierung), mit `manifest.csv` | `python3 tools/extract_textures.py --out <Ordner>` (braucht Pillow) |
 | `convert_audio.py` | WAV-Dateien in FLAC (PCM) bzw. Ogg Vorbis (MP3-in-WAV) wandeln, INI-Verweise umstellen | `python3 tools/convert_audio.py --stage <Ordner> [--apply --backup <Ordner>]` (braucht ffmpeg) |
-| `make_surface_maps.py` | Normal Maps (aus Texturen abgeleitet) und prozedurale Cube Maps erzeugen, Zusatzkarten per `SDK/fx/SurfaceMaps.ini` | `python3 tools/make_surface_maps.py [--preview <Ordner>]` (Pillow, numpy) |
+| `make_surface_maps.py` | Normal Maps (aus Texturen abgeleitet) und prozedurale Cube Maps erzeugen, Zusatzkarten per `SDK/fx/SurfaceMaps.ini` | `python3 tools/make_surface_maps.py [--preview <Ordner>] [--llm http://localhost:1234/v1]` (Pillow, numpy; `--llm` optional, OpenAI-kompatible API wie LM Studio) |
 | `check_refs.py` | Alle Datei-Verweise der INIs gegen `NAP/` prüfen, schreibt `missing.md` | `python3 tools/check_refs.py` |
 | `scale_shape_inis.py` | `[Shape]`-Koordinaten in INIs an hochskalierte Texturen anpassen | `python3 tools/scale_shape_inis.py` (`--dry-run`) |
 | `upscale_textures_test.py` | Modellvergleich an 42 zufälligen Texturen (Kontaktbögen) | `python3 tools/upscale_textures_test.py` |

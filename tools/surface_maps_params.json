@@ -1,0 +1,126 @@
+{
+ "normal": {
+  "li_elite_hull": {
+   "strength": 2.5,
+   "smooth": 1
+  },
+  "li_engine_grill": {
+   "strength": 3.5,
+   "smooth": 1
+  },
+  "li_equip_gen": {
+   "strength": 2.5,
+   "smooth": 1
+  },
+  "bw_dig_site_16": {
+   "strength": 3.0,
+   "smooth": 1
+  },
+  "bw_dig_site_18": {
+   "strength": 3.0,
+   "smooth": 1
+  },
+  "li_ceiling_gen01": {
+   "strength": 2.5,
+   "smooth": 1
+  },
+  "planet_rock01": {
+   "strength": 3.0,
+   "smooth": 1
+  },
+  "planet_crater_hi": {
+   "strength": 3.0,
+   "smooth": 1
+  },
+  "planet_ground01": {
+   "strength": 2.5,
+   "smooth": 1
+  }
+ },
+ "cube": {
+  "envcube_space": {
+   "kind": "space",
+   "desc": "dunkler Weltraum mit vielen Sternen, schwacher Sonne und blauem Hauch",
+   "star_count": 3500,
+   "star_gain": 1.0,
+   "sun_dir": [
+    0.6,
+    0.35,
+    0.72
+   ],
+   "sun_color": [
+    0.5,
+    0.5,
+    0.55
+   ],
+   "sun_exp": 400,
+   "ambient": [
+    0.01,
+    0.012,
+    0.03
+   ],
+   "seed": 11
+  },
+  "envcube_sun": {
+   "kind": "sun",
+   "desc": "warme Sonne mit Schein, dunkler Umgebung, wenig Sternen",
+   "star_count": 1200,
+   "star_gain": 0.6,
+   "sun_dir": [
+    0.6,
+    0.35,
+    0.72
+   ],
+   "sun_color": [
+    0.55,
+    0.38,
+    0.2
+   ],
+   "sun_exp": 12,
+   "ambient": [
+    0.016,
+    0.018,
+    0.024
+   ],
+   "seed": 11
+  },
+  "envcube_nebula": {
+   "kind": "nebula",
+   "desc": "violetter Nebel mit kühlen Blautönen und Sternen",
+   "star_count": 3500,
+   "star_gain": 0.7,
+   "sun_dir": [
+    0.6,
+    0.35,
+    0.72
+   ],
+   "sun_color": [
+    0.55,
+    0.15,
+    0.7
+   ],
+   "sun_exp": 12,
+   "ambient": [
+    0.015,
+    0.015,
+    0.015
+   ],
+   "seed": 11,
+   "nebula_a": [
+    0.55,
+    0.15,
+    0.7
+   ],
+   "nebula_b": [
+    0.2,
+    0.35,
+    0.1
+   ],
+   "nebula_cover": 0.35
+  }
+ },
+ "_info": {
+  "model": null,
+  "vision": false
+ }
+}
