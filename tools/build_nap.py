@@ -39,10 +39,13 @@ OVERRIDES_FILE = os.path.join(HERE, 'hd_overrides.txt')
 
 
 def load_overrides():
-    if not os.path.isfile(OVERRIDES_FILE):
-        return set()
-    with open(OVERRIDES_FILE, encoding='utf-8') as f:
-        return {line.strip() for line in f if line.strip() and not line.startswith('#')}
+    """HD-Pack-Dateien und per KI hochskalierte Container (beide werden nicht überschrieben/gelöscht)."""
+    out = set()
+    for fn in (OVERRIDES_FILE, os.path.join(os.path.dirname(OVERRIDES_FILE), 'upscaled_containers.txt')):
+        if os.path.isfile(fn):
+            with open(fn, encoding='utf-8') as f:
+                out |= {line.strip() for line in f if line.strip() and not line.startswith('#')}
+    return out
 
 
 # Klasse nach Dateiendung (Vorrang) und nach Hauptordner, wie in classes.md.

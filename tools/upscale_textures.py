@@ -38,10 +38,12 @@ def model_for(container, tex):
 
 
 def overrides():
-    p = os.path.join(REPO, 'tools', 'hd_overrides.txt')
-    if not os.path.exists(p):
-        return set()
-    return {l.strip().lower() for l in open(p, encoding='utf-8') if l.strip() and not l.startswith('#')}
+    out = set()
+    for fn in ('hd_overrides.txt', 'upscaled_containers.txt'):
+        p = os.path.join(REPO, 'tools', fn)
+        if os.path.exists(p):
+            out |= {l.strip().lower() for l in open(p, encoding='utf-8') if l.strip() and not l.startswith('#')}
+    return out
 
 
 class Upscaler:
@@ -68,11 +70,26 @@ class Upscaler:
         return (y[0].clamp(0, 1).permute(1, 2, 0).cpu().numpy() * 255).round().astype(np.uint8)
 
 
-def upscale_image(up, key, im, wrap):
+def upscale_image(up, key, im, wrap, icon=False):
     """PIL-Bild -> PIL RGBA x4. Alpha getrennt per Lanczos."""
     rgba = im.convert('RGBA')
     w, h = rgba.size
     a_arr = np.asarray(rgba.getchannel('A'))
+    if (a_arr < 250).mean() > 0.3 and icon:
+        # Symbol mit Alpha als Form: Farbe ueber transparente Pixel ausbluten, Farbe und Alpha je per Modell
+        from PIL import ImageFilter
+        f = np.asarray(rgba).astype(np.float32)
+        al = f[:, :, 3:4] / 255
+        rad = max(w // 16, 1)
+        pm = Image.fromarray((f[:, :, :3] * al).clip(0, 255).astype(np.uint8), 'RGB').filter(ImageFilter.GaussianBlur(rad))
+        am = Image.fromarray(a_arr, 'L').filter(ImageFilter.GaussianBlur(rad))
+        bl = np.asarray(pm).astype(np.float32) / np.maximum(np.asarray(am).astype(np.float32)[:, :, None] / 255, 1 / 255)
+        filled = np.where(al >= 0.98, f[:, :, :3], np.where(al > 0, f[:, :, :3] * al + bl * (1 - al), bl))
+        col = up.rgb(key, filled.clip(0, 255).astype(np.uint8))
+        grey = up.rgb(key, np.repeat(a_arr[:, :, None], 3, axis=2))[:, :, 0]
+        res = Image.fromarray(col, 'RGB').convert('RGBA')
+        res.putalpha(Image.fromarray(grey, 'L'))
+        return res
     if (a_arr < 250).mean() > 0.3:
         # Sprite/Glow: weiche Verläufe, die das Modell zu Körnung "verbessert" -> bikubisch, vormultipliziert
         f = np.asarray(rgba).astype(np.float32)
@@ -142,16 +159,28 @@ def encode_dds(img, header):
         struct.pack_into('<IIII', h, 12, rgba.size[1], rgba.size[0], size, 0)
         struct.pack_into('<I', h, 28, len(levels))
         return bytes(h) + bytes(body)
-    # unkomprimiert 24 Bit (B,G,R)
+    # unkomprimiert: Kanalmasken aus dem Kopf (R, G, B, A bei Offset 92..104)
     bpp = struct.unpack_from('<I', header, 88)[0]
-    if bpp not in (24, 32):
+    if bpp not in (16, 24, 32):
         raise ValueError(f'DDS {bpp} Bit nicht unterstützt')
+    masks = struct.unpack_from('<4I', header, 92)
     levels = mip_chain(rgba, 1)
     body = bytearray()
     for lv in levels:
-        a = np.asarray(lv)
-        bgr = a[:, :, [2, 1, 0]] if bpp == 24 else a[:, :, [2, 1, 0, 3]]
-        body += np.ascontiguousarray(bgr).tobytes()
+        a = np.asarray(lv).astype(np.uint32)
+        v = np.zeros(a.shape[:2], np.uint32)
+        for ch, m in enumerate(masks):
+            if not m:
+                continue
+            sh = (m & -m).bit_length() - 1
+            bits = bin(m).count('1')
+            v |= ((a[:, :, ch] >> (8 - bits)) << sh) & m
+        if bpp == 16:
+            body += v.astype('<u2').tobytes()
+        elif bpp == 32:
+            body += v.astype('<u4').tobytes()
+        else:
+            body += v.astype('<u4').view(np.uint8).reshape(-1, 4)[:, :3].tobytes()
     struct.pack_into('<IIII', h, 12, rgba.size[1], rgba.size[0], rgba.size[0] * bpp // 8, 0)
     struct.pack_into('<I', h, 28, len(levels))
     return bytes(h) + bytes(body)
@@ -190,7 +219,9 @@ def encode_tga(img, first_blob):
             px = a[:, :, [2, 1, 0]]
         elif bpp == 16:
             r, g, b = (a[:, :, 0] >> 3).astype(np.uint16), (a[:, :, 1] >> 3).astype(np.uint16), (a[:, :, 2] >> 3).astype(np.uint16)
-            px = (0x8000 | (r << 10) | (g << 5) | b).astype('<u2')
+            px = ((r << 10) | (g << 5) | b).astype('<u2')
+            if desc & 0x0f:  # Alpha-Bit nur, wenn der Kopf Attributbits meldet (sonst bleibt Bit 15 = 0)
+                px = px | ((a[:, :, 3] >= 128).astype('<u2') << 15)
         else:
             raise ValueError(f'TGA {bpp} Bit nicht unterstützt')
         out.append(tga_header(lv.size[0], lv.size[1], 2, bpp, desc=desc) + np.ascontiguousarray(rows(px)).tobytes())
@@ -205,10 +236,18 @@ def process(path, outpath, up, stats, dry=False):
 
     def visit(d, trail):
         nonlocal n
+        try:
+            _visit(d, trail)
+        except Exception as e:  # noqa: BLE001
+            stats.setdefault('fehler', []).append((path, d.name, str(e)))
+
+    def _visit(d, trail):
+        nonlocal n
         leaves = {c.name.upper(): c for c in d.children if not c.is_dir}
         if 'MIPS' in leaves or 'MIP0' in leaves:
             name = d.name
             key = model_for(path, name)
+            icon = any(t in path.replace('\\', '/').lower() for t in ('/interface/', '/equipment/'))
             wrap = name.lower().startswith('dtl')
             if 'MIPS' in leaves:
                 blob = leaves['MIPS'].data
@@ -216,7 +255,7 @@ def process(path, outpath, up, stats, dry=False):
                 if sig not in cache:
                     im = Image.open(io.BytesIO(blob))
                     im.load()
-                    cache[sig] = encode_dds(upscale_image(up, key, im, wrap), blob[:128]) if not dry else blob
+                    cache[sig] = encode_dds(upscale_image(up, key, im, wrap, icon), blob[:128]) if not dry else blob
                 leaves['MIPS'].data = cache[sig]
             else:
                 blob = leaves['MIP0'].data
@@ -224,7 +263,7 @@ def process(path, outpath, up, stats, dry=False):
                 if sig not in cache:
                     im = Image.open(io.BytesIO(blob))
                     im.load()
-                    cache[sig] = encode_tga(upscale_image(up, key, im, wrap), blob) if not dry else None
+                    cache[sig] = encode_tga(upscale_image(up, key, im, wrap, icon), blob) if not dry else None
                 new = cache[sig]
                 if new is not None:
                     keep = [c for c in d.children if c.is_dir or not c.name.upper().startswith('MIP')]
@@ -265,6 +304,8 @@ def main():
         n = process(p, outp, up, stats, dry=a.dry_run)
         print(f'{rel}: {n} Texturen')
     print(f"gesamt {stats['tex']} Texturen, {stats['uniq']} verschiedene")
+    for f in stats.get('fehler', []):
+        print('FEHLER', *f)
 
 
 if __name__ == '__main__':

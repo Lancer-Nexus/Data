@@ -2,3 +2,5 @@
 /NAP/**
 !/NAP/*/
 !/NAP/*/.gitkeep
+
+__pycache__/

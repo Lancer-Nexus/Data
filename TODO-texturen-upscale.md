@@ -108,3 +108,15 @@ PBRify liegt in allen 42 Fällen vor x4plus, bei großen Backdrops und Kacheln m
 Erster Durchlauf an sechs Containern (Backdrop, drei Basen-Container, Atmosphäre, FX): 105 Texturen, alle Container ohne Fehler geschrieben und wieder lesbar, Faktor 4 überall; PSNR der Rückrechnung im Mittel 35 bis 45 dB, schlechtester Wert 30 dB. Sichtprüfung an vier Texturen unauffällig.
 
 **Nicht geprüft:** Ob Freelancer die neu geschriebenen Container lädt (kein Spieltest in dieser Umgebung). Vorher nicht auf das ganze NAP anwenden; erst einen einzelnen Container im Spiel prüfen.
+
+## 9. Gesamtlauf und Ablage im NAP
+
+- **Auswahl:** alle 343 Container mit Originaltexturen (605 Texturen, kein Fehler). Liste: `tools/upscaled_containers.txt`; `build_nap.py`, `check_textures.py` und `upscale_textures.py` behandeln sie wie `hd_overrides.txt` (nicht überschreiben/löschen, nicht ein zweites Mal hochskalieren).
+- **Sicherung:** `~/Dokumente/Freelancer-Backup-NAP-vor-Upscale/` (die 343 Container, die sechs betroffenen SDK-INIs, Stand der Schutzliste, `MD5SUMS`). Wiederherstellen: Klassenordner nach `NAP/` kopieren und die Zeilen aus `upscaled_containers.txt` entfernen.
+- **Alpha:** alle 153 Alpha-Texturen haben mehr als 30 % durchscheinende Pixel. Symbole (`/interface/`, `/equipment/`): Farbe über transparente Pixel ausgeblutet und je per Modell, Alpha ebenfalls per Modell (scharfe Konturen). Alle anderen (Glows, FX, Lichter): bikubisch, vormultipliziert.
+- **Kacheln (`dtl_`):** Wrap-Padding 16 px senkt das Nahtverhältnis (Kante/Nachbarpixel) von 5,2 auf 1,6 (`dtl_tile01`, 128 px); ohne Padding wären es 3,8. Die Kachel war schon im Original nicht nahtlos, wird also nicht schlechter.
+- **INIs:** `tools/scale_shape_inis.py` hat 40 Formen in zwei INIs ×4 genommen (`universe/heavens/Shapes.ini`, `solar/blackhole/Bhshapes.ini`). Prüfung danach: `check_textures.py` meldet 0 Formen außerhalb und 0 nur teilweise abgedeckte Texturen.
+- **Rückrechnung:** Mittel über alle Container 33 bis 45 dB. Niedrige Werte (13 bis 16 dB) haben nur kleine 32-px-Symbole, bei denen die Konturen absichtlich schärfer werden (Sichtprüfung der 14 schlechtesten ohne Auffälligkeit).
+- **TGA16:** Bit 15 bleibt 0, wenn der Kopf keine Alpha-Bits meldet (Fehler beim ersten Lauf: Alpha 0, behoben und die drei Container neu geschrieben).
+- **Nicht umgewandelt:** Vollbildgrafiken als Einzeldatei (`startupscreen.tga`, `front_freelancerlogo.tga`, 23 `.bmp` in `Material/interface/intro/images`); sie sind keine Texturkacheln und brauchen eine eigene Entscheidung.
+- **Nicht geprüft:** Laden im Spiel. Fällt etwas auf, den betroffenen Container aus der Sicherung zurückkopieren und aus `upscaled_containers.txt` nehmen.

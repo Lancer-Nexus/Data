@@ -6,7 +6,7 @@ Geprüft: 112 Texturbibliotheken (`.txm`), 394 Texturen, 81 Formen, 825 Texturna
 
 | Prüfung | Ergebnis |
 |---|---:|
-| Texturen mit anderer Größe als im CD-Original | 302 |
+| Texturen mit anderer Größe als im CD-Original | 340 |
 | Formen außerhalb der Textur | 0 |
 | Texturen, die von den Formen nur zur Hälfte abgedeckt werden | 0 |
 | Texturnamen in Materialien ohne Textur | 0 |
@@ -16,12 +16,12 @@ Geprüft: 112 Texturbibliotheken (`.txm`), 394 Texturen, 81 Formen, 825 Texturna
 
 | CD | NAP | Texturen |
 |---|---|---:|
+| 128x128 | 512x512 | 109 |
 | 256x256 | 2048x2048 | 106 |
-| 128x128 | 512x512 | 102 |
-| 64x64 | 256x256 | 45 |
-| 256x256 | 1024x1024 | 33 |
+| 64x64 | 256x256 | 53 |
+| 256x256 | 1024x1024 | 39 |
+| 32x32 | 128x128 | 21 |
 | 64x64 | 512x512 | 7 |
-| 32x32 | 128x128 | 4 |
 | 128x128 | 1024x1024 | 4 |
 | 64x64 | 1024x1024 | 1 |
 
@@ -32,10 +32,13 @@ Geprüft: 112 Texturbibliotheken (`.txm`), 394 Texturen, 81 Formen, 825 Texturna
 | `fx/animated.txm` | `lightningaxm_0_0` | 256x256 | 1024x1024 |
 | `fx/animated.txm` | `sparks1anim_0_0` | 256x256 | 1024x1024 |
 | `fx/beam.txm` | `code_beam` | 64x64 | 256x256 |
+| `fx/debrisdust.txm` | `debrisdust1` | 32x32 | 128x128 |
+| `fx/debrisdust.txm` | `debrisdust2` | 32x32 | 128x128 |
 | `fx/efx.txm` | `bulb` | 64x64 | 256x256 |
 | `fx/efx.txm` | `line` | 64x64 | 256x256 |
 | `fx/efx.txm` | `puff` | 32x32 | 128x128 |
 | `fx/efx.txm` | `shine` | 64x64 | 512x512 |
+| `fx/glyphs.txm` | `glyph1` | 128x128 | 512x512 |
 | `fx/hexagon.txm` | `hexagon2` | 64x64 | 256x256 |
 | `fx/holomap.txm` | `fx_galaxy` | 64x64 | 256x256 |
 | `fx/holomap.txm` | `fx_galaxy2` | 64x64 | 256x256 |
@@ -49,6 +52,9 @@ Geprüft: 112 Texturbibliotheken (`.txm`), 394 Texturen, 81 Formen, 825 Texturna
 | `fx/holomap.txm` | `scroll1` | 128x128 | 512x512 |
 | `fx/holomap.txm` | `scroll2` | 128x128 | 512x512 |
 | `fx/holomap.txm` | `scroll3` | 128x128 | 512x512 |
+| `fx/ice.txm` | `ice1` | 64x64 | 256x256 |
+| `fx/ice.txm` | `ice2` | 32x32 | 128x128 |
+| `fx/ice.txm` | `ice3` | 32x32 | 128x128 |
 | `fx/jumpeffect.txm` | `jumptube` | 128x128 | 512x512 |
 | `fx/jumpeffect.txm` | `jumptube5` | 256x256 | 1024x1024 |
 | `fx/kioncannon.txm` | `kioncanlongspark` | 64x64 | 256x256 |
@@ -56,9 +62,18 @@ Geprüft: 112 Texturbibliotheken (`.txm`), 394 Texturen, 81 Formen, 825 Texturna
 | `fx/kioncannon.txm` | `kionflare_0` | 128x128 | 512x512 |
 | `fx/kioncannon.txm` | `projectile2` | 64x64 | 256x256 |
 | `fx/libertytext.txm` | `libertynews` | 128x128 | 512x512 |
+| `fx/lightbeam.txm` | `lightbeam` | 32x32 | 128x128 |
+| `fx/lightbeam.txm` | `lightbeam2` | 32x32 | 128x128 |
+| `fx/lightning2.txm` | `bllightning1` | 64x64 | 256x256 |
+| `fx/lightning2.txm` | `lightning256_0` | 256x256 | 1024x1024 |
+| `fx/metallic.txm` | `metal1` | 32x32 | 128x128 |
+| `fx/metallic.txm` | `metal2` | 32x32 | 128x128 |
+| `fx/metallic.txm` | `metal3` | 32x32 | 128x128 |
 | `fx/miningship.txm` | `dust1` | 64x64 | 256x256 |
 | `fx/miningship.txm` | `fx_dust2` | 64x64 | 256x256 |
 | `fx/missleeffect.txm` | `impact_0` | 256x256 | 1024x1024 |
+| `fx/moon.txm` | `moon3` | 128x128 | 512x512 |
+| `fx/moon.txm` | `moon4` | 128x128 | 512x512 |
 | `fx/newglows.txm` | `bulhit` | 64x64 | 256x256 |
 | `fx/newglows.txm` | `dyson_flare` | 64x64 | 256x256 |
 | `fx/newglows.txm` | `hurr64` | 64x64 | 256x256 |
@@ -68,9 +83,22 @@ Geprüft: 112 Texturbibliotheken (`.txm`), 394 Texturen, 81 Formen, 825 Texturna
 | `fx/organism.txm` | `cilia` | 32x32 | 128x128 |
 | `fx/organism.txm` | `micthu` | 32x32 | 128x128 |
 | `fx/organism.txm` | `xanti` | 32x32 | 128x128 |
+| `fx/photon.txm` | `photon1` | 32x32 | 128x128 |
 | `fx/planetflare.txm` | `planetflare` | 64x64 | 256x256 |
+| `fx/plasmaring.txm` | `plasmaring` | 128x128 | 512x512 |
+| `fx/rain.txm` | `fx_rain1` | 128x128 | 512x512 |
+| `fx/rain.txm` | `fx_rain2` | 128x128 | 512x512 |
+| `fx/rain.txm` | `rain` | 32x32 | 128x128 |
+| `fx/rain.txm` | `rain2` | 64x64 | 256x256 |
+| `fx/rain.txm` | `waterdroplet` | 32x32 | 128x128 |
+| `fx/rtc_scene02_e.txm` | `distort` | 256x256 | 1024x1024 |
+| `fx/rtc_scene02_e.txm` | `lines2` | 256x256 | 1024x1024 |
 | `fx/sarma.txm` | `small-flare` | 64x64 | 256x256 |
+| `fx/sidedistortion.txm` | `beam_1` | 64x64 | 256x256 |
+| `fx/sidedistortion.txm` | `sidedistortion2` | 128x128 | 512x512 |
 | `fx/smoke.txm` | `smokecard` | 64x64 | 1024x1024 |
+| `fx/snow.txm` | `snow1` | 32x32 | 128x128 |
+| `fx/snow.txm` | `snow2` | 32x32 | 128x128 |
 | `fx/standardeffects.txm` | `xp_herm_0` | 256x256 | 1024x1024 |
 | `fx/storm.txm` | `storm1` | 64x64 | 256x256 |
 | `fx/storm.txm` | `storm2` | 64x64 | 256x256 |
@@ -186,7 +214,11 @@ Geprüft: 112 Texturbibliotheken (`.txm`), 394 Texturen, 81 Formen, 825 Texturna
 | `interface/neuronet/newsvendor/newsvendor.txm` | `news_transport` | 128x128 | 512x512 |
 | `interface/neuronet/newsvendor/newsvendor.txm` | `news_war` | 128x128 | 512x512 |
 | `interface/neuronet/newsvendor/newsvendor.txm` | `news_westpoint` | 128x128 | 512x512 |
+| `interface/ui/uitextures.txm` | `hud_sliderarrow` | 32x32 | 128x128 |
+| `interface/ui/uitextures.txm` | `hud_slidertexmid` | 32x32 | 128x128 |
+| `interface/ui/uitextures.txm` | `hud_slidertextopbottom` | 32x32 | 128x128 |
 | `screens/cursor.txm` | `newcursors` | 256x256 | 1024x1024 |
+| `ships/nomad/nomad_fx.txm` | `nomadrgb1_nomadalpha1` | 256x256 | 1024x1024 |
 | `solar/asteroids/debris_roids.txm` | `asteroid_debris_4` | 128x128 | 512x512 |
 | `solar/asteroids/debris_roids.txm` | `debris_belt_04` | 256x256 | 1024x1024 |
 | `solar/asteroids/ice_roids.txm` | `asteroid_ice_4` | 64x64 | 256x256 |
@@ -206,6 +238,8 @@ Geprüft: 112 Texturbibliotheken (`.txm`), 394 Texturen, 81 Formen, 825 Texturna
 | `solar/asteroids/rock_roids.txm` | `asteroid_planet_frag` | 64x64 | 256x256 |
 | `solar/asteroids/rock_roids.txm` | `asteroid_rock_4` | 64x64 | 256x256 |
 | `solar/asteroids/rock_roids.txm` | `asteroid_uranium` | 64x64 | 256x256 |
+| `solar/blackhole/blackhole.txm` | `bhflash_0` | 256x256 | 1024x1024 |
+| `solar/blackhole/blackhole.txm` | `blackholering` | 256x256 | 1024x1024 |
 | `solar/nebula/crow.txm` | `crow_circle` | 256x256 | 1024x1024 |
 | `solar/nebula/crow.txm` | `crow_clouds` | 256x256 | 1024x1024 |
 | `solar/nebula/crow.txm` | `crow_exterior` | 256x256 | 1024x1024 |
@@ -223,6 +257,7 @@ Geprüft: 112 Texturbibliotheken (`.txm`), 394 Texturen, 81 Formen, 825 Texturna
 | `solar/nebula/walker.txm` | `walker_exterior` | 256x256 | 1024x1024 |
 | `solar/nebula/white.txm` | `white_circle` | 256x256 | 1024x1024 |
 | `solar/nebula/white.txm` | `white_exterior` | 256x256 | 1024x1024 |
+| `solar/planets/atmosphere.txm` | `atmosphere` | 64x64 | 256x256 |
 | `solar/planets/cratermoon.txm` | `cratermoon` | 256x256 | 2048x2048 |
 | `solar/planets/desert.txm` | `desert01` | 256x256 | 2048x2048 |
 | `solar/planets/desert.txm` | `desert02` | 256x256 | 2048x2048 |
@@ -331,4 +366,7 @@ Geprüft: 112 Texturbibliotheken (`.txm`), 394 Texturen, 81 Formen, 825 Texturna
 | `solar/rings/rings.txm` | `ring_exteriors` | 256x256 | 1024x1024 |
 | `solar/rings/rings.txm` | `ringdetail` | 128x128 | 1024x1024 |
 | `solar/rings/rings.txm` | `rock_wisps` | 256x256 | 1024x1024 |
+| `universe/heavens/heavens.txm` | `dust` | 64x64 | 256x256 |
+| `universe/heavens/heavens.txm` | `dust2` | 64x64 | 256x256 |
+| `universe/heavens/heavens.txm` | `stars` | 64x64 | 256x256 |
 

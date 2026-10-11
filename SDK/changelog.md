@@ -20,6 +20,15 @@ Korrekturen gegenüber 1.3. Alle Änderungen betreffen Formatfehler, keine Spiel
 | `initialworld.ini` | Geschützte Leerzeichen (`0xA0`) in 53 Zeilen durch normale Leerzeichen ersetzt; Datei ist jetzt reines ASCII/UTF-8 |
 | `Universe/Systems/Li02/Bases/Rooms/Li02_01_cityscape.ini` | Tippfehler `:gap` → `gap` in `[FlashlightSet]` (Wert wurde nie gelesen) |
 
+### Texturen: KI-Hochskalierung (Formkoordinaten)
+
+Die im NAP noch originalen Texturen (343 Container, 605 Texturen) wurden um Faktor 4 hochskaliert (`tools/upscale_textures.py`, siehe `TODO-texturen-upscale.md`). Die Formkoordinaten folgen der Textur (`tools/scale_shape_inis.py`):
+
+| Datei | Änderung |
+|---|---|
+| `Universe/Heavens/Shapes.ini` | 38 Formen (`dust`, `dust2`, `stars`): x, y, w, h × 4 |
+| `Solar/Blackhole/Bhshapes.ini` | 2 Formen (`blackholering`, `bh_chunk`): 256 → 1024 und 128 → 512 |
+
 ### Dateinamen mit Leerzeichen, Korrekturen an Verweisen
 
 Dateien mit Leerzeichen im Namen wurden auf Unterstriche umgestellt. Die Verweise in den INIs wurden angepasst. Die Dateien sind auf der CD vorhanden, nur die Namen weichen ab.

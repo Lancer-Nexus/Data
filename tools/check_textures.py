@@ -49,13 +49,14 @@ def cd_index(cd):
 
 
 def load_overrides():
-    p = os.path.join(HERE, 'hd_overrides.txt')
     s = set()
-    if os.path.isfile(p):
-        for l in open(p, encoding='utf-8'):
-            l = l.strip()
-            if l and not l.startswith('#'):
-                s.add(re.sub(r'^[^/]+/', '', l.lower()))
+    for fn in ('hd_overrides.txt', 'upscaled_containers.txt'):
+        p = os.path.join(HERE, fn)
+        if os.path.isfile(p):
+            for l in open(p, encoding='utf-8'):
+                l = l.strip()
+                if l and not l.startswith('#'):
+                    s.add(re.sub(r'^[^/]+/', '', l.lower()))
     return s
 
 
