@@ -102,6 +102,30 @@ python3 tools/sync_inis_to_nap.py --dry-run
 
 Die Klasse einer INI richtet sich nach ihrem Hauptordner (`audio` → `Sounds`, `universe` → `World` usw.). INIs im Wurzelverzeichnis gehen nach `System`. `SDK/exe/` wird nicht übernommen.
 
+## Werkzeuge (`tools/`)
+
+| Werkzeug | Zweck | Aufruf |
+|---|---|---|
+| `build_nap.py` | `NAP/` aus der ISO aufbauen, normalisieren, Klassen zuordnen | `python3 tools/build_nap.py --source <ISO>` (`--dry-run` zum Testen) |
+| `sync_inis_to_nap.py` | INIs aus `SDK/` in die Klassencontainer kopieren | `python3 tools/sync_inis_to_nap.py` |
+| `import_hd_pack.py` | HD-Pack (Daten) nach `NAP/` übernehmen, mit Manifest | `python3 tools/import_hd_pack.py --hd-repo <Pfad>` (`--apply` zum Schreiben) |
+| `import_hd_inis.py` | HD-INIs normalisiert in `SDK/` übernehmen | `python3 tools/import_hd_inis.py` (`--apply` zum Schreiben) |
+| `utf_textures.py` | Maße und Format der Texturen in UTF-Dateien (`.txm`, `.mat`, `.3db` …) lesen | `python3 tools/utf_textures.py NAP/Material/solar/rings/rings.txm` |
+| `check_textures.py` | Texturmaße und Verweise prüfen, schreibt `textur-pruefung.md` | `python3 tools/check_textures.py` |
+
+### Textur-Prüfung (`check_textures.py`)
+
+Das Werkzeug prüft nach einem Import oder nach dem Austausch von Texturen:
+
+1. **Maße:** Breite, Höhe und Format (DDS/TGA) jeder Textur in allen `.txm`.
+2. **Version:** Größe der Textur in `NAP/` gegenüber dem CD-Original. Zeigt, welche Texturen hochskaliert wurden (HD) und welche unverändert sind.
+3. **Formen:** `[Shape]`-Rechtecke (`x`, `y`, `w`, `h`) in den INIs gegen die Größe der referenzierten Textur. Meldet Formen außerhalb der Textur und Texturen, die nur zur Hälfte abgedeckt werden (INI noch für die kleine Textur).
+4. **Materialien:** Texturnamen in `.mat` (`Dt_name` usw.) gegen vorhandene Texturen, auch eingebettete und `.tga`.
+
+Die CD-Originale für den Vergleich liest es aus einem Ordner mit den entpackten CABs (`--cd <Ordner>`). Die Ausgabe ist `textur-pruefung.md` im Wurzelverzeichnis (`--out` ändert das). Animierte Texturen (`name_0`) werden erkannt.
+
+Der Bericht gilt für den jeweiligen Stand. Nach Änderungen an Texturen oder INIs neu erzeugen.
+
 ## Bekannte Grenzen
 
 - **Fehlende Dateien:** 32 Dateien, auf die die INIs verweisen, sind auf der CD nicht vorhanden (vor allem Kollisionsmodelle `*_col.cmp` und einige Sprachdateien). Sie stehen in `missing.md`.
