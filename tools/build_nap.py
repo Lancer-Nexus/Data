@@ -18,6 +18,7 @@ Aufruf:
 import argparse
 import filecmp
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -32,6 +33,17 @@ EXCLUDE = {
     'missions/m01a/mission1 readme.doc',
     'missions/m01b/mission1 readme.doc',
 }
+
+# HD-Dateien, die nicht überschrieben und nicht entfernt werden (Klasse/Pfad, eine pro Zeile).
+OVERRIDES_FILE = os.path.join(HERE, 'hd_overrides.txt')
+
+
+def load_overrides():
+    if not os.path.isfile(OVERRIDES_FILE):
+        return set()
+    with open(OVERRIDES_FILE, encoding='utf-8') as f:
+        return {line.strip() for line in f if line.strip() and not line.startswith('#')}
+
 
 # Klasse nach Dateiendung (Vorrang) und nach Hauptordner, wie in classes.md.
 EXT_CLASS = {
@@ -128,7 +140,18 @@ def collect(extract_root):
 
 
 def rename(rel):
-    """Leerzeichen im Dateinamen werden zu Unterstrichen (z. B. 'debri explo 1.wav' -> 'debri_explo_1.wav')."""
+    """Leerzeichen im Dateinamen werden zu Unterstrichen (z. B. 'debri explo 1.wav' -> 'debri_explo_1.wav').
+
+    Planeten-Materialien liegen flach in solar/planets/ statt in einem Ordner pro Planet
+    (solar/planets/planet_x/planet_x.mat -> solar/planets/planet_x.mat). Detailmaps liegen ebenfalls
+    flach in solar/planets/ (solar/planets/detailmaps/x.txm -> solar/planets/x.txm).
+    """
+    m = re.fullmatch(r'solar/planets/(planet_[^/]+)/\1\.mat', rel)
+    if m:
+        return f'solar/planets/{m.group(1)}.mat'
+    m = re.fullmatch(r'solar/planets/detailmaps/(detailmap_[^/]+\.txm)', rel)
+    if m:
+        return f'solar/planets/{m.group(1)}'
     head, _, base = rel.rpartition('/')
     base = base.replace(' ', '_')
     return f'{head}/{base}' if head else base
@@ -194,10 +217,12 @@ def main():
                         existing[key] = os.path.join(r, f)
 
         new = [k for k in target if k not in existing]
-        changed = [k for k in target if k in existing and not same_file(target[k], existing[k])]
+        keep = load_overrides()
+        changed = [k for k in target if k in existing and k not in keep and not same_file(target[k], existing[k])]
         same = len(target) - len(new) - len(changed)
-        stale = [k for k in existing if k not in target] if not args.no_prune else []
+        stale = [k for k in existing if k not in target and k not in keep] if not args.no_prune else []
         print(f'neu {len(new)}, geändert {len(changed)}, unverändert {same}, entfernen {len(stale)}')
+        print(f'HD-Ausnahmen (nicht angefasst): {len(keep)}')
 
         if args.dry_run:
             for k in new[:20]:

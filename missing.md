@@ -1,43 +1,68 @@
 # Fehlende Dateien
 
-Dateien, auf die die INIs im SDK verweisen, die aber nicht in `NAP/` liegen. Geprüft wurden alle Asset-Verweise in `SDK/**/*.ini` (ohne Entwicklerpfade `E:\lancer\…` in `ButtonMontage.ini`) gegen den virtuellen Root von `NAP/` (Groß-/Kleinschreibung ignoriert).
+Dateien, auf die die INIs im SDK verweisen, die aber nicht in `NAP/` liegen. Geprüft wurden alle Asset- und INI-Verweise in `SDK/**/*.ini` (ohne `exe/`) gegen den virtuellen Root von `NAP/` (Groß-/Kleinschreibung ignoriert).
 
-**21 fehlende Ziele** mit insgesamt **35 Fundstellen**.
+**48 fehlende Ziele**, Fundstellen: **48**.
 
-Die Dateien stammen von der Original-CD (`CAB1.CAB`, `CAB2.CAB`). Ein Eintrag bedeutet: Die Datei fehlt auf der CD oder liegt an einem anderen Pfad.
+Hinweis: Verweise ohne Ordner (z. B. `ocean_blue.cmp` in `PetalDB.ini`) sind in der Prüfung als fehlend markiert, die Dateien liegen aber unter `bases/generic/`. Diese Zeilen sind unten gekennzeichnet.
 
 ## Liste
 
-| Ziel | Verwendet in (INI:Zeile) |
-|---|---|
-| `exit.tga` | `interface/Intro.ini:4` |
-| `interface/baseside/elite.3db` | `interface/baseside/Navbar.ini:39` |
-| `interface/baseside/exit.3db` | `interface/baseside/Navbar.ini:31` |
-| `interface/baseside/fighter.3db` | `interface/baseside/Navbar.ini:37` |
-| `interface/baseside/frieghter.3db` | `interface/baseside/Navbar.ini:38` |
-| `interface/baseside/unknown.3db` | `interface/baseside/Navbar.ini:36`, `interface/baseside/Navbar.ini:46`, `interface/baseside/Navbar.ini:66`, `interface/baseside/Navbar.ini:79`, `interface/baseside/Navbar.ini:92`, `interface/baseside/Navbar.ini:105`, `interface/baseside/Navbar.ini:118`, `interface/baseside/Navbar.ini:131`, `interface/baseside/Navbar.ini:196` |
-| `interface/hud/hud_commsicon.3db` | `interface/Hud.ini:5` |
-| `interface/hud/hudtarget.txm` | `interface/hud/HudTarget.ini:2` |
-| `interface/intro/objects/multi_blackdragonmale.3db` | `characters/NewCharacter.ini:7` |
-| `openingscreen.tga` | `interface/Intro.ini:3` |
-| `ships/kusari/ku_battleship/ku_battleship_col.cmp` | `Concave.ini:38` |
-| `ships/liberty/li_dreadnought/li_dreadnought_col.cmp` | `Concave.ini:82` |
-| `ships/order/or_osiris/or_osiris_col.cmp` | `Concave.ini:71` |
-| `ships/utility/luxury_liner/luxury_liner_col.cmp` | `Concave.ini:52` |
-| `ships/utility/prison_liner/prison_liner_col.cmp` | `Concave.ini:61` |
-| `solar/asteroids/roids.txm` | `solar/asteroids/Shapes.ini:2`, `solar/asteroids/Shapes.ini:69`, `solar/asteroids/Shapes.ini:80`, `solar/asteroids/Shapes.ini:91`, `solar/asteroids/Shapes.ini:102`, `solar/asteroids/Shapes.ini:113`, `solar/asteroids/Shapes.ini:124` |
-| `solar/dockable/tlr_a.3db` | `Concave.ini:26` |
-| `solar/dockable/tlr_d.3db` | `Concave.ini:32` |
-| `solar/dockable/tlr_tube_a.cmp` | `Concave.ini:29` |
-| `solar/dockable/trading_depot.cmp` | `Concave.ini:9` |
-| `solar/dockable/trading_outpost_lod_col.cmp` | `Concave.ini:2` |
+| Ziel | Verwendet in | Bemerkung |
+|---|---|---|
+| `dx_s059x_0101_blix.wav` | `audio/StorySounds.ini` |  |
+| `exit.tga` | `interface/Intro.ini` |  |
+| `interface/baseside/elite.3db` | `interface/baseside/Navbar.ini` |  |
+| `interface/baseside/exit.3db` | `interface/baseside/Navbar.ini` |  |
+| `interface/baseside/fighter.3db` | `interface/baseside/Navbar.ini` |  |
+| `interface/baseside/frieghter.3db` | `interface/baseside/Navbar.ini` |  |
+| `interface/baseside/unknown.3db` | `interface/baseside/Navbar.ini` |  |
+| `interface/hud/hud_commsicon.3db` | `interface/Hud.ini` |  |
+| `interface/hud/hudtarget.txm` | `interface/hud/HudTarget.ini` |  |
+| `interface/intro/objects/multi_blackdragonmale.3db` | `characters/NewCharacter.ini` |  |
+| `missions/encounters/spacepop/scenes/area_homedefender_defenders-df.ini` | `universe/systems/intro/Intro.ini` | INI fehlt auf der CD |
+| `missions/encounters/spacepop/scenes/area_patrol_fighters-f.ini` | `universe/systems/intro/Intro.ini` | INI fehlt auf der CD |
+| `missions/encounters/spacepop/scenes/area_scavenger_fighters-f.ini` | `universe/systems/intro/Intro.ini` | INI fehlt auf der CD |
+| `missions/encounters/spacepop/scenes/area_trade_freighters-f-fr.ini` | `universe/systems/intro/Intro.ini` | INI fehlt auf der CD |
+| `missions/encounters/spacepop/scenes/area_trade_gunboat-f-g.ini` | `universe/systems/intro/Intro.ini` | INI fehlt auf der CD |
+| `missions/encounters/spacepop/scenes/area_trade_traders-f-fr-t.ini` | `universe/systems/intro/Intro.ini` | INI fehlt auf der CD |
+| `missions/encounters/spacepop/scenes/area_trade_transports-f-t.ini` | `universe/systems/intro/Intro.ini` | INI fehlt auf der CD |
+| `missions/encounters/spacepop/scenes/path_patrol_fighters-f.ini` | `universe/systems/intro/Intro.ini` | INI fehlt auf der CD |
+| `missions/encounters/spacepop/scenes/path_piratepatrol_fighters-f.ini` | `universe/systems/intro/Intro.ini` | INI fehlt auf der CD |
+| `missions/encounters/spacepop/scenes/path_piratepatrol_laneattackers-la.ini` | `universe/systems/intro/Intro.ini` | INI fehlt auf der CD |
+| `missions/encounters/spacepop/scenes/path_piratepatrol_wingattack-al-w.ini` | `universe/systems/intro/Intro.ini` | INI fehlt auf der CD |
+| `missions/encounters/spacepop/scenes/path_policepatrol_fieldpatroller-fp.ini` | `universe/systems/intro/Intro.ini` | INI fehlt auf der CD |
+| `missions/encounters/spacepop/scenes/path_policepatrol_patroller-pt.ini` | `universe/systems/intro/Intro.ini` | INI fehlt auf der CD |
+| `missions/encounters/spacepop/scenes/path_trade_fighters-f.ini` | `universe/systems/intro/Intro.ini` | INI fehlt auf der CD |
+| `missions/encounters/spacepop/scenes/path_trade_freighters-f-fr.ini` | `universe/systems/intro/Intro.ini` | INI fehlt auf der CD |
+| `missions/encounters/spacepop/scenes/path_trade_independents-td.ini` | `universe/systems/intro/Intro.ini` | INI fehlt auf der CD |
+| `missions/encounters/spacepop/scenes/path_trade_smugglers-sm.ini` | `universe/systems/intro/Intro.ini` | INI fehlt auf der CD |
+| `ocean_blue.cmp` | `PetalDB.ini` | liegt unter bases/generic/, Verweis ohne Ordner |
+| `ocean_green.cmp` | `PetalDB.ini` | liegt unter bases/generic/, Verweis ohne Ordner |
+| `ocean_green_btm.3db` | `PetalDB.ini` | liegt unter bases/generic/, Verweis ohne Ordner |
+| `ocean_green_top.3db` | `PetalDB.ini` | liegt unter bases/generic/, Verweis ohne Ordner |
+| `ocean_grey_btm.3db` | `PetalDB.ini` | liegt unter bases/generic/, Verweis ohne Ordner |
+| `ocean_grey_top.3db` | `PetalDB.ini` | liegt unter bases/generic/, Verweis ohne Ordner |
+| `ocean_lime.cmp` | `PetalDB.ini` | liegt unter bases/generic/, Verweis ohne Ordner |
+| `ocean_navy.cmp` | `PetalDB.ini` | liegt unter bases/generic/, Verweis ohne Ordner |
+| `openingscreen.tga` | `interface/Intro.ini` |  |
+| `ships/kusari/ku_battleship/ku_battleship_col.cmp` | `Concave.ini` | Kollisionsmodell fehlt auf der CD |
+| `ships/liberty/li_dreadnought/li_dreadnought_col.cmp` | `Concave.ini` | Kollisionsmodell fehlt auf der CD |
+| `ships/order/or_osiris/or_osiris_col.cmp` | `Concave.ini` | Kollisionsmodell fehlt auf der CD |
+| `ships/utility/luxury_liner/luxury_liner_col.cmp` | `Concave.ini` | Kollisionsmodell fehlt auf der CD |
+| `ships/utility/prison_liner/prison_liner_col.cmp` | `Concave.ini` | Kollisionsmodell fehlt auf der CD |
+| `solar/asteroids/roids.txm` | `solar/asteroids/Shapes.ini` |  |
+| `solar/dockable/tlr_a.3db` | `Concave.ini` |  |
+| `solar/dockable/tlr_d.3db` | `Concave.ini` |  |
+| `solar/dockable/tlr_tube_a.cmp` | `Concave.ini` |  |
+| `solar/dockable/trading_depot.cmp` | `Concave.ini` |  |
+| `solar/dockable/trading_outpost_lod_col.cmp` | `Concave.ini` | Kollisionsmodell fehlt auf der CD |
+| `startupscreen.tga` | `interface/Intro.ini` |  |
 
 ## Hinweise
 
-- Kollisionsmodelle `*_col.cmp` der Schiffe fehlen auf der CD. Die Modelle selbst (`ships/…/*.cmp`) sind vorhanden.
-- Die Verweise auf `interface/baseside/*.3db`, `hud_commsicon.3db`, `hudtarget.txm`, `tlr_*`, `roids.txm` und `multi_blackdragonmale.3db` haben keinen eindeutigen Ersatz. Sie sind offen.
-- Korrigierte Namen (Leerzeichen → `_`, Korrekturen in `Concave.ini`) stehen in `SDK/changelog.md`.
-
+- Kollisionsmodelle `*_col.cmp` der Schiffe fehlen auf der CD. Die Modelle selbst liegen vor.
+- Die Verweise auf `interface/baseside/*.3db`, `hud_commsicon.3db`, `hudtarget.txm`, `tlr_*`, `roids.txm` und `multi_blackdragonmale.3db` haben keinen eindeutigen Ersatz.
 
 ## Recherche (Verbleib der Dateien)
 

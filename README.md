@@ -91,6 +91,8 @@ Von `NAP/` werden nur die Klassenordner ins Repo übernommen (mit einer leeren `
 
 Das Skript ist mehrfach ausführbar. Gleiche Dateien bleiben unberührt, geänderte werden überschrieben. Ohne `--no-prune` werden Dateien entfernt, die nicht mehr aus der Quelle stammen. Die beiden Kopien von `mission1 readme.doc` sind bewusst ausgeschlossen (siehe `EXCLUDE` in `build_nap.py`).
 
+HD-Dateien, die in `NAP/` ersetzt wurden, stehen in `tools/hd_overrides.txt`. `build_nap.py` überschreibt und entfernt diese Dateien nicht.
+
 ### Nur die INIs aktualisieren
 
 ```bash
