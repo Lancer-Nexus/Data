@@ -112,6 +112,7 @@ Die Klasse einer INI richtet sich nach ihrem Hauptordner (`audio` → `Sounds`, 
 | `import_hd_inis.py` | HD-INIs normalisiert in `SDK/` übernehmen | `python3 tools/import_hd_inis.py` (`--apply` zum Schreiben) |
 | `utf_textures.py` | Maße und Format der Texturen in UTF-Dateien (`.txm`, `.mat`, `.3db` …) lesen | `python3 tools/utf_textures.py NAP/Material/solar/rings/rings.txm` |
 | `check_textures.py` | Texturmaße und Verweise prüfen, schreibt `textur-pruefung.md` | `python3 tools/check_textures.py` |
+| `extract_textures.py` | Originaltexturen als PNG herauslösen (für KI-Hochskalierung), mit `manifest.csv` | `python3 tools/extract_textures.py --out <Ordner>` (braucht Pillow) |
 
 ### Textur-Prüfung (`check_textures.py`)
 
