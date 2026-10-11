@@ -68,9 +68,32 @@ Alle drei laufen über `spandrel` und PyTorch (CUDA 12.8) auf der RTX 5060, je T
 
 ## 6. Offen
 
-- [ ] Größerer Test an 30–50 Texturen quer durch die Gruppen, bevor die Zuordnung der Modelle feststeht.
+- [x] Größerer Test an 42 Texturen quer durch die Gruppen (siehe 7).
 - [ ] UTF-Schreiber und DXT-Kompression (z. B. `texconv`, `nvcompress` oder `ImageMagick`) auswählen und testen.
 - [ ] Kachelnde Texturen: Nahtprüfung.
 - [ ] Entscheiden, ob die 77 Duplikate gemeinsam bleiben (gleiche Pixel, mehrere Container) oder pro Container gerechnet werden.
 - [ ] Nachweis, dass die Engine die größeren Texturen im selben Container lädt (Speicher, Mip-Stufen).
 - [ ] Namensnennung für GTAV-Modell (CC-BY-4.0), falls eingesetzt.
+
+## 7. Ergebnis des größeren Tests (42 Texturen)
+
+Skript: `tools/upscale_textures_test.py` (Zufallsauswahl mit festem Seed aus den Originalen: Basen 8, Neuronet 5, Interface 6, Ausrüstung 6, Backdrops 4, FX 5, Solar 5, dtl 3; Modelle x4plus und PBRify). Kontaktbögen und `ergebnis.csv` liegen in `~/Dokumente/Freelancer-Textures/test2/` (nicht im Repo). Alle 42 Läufe fehlerfrei, PBRify 0,04 bis 1,4 s je Textur, x4plus 0,01 bis 0,5 s.
+
+**Rückrechnung** (Ergebnis wieder auf Originalgröße verkleinert, PSNR gegen das Original; hoch = treu):
+
+| Modell | PSNR Mittel | schlechtester Wert |
+|---|---|---|
+| PBRify | etwa 38 dB | 26,9 dB (loot_niobium) |
+| x4plus | etwa 31 dB | 21,5 dB (loot_niobium) |
+
+PBRify liegt in allen 42 Fällen vor x4plus, bei großen Backdrops und Kacheln mit 4 bis 5 dB, bei kleinen Symbolen mit 5 bis 10 dB.
+
+**Sichtprüfung:**
+- Basen-, Backdrop-, Ausrüstungs- und dtl-Texturen: PBRify entfernt die DXT-Blockartefakte und hält Kanten und Flächen sauber. x4plus ist ähnlich, schärft aber harte Kanten mit leichten Säumen.
+- Interface- und Neuronet-Symbole (weiß auf schwarz): x4plus ergibt etwas härtere, glattere Konturen; PBRify ist weicher, aber ohne Artefakte. Beide brauchbar, x4plus wirkt besser.
+- FX-Sprites: x4plus erfindet bei `debrisdust1` Linienstrukturen, die es im Original nicht gibt. PBRify bleibt bei der Körnung. Daher **PBRify für FX**, nicht x4plus.
+- Rein weiße oder Verlaufstexturen: beide unauffällig, Verläufe werden ohne Banding geglättet.
+
+**Angepasste Zuordnung:** PBRify für alles außer Interface und Neuronet; dort x4plus (Alpha getrennt). GTAV entfällt als Standard.
+
+**Weiter offen:** Zurückschreiben (UTF-Schreiber, DXT-Kompression), Alpha-Behandlung, Wrap-Padding für dtl, Engine-Ladeprüfung.
