@@ -10,7 +10,7 @@ Ziel: Zu Texturen lassen sich zusätzliche Normal Maps und Cube Maps (Umgebungss
 |---|---|
 | Generator | `tools/make_surface_maps.py` (Pillow, numpy), reproduzierbar aus dem NAP |
 | Normal Maps | 55 Karten in vier Bibliotheken `NAP/Shader/fx/normalmaps_<ships|bases|solar|planets>.txm` (22 / 12 / 6 / 15 Karten, zusammen 77 MB). Je 1024 × 1024, **BC5** (ATI2N, nur X und Y) mit Mips bis 4 × 4. Schiffe: Liberty, Kusari, Bretonia, Piraten, Zivil, Order, Nutzschiffe. Basen: Bretonia/Pygar und Liberty. Solar: Asteroiden, Geschütztürme, Torpedo, Nomaden. Planeten: 8 kachelnde Detailkarten und 7 Oberflächenkarten |
-| Cube Maps | `NAP/Material/fx/envcube_space.mat`, `envcube_sun.mat`, `envcube_nebula.mat` (je 256 px, DDS A8R8G8B8 mit Mips, 2,1 MB), Aufbau wie `envmapbasic.mat` (Knoten `CUBE`) |
+| Cube Maps | `NAP/Shader/fx/envcube_space.mat`, `envcube_sun.mat`, `envcube_nebula.mat` (je 256 px, DDS A8R8G8B8 mit Mips, 2,1 MB), Aufbau wie `envmapbasic.mat` (Knoten `CUBE`) |
 | INI | `SDK/fx/SurfaceMaps.ini` mit `[Texture]`, `[NormalMap]`, `[CubeMap]`, vom Generator erzeugt |
 | Bewertung | `surface-maps-bewertung.md` (Kennzahlen je Karte, vorher/nachher) |
 | Schutz | `tools/extra_maps.txt` (`build_nap.py` überschreibt oder löscht die Dateien nicht) |
