@@ -9,7 +9,7 @@ Datenrepository des [Lancer Nexus](https://github.com/Lancer-Nexus)-Projekts: Sp
 | `SDK/` | INI-Dateien (Spielkonfiguration, Universum, Missionen, Ausrüstung, Schiffe …) in der Version 1.3.1 | ja |
 | `SDK/changelog.md` | Änderungen 1.0 → 1.3 → 1.3.1 mit Diff je Datei | ja |
 | `SDK/exe/` | `Freelancer.ini`, `DACOM.ini`, `dacomsrv.ini` aus dem Spielverzeichnis | ja |
-| `NAP/` | Spieldaten (Modelle, Töne, Texturen, Skripte, Videos …) als Klassencontainer | **nein** (ignoriert) |
+| `NAP/` | Spieldaten (Modelle, Töne, Texturen, Skripte, Videos …) als Klassencontainer | nur die Klassenordner (Inhalt ignoriert) |
 | `classes.md` | Einteilung der Spieldaten in Klassen und Regeln | ja |
 | `missing.md` | Dateien, auf die die INIs verweisen, die aber auf der CD fehlen | ja |
 | `tools/` | Skripte zum Aufbau von `NAP/` aus der CD | ja |
@@ -38,7 +38,7 @@ NAP/Sounds/audio/…/x.wav   →   im Spiel: audio/…/x.wav
 
 Die Klassen sind in [`classes.md`](classes.md) beschrieben: `Models`, `Sounds`, `Script`, `UI`, `Effects`, `Material`, `Video`, `Mission`, `System`, `World`.
 
-`NAP/` ist per `.gitignore` vom Repo ausgeschlossen, weil die Dateien aus der Original-CD stammen und groß sind (rund 855 MB).
+Von `NAP/` werden nur die Klassenordner ins Repo übernommen (mit einer leeren `.gitkeep`). Die Dateien darin stammen aus der Original-CD, sind groß (rund 855 MB) und bleiben per `.gitignore` außerhalb.
 
 ## Anleitung: NAP aus der CD aufbauen
 
