@@ -9,7 +9,7 @@ Ergänzung zu make_surface_maps.py (handgewählte Beispielkarten). Ablauf:
   3. Je Karte: Höhenkarte aus Helligkeit, Stärke so, dass p95 der Neigung bei 28° und p99 höchstens
      bei 60° liegt (wie `--tune`), BC5. Karten ohne erkennbares Relief (über 90 % unter 1°) entfallen.
   4. Bibliotheken `Material/fx/normalmaps_<gruppe>_<nr>.txm` (höchstens 48 MB je Datei),
-     INI `SDK/fx/SurfaceMapsAuto.ini`, Parameter `tools/surface_maps_auto.json`,
+     INI `SDK/fx/SurfaceMapsShips.ini` und `SurfaceMapsBases.ini`, Parameter `tools/surface_maps_auto.json`,
      Schutzliste `tools/extra_maps_auto.txt`, Bericht `surface-maps-auto-bewertung.md`.
 
 Schiffskarten 1024 px, Basiskarten 512 px (die Texturen sind größtenteils KI-hochskaliert,
@@ -47,7 +47,8 @@ BAD = re.compile(r'illum|light|alpha|banner|sign|window|glass|plasma|\.avi|fade|
 MAX_FILE_BYTES = 48 * 1024 * 1024
 PARAMS_JSON = os.path.join(HERE, 'surface_maps_auto.json')
 EXTRA_LIST = os.path.join(HERE, 'extra_maps_auto.txt')
-INI_PATH = os.path.join(ROOT, 'SDK', 'fx', 'SurfaceMapsAuto.ini')
+INI_PATHS = {'ships': os.path.join(ROOT, 'SDK', 'fx', 'SurfaceMapsShips.ini'),
+             'bases': os.path.join(ROOT, 'SDK', 'fx', 'SurfaceMapsBases.ini')}
 REPORT = os.path.join(ROOT, 'surface-maps-auto-bewertung.md')
 
 
@@ -213,16 +214,20 @@ def main():
             for k, (c, _) in ch.items():
                 lib_names[c['key']] = 'surface_' + lname
             print(f'{lname}.txm: {len(ch)} Karten, {os.path.getsize(path) / 1e6:.1f} MB')
-    body = []
-    for (group, sset), items in sorted(libs.items()):
-        for c, r in items:
-            body.append(f"\n[NormalMap]\ntexture = {c['name']}\nlibrary = {lib_names[c['key']]}\n"
-                        f"map = nm_{c['key']}\nstrength = {r['strength']:g}\n")
-    with open(INI_PATH, 'w', encoding='utf-8', newline='\n') as f:
-        f.write('; SurfaceMapsAuto.ini - automatisch erzeugte Normal Maps fuer Schiffs- und Basistexturen.\n'
-                '; Syntax wie SurfaceMaps.ini. Erzeugt von tools/make_surface_maps_bulk.py, nicht von Hand aendern.\n'
-                '; Eine Textur kommt hoechstens einmal vor; Namen mit verschiedenem Inhalt wurden ausgelassen.\n')
-        f.write(''.join(ini) + ''.join(body))
+    for group, path in INI_PATHS.items():
+        tex_blocks = [b for b in ini if any(f'surface_normalmaps_{group}_' in b for _ in [0])]
+        body = []
+        for (g, sset), items in sorted(libs.items()):
+            if g != group:
+                continue
+            for c, r in items:
+                body.append(f"\n[NormalMap]\ntexture = {c['name']}\nlibrary = {lib_names[c['key']]}\n"
+                            f"map = nm_{c['key']}\nstrength = {r['strength']:g}\n")
+        with open(path, 'w', encoding='utf-8', newline='\n') as f:
+            f.write(f'; SurfaceMaps{group.capitalize()}.ini - automatisch erzeugte Normal Maps fuer {"Schiffs" if group == "ships" else "Basis"}texturen.\n'
+                    '; Syntax wie SurfaceMaps.ini. Erzeugt von tools/make_surface_maps_bulk.py, nicht von Hand aendern.\n'
+                    '; Eine Textur kommt hoechstens einmal vor; Namen mit verschiedenem Inhalt wurden ausgelassen.\n')
+            f.write(''.join(tex_blocks) + ''.join(body))
     with open(PARAMS_JSON, 'w', encoding='utf-8', newline='\n') as f:
         json.dump(params, f, indent=0, ensure_ascii=False, sort_keys=True)
         f.write('\n')

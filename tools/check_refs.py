@@ -62,7 +62,7 @@ def main():
                 line = line.split(';')[0]
                 if '=' not in line:
                     continue
-                if f in ('SurfaceMaps.ini', 'SurfaceMapsAuto.ini') and line.split('=', 1)[0].strip().lower() == 'texture':
+                if f.startswith('SurfaceMaps') and line.split('=', 1)[0].strip().lower() == 'texture':
                     continue   # Texturname (Dt_name), keine Datei
                 for tok in line.split('=', 1)[1].split(','):
                     tok = tok.strip()

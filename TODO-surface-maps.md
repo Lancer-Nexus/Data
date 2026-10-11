@@ -52,7 +52,7 @@ Technische Beschreibung der Dateien, der INI-Syntax und der Engine-Anbindung mit
 
 ## 1b. Massenlauf für alle Schiffe und Basen (2026-10-12)
 
-`tools/make_surface_maps_bulk.py` erzeugt Normal Maps für alle geeigneten Texturen aus `Material/ships`, `Models/ships` und `Models/bases`. Bericht: `surface-maps-auto-bewertung.md`, Parameter: `tools/surface_maps_auto.json`, INI: `SDK/fx/SurfaceMapsAuto.ini`.
+`tools/make_surface_maps_bulk.py` erzeugt Normal Maps für alle geeigneten Texturen aus `Material/ships`, `Models/ships` und `Models/bases`. Bericht: `surface-maps-auto-bewertung.md`, Parameter: `tools/surface_maps_auto.json`, INI: `SDK/fx/SurfaceMapsShips.ini` (49 Karten) und `SDK/fx/SurfaceMapsBases.ini` (2621 Karten).
 
 | Schritt | Texturen |
 |---|---:|
@@ -77,6 +77,16 @@ Technische Beschreibung der Dateien, der INI-Syntax und der Engine-Anbindung mit
 - Die Namensfilter sind eine Heuristik. Im Lauf stecken vermutlich einzelne ungeeignete Texturen (Stadtkulissen, Schilder), die nicht im Namen erkennbar sind. Eine Stichprobe von acht Karten sah plausibel aus.
 - Ob die Engine Bibliotheken dieser Größe (bis 50 MB je Datei, insgesamt viele) zügig lädt, ist offen. Eine Bibliothek wird in der Engine möglicherweise erst beim Zugriff geladen; das ist nicht geprüft.
 - Die Wirkung im Spiel hängt weiter von Tangenten und Shaderpfad ab.
+
+**Lade-Profile (nur INIs, keine doppelten Daten):** Die Karten stehen in vier INIs, die die Engine je nach Bedarf liest.
+
+| Profil | INIs | Karten | Größe der Bibliotheken |
+|---|---|---:|---:|
+| minimal | `SurfaceMaps.ini` | 55 (Beispielsatz: Schiffe, Basen, Solar, Planeten) | 77 MB |
+| Standard | + `SurfaceMapsShips.ini` | + 49 (alle Schiffstexturen) | + 68 MB |
+| voll | + `SurfaceMapsBases.ini` | + 2621 (alle Basistexturen) | + 0,88 GB |
+
+Die Engine liest nur die INIs des gewählten Profils und lädt eine Bibliothek erst, wenn eine passende Diffuse-Textur gebunden wird. Die Textur-zu-Bibliothek-Zuordnung steht in den INIs.
 
 ## 2. Was die Engine heute schon kann (Client, geprüft im Quelltext)
 
