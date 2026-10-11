@@ -97,12 +97,12 @@ Ziel: Die INIs müssen zur Auflösung der referenzierten Textur passen (256 gege
 
 Besondere Kandidaten: `solar/rings`, `solar/nebula`, `solar/planets/*`, `interface/*`, `fx/*` (Partikel), Schriften.
 
-### Phase 6: Abschluss
+### Phase 6: Abschluss (erledigt)
 
-- `README.md`, `WISSEN.md`, `classes.md` aktualisieren.
-- `SDK/changelog.md`: neuer Abschnitt „HD-Pack“ mit Bereichen und Zahlen.
-- Probelauf `build_nap.py --dry-run`: darf nichts Ungewolltes melden.
-- Commits pro Phase, danach Push durch dich.
+- `README.md`, `WISSEN.md`, `classes.md`, `missing.md` sind auf den Stand nach dem HD-Pack und der Hochskalierung gebracht (Abschnitt 13 und 14 in `WISSEN.md`).
+- `SDK/changelog.md` enthält die Abschnitte zu den HD-INIs und zur Textur-Hochskalierung.
+- Ein Probelauf von `build_nap.py --dry-run` braucht die ISO und ist hier nicht gelaufen; die Schutzlisten werden geladen (1946 Einträge).
+- Commits pro Phase; Push durch dich.
 
 ## 5. Risiken
 

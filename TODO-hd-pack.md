@@ -1,5 +1,7 @@
 # TODO: HD-Pack im Spiel prüfen
 
+Stand: Phasen 0 bis 6 abgeschlossen. Offen ist nur die Prüfung im Spiel.
+
 Phase 2 (Daten nach `NAP/`) und Phase 3 (INIs nach `SDK/`) des Plans `PLAN-hd-pack.md` sind ausgeführt.
 
 ## Was übernommen wurde
@@ -24,4 +26,4 @@ Phase 2 (Daten nach `NAP/`) und Phase 3 (INIs nach `SDK/`) des Plans `PLAN-hd-pa
   - Alle 825 Texturnamen in Materialien lösen sich auf (Bibliotheken, eingebettete Texturen, `.tga`).
   - Offen: `solar/asteroids/roids.txm` und `interface/hud/hudtarget.txm` fehlen (siehe `missing.md`), deshalb sind die Formen in `solar/asteroids/Shapes.ini` und `interface/hud/HudTarget.ini` ohne Textur.
 - [ ] Im Spiel prüfen, ob die Engine 2048×2048-Texturen (DXT5) verträgt, besonders bei Planeten.
-- [ ] 42 Verweise lösen sich nicht auf (`missing.md`).
+- [x] Verweise geprüft (`tools/check_refs.py`): 32 Ziele fehlen wirklich, 10 Verweise ohne Ordner finden ihre Datei (`missing.md`).

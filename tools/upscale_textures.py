@@ -37,9 +37,10 @@ def model_for(container, tex):
     return 'pbrify'
 
 
-def overrides():
+def overrides(redo=False):
+    """Geschützte Container: HD-Pack und bereits hochskalierte (bei redo nur HD-Pack)."""
     out = set()
-    for fn in ('hd_overrides.txt', 'upscaled_containers.txt'):
+    for fn in ('hd_overrides.txt',) if redo else ('hd_overrides.txt', 'upscaled_containers.txt'):
         p = os.path.join(REPO, 'tools', fn)
         if os.path.exists(p):
             out |= {l.strip().lower() for l in open(p, encoding='utf-8') if l.strip() and not l.startswith('#')}
@@ -288,10 +289,12 @@ def main():
     ap.add_argument('--out', help='Ausgabeverzeichnis (Pfadstruktur ab NAP bleibt erhalten)')
     ap.add_argument('--apply', action='store_true', help='Container im NAP direkt ersetzen')
     ap.add_argument('--dry-run', action='store_true')
+    ap.add_argument('--redo', action='store_true',
+                    help='auch Container aus upscaled_containers.txt bearbeiten (nach frischem Aufbau von NAP/)')
     a = ap.parse_args()
     if not (a.out or a.apply or a.dry_run):
         ap.error('--out, --apply oder --dry-run angeben')
-    ov = overrides()
+    ov = overrides(a.redo)
     up = None if a.dry_run else Upscaler()
     stats = {'tex': 0, 'uniq': 0}
     for p in a.containers:

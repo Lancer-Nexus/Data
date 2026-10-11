@@ -1,25 +1,17 @@
 # Fehlende Dateien
 
-Dateien, auf die die INIs im SDK verweisen, die aber nicht in `NAP/` liegen. Geprüft wurden alle Asset- und INI-Verweise in `SDK/**/*.ini` (ohne `exe/`) gegen den virtuellen Root von `NAP/` (Groß-/Kleinschreibung ignoriert).
+Dateien, auf die die INIs im SDK verweisen, die aber nicht in `NAP/` liegen. Erzeugt von `tools/check_refs.py` (alle Datei-Verweise in `SDK/**/*.ini` ohne `exe/`, 19712 Verweise, Groß-/Kleinschreibung ignoriert).
 
-**48 fehlende Ziele**, Fundstellen: **48**.
-
-Hinweis: Verweise ohne Ordner (z. B. `ocean_blue.cmp` in `PetalDB.ini`) sind in der Prüfung als fehlend markiert, die Dateien liegen aber unter `bases/generic/`. Diese Zeilen sind unten gekennzeichnet.
+**32 fehlende Ziele**, dazu 10 Verweise ohne Ordner, deren Datei an anderer Stelle liegt.
 
 ## Liste
 
 | Ziel | Verwendet in | Bemerkung |
 |---|---|---|
-| `dx_s059x_0101_blix.wav` | `audio/StorySounds.ini` |  |
+| `dx_s059x_0101_blix.wav` | `audio/StorySounds.ini` | liegt unter audio/dialogue/blix/, Verweis ohne Ordner |
 | `exit.tga` | `interface/Intro.ini` |  |
-| `interface/baseside/elite.3db` | `interface/baseside/Navbar.ini` |  |
-| `interface/baseside/exit.3db` | `interface/baseside/Navbar.ini` |  |
-| `interface/baseside/fighter.3db` | `interface/baseside/Navbar.ini` |  |
-| `interface/baseside/frieghter.3db` | `interface/baseside/Navbar.ini` |  |
 | `interface/baseside/unknown.3db` | `interface/baseside/Navbar.ini` |  |
-| `interface/hud/hud_commsicon.3db` | `interface/Hud.ini` |  |
 | `interface/hud/hudtarget.txm` | `interface/hud/HudTarget.ini` |  |
-| `interface/intro/objects/multi_blackdragonmale.3db` | `characters/NewCharacter.ini` |  |
 | `missions/encounters/spacepop/scenes/area_homedefender_defenders-df.ini` | `universe/systems/intro/Intro.ini` | INI fehlt auf der CD |
 | `missions/encounters/spacepop/scenes/area_patrol_fighters-f.ini` | `universe/systems/intro/Intro.ini` | INI fehlt auf der CD |
 | `missions/encounters/spacepop/scenes/area_scavenger_fighters-f.ini` | `universe/systems/intro/Intro.ini` | INI fehlt auf der CD |
@@ -57,12 +49,15 @@ Hinweis: Verweise ohne Ordner (z. B. `ocean_blue.cmp` in `PetalDB.ini`) sind in 
 | `solar/dockable/tlr_tube_a.cmp` | `Concave.ini` |  |
 | `solar/dockable/trading_depot.cmp` | `Concave.ini` |  |
 | `solar/dockable/trading_outpost_lod_col.cmp` | `Concave.ini` | Kollisionsmodell fehlt auf der CD |
-| `startupscreen.tga` | `interface/Intro.ini` |  |
+| `startupscreen.tga` | `interface/Intro.ini` | liegt unter interface/intro/images/, Verweis ohne Ordner |
 
 ## Hinweise
 
-- Kollisionsmodelle `*_col.cmp` der Schiffe fehlen auf der CD. Die Modelle selbst liegen vor.
-- Die Verweise auf `interface/baseside/*.3db`, `hud_commsicon.3db`, `hudtarget.txm`, `tlr_*`, `roids.txm` und `multi_blackdragonmale.3db` haben keinen eindeutigen Ersatz.
+- Kollisionsmodelle `*_col.cmp` der Schiffe fehlen auf der CD und im HD-Pack. Die Modelle selbst liegen vor.
+- Die HD-Pack-Daten haben `interface/baseside/{elite,exit,fighter,frieghter}.3db`, `hud_commsicon.3db` und `multi_blackdragonmale.3db` geliefert. Seitdem fehlen diese nicht mehr.
+- Ohne eindeutigen Ersatz bleiben `interface/baseside/unknown.3db`, `hudtarget.txm`, `tlr_a.3db`, `tlr_d.3db`, `tlr_tube_a.cmp`, `trading_depot.cmp`, `roids.txm`, `exit.tga` und `openingscreen.tga`.
+- Die 17 `spacepop`-INIs in `universe/systems/intro/Intro.ini` fehlen auf der CD; die Intro-Szene lädt auch ohne sie.
+- Ohne Ordner verwiesene Dateien (`ocean_*`, `dx_s059x_0101_blix.wav`, `startupscreen.tga`) liegen vor, die Engine sucht sie selbst.
 
 ## Recherche (Verbleib der Dateien)
 

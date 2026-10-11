@@ -1,6 +1,6 @@
 # Lancer Nexus Data
 
-Datenrepository des [Lancer Nexus](https://github.com/Lancer-Nexus)-Projekts: Spieldaten für Freelancer (Stand der Original-CD 1.0 und des Patches 1.3, mit Korrekturen unter 1.3.1).
+Datenrepository des [Lancer Nexus](https://github.com/Lancer-Nexus)-Projekts: Spieldaten für Freelancer: Original-CD 1.0, Patch 1.3, Korrekturen 1.3.1 und das HD-Pack (FLHDE). Texturen, die das HD-Pack nicht anfasst, sind per KI um Faktor 4 hochskaliert.
 
 ## Inhalt
 
@@ -12,7 +12,7 @@ Datenrepository des [Lancer Nexus](https://github.com/Lancer-Nexus)-Projekts: Sp
 | `NAP/` | Spieldaten (Modelle, Töne, Texturen, Skripte, Videos …) als Klassencontainer | nur die Klassenordner (Inhalt ignoriert) |
 | `classes.md` | Einteilung der Spieldaten in Klassen und Regeln | ja |
 | `missing.md` | Dateien, auf die die INIs verweisen, die aber auf der CD fehlen | ja |
-| `tools/` | Skripte zum Aufbau von `NAP/` aus der CD | ja |
+| `tools/` | Skripte: `NAP/` aus der CD aufbauen, HD-Pack übernehmen, Texturen prüfen und hochskalieren | ja |
 | `BASE/`, `CLIENT/` | leer, für später vorgesehen | – |
 
 Branches: `main` enthält den ursprünglichen Upload. Die Arbeit liegt auf `sdk-1.3.1`.
@@ -36,9 +36,9 @@ Alle Änderungen gegenüber der CD sind in `SDK/changelog.md` dokumentiert.
 NAP/Sounds/audio/…/x.wav   →   im Spiel: audio/…/x.wav
 ```
 
-Die Klassen sind in [`classes.md`](classes.md) beschrieben: `Models`, `Sounds`, `Script`, `UI`, `Effects`, `Material`, `Video`, `Mission`, `System`, `World`.
+Die Klassen sind in [`classes.md`](classes.md) beschrieben: `Models`, `Sounds`, `Script`, `UI`, `Effects`, `Material`, `Video`, `Equipment`, `Mission`, `System`, `World`.
 
-Von `NAP/` werden nur die Klassenordner ins Repo übernommen (mit einer leeren `.gitkeep`). Die Dateien darin stammen aus der Original-CD, sind groß (rund 855 MB) und bleiben per `.gitignore` außerhalb.
+Von `NAP/` werden nur die Klassenordner ins Repo übernommen (mit einer leeren `.gitkeep`). Die Dateien darin stammen aus der Original-CD und dem HD-Pack, sind groß (rund 5,5 GB) und bleiben per `.gitignore` außerhalb.
 
 ## Anleitung: NAP aus der CD aufbauen
 
@@ -91,7 +91,7 @@ Von `NAP/` werden nur die Klassenordner ins Repo übernommen (mit einer leeren `
 
 Das Skript ist mehrfach ausführbar. Gleiche Dateien bleiben unberührt, geänderte werden überschrieben. Ohne `--no-prune` werden Dateien entfernt, die nicht mehr aus der Quelle stammen. Die beiden Kopien von `mission1 readme.doc` sind bewusst ausgeschlossen (siehe `EXCLUDE` in `build_nap.py`).
 
-HD-Dateien, die in `NAP/` ersetzt wurden, stehen in `tools/hd_overrides.txt`. `build_nap.py` überschreibt und entfernt diese Dateien nicht.
+Zwei Listen schützen veränderte Dateien: `tools/hd_overrides.txt` (1603 Dateien aus dem HD-Pack) und `tools/upscaled_containers.txt` (343 per KI hochskalierte Container). `build_nap.py` überschreibt und entfernt sie nicht. Nach einem frischen Aufbau aus der CD müssen daher das HD-Pack (`import_hd_pack.py --apply`) und die Hochskalierung (`python3 tools/upscale_textures.py <Container> --apply --redo`, Containerliste aus `upscaled_containers.txt`) erneut ausgeführt werden. Danach `scale_shape_inis.py` und `check_textures.py`.
 
 ### Nur die INIs aktualisieren
 
@@ -113,6 +113,9 @@ Die Klasse einer INI richtet sich nach ihrem Hauptordner (`audio` → `Sounds`, 
 | `utf_textures.py` | Maße und Format der Texturen in UTF-Dateien (`.txm`, `.mat`, `.3db` …) lesen | `python3 tools/utf_textures.py NAP/Material/solar/rings/rings.txm` |
 | `check_textures.py` | Texturmaße und Verweise prüfen, schreibt `textur-pruefung.md` | `python3 tools/check_textures.py` |
 | `extract_textures.py` | Originaltexturen als PNG herauslösen (für KI-Hochskalierung), mit `manifest.csv` | `python3 tools/extract_textures.py --out <Ordner>` (braucht Pillow) |
+| `check_refs.py` | Alle Datei-Verweise der INIs gegen `NAP/` prüfen, schreibt `missing.md` | `python3 tools/check_refs.py` |
+| `scale_shape_inis.py` | `[Shape]`-Koordinaten in INIs an hochskalierte Texturen anpassen | `python3 tools/scale_shape_inis.py` (`--dry-run`) |
+| `upscale_textures_test.py` | Modellvergleich an 42 zufälligen Texturen (Kontaktbögen) | `python3 tools/upscale_textures_test.py` |
 | `utf_write.py` | UTF-Container laden, ändern, neu schreiben (Bibliothek, `--selftest`) | `python3 tools/utf_write.py --selftest <datei>` |
 | `upscale_textures.py` | Texturen eines Containers per KI um Faktor 4 hochskalieren, selbes Format zurückschreiben | `python3 tools/upscale_textures.py <container> --out <Ordner>` (braucht torch, spandrel, etcpak) |
 | `verify_upscaled.py` | Hochskalierten Container gegen das Original prüfen (Größe, PSNR) | `python3 tools/verify_upscaled.py <original> <neu>` |
@@ -132,10 +135,12 @@ Der Bericht gilt für den jeweiligen Stand. Nach Änderungen an Texturen oder IN
 
 ## Bekannte Grenzen
 
-- **Fehlende Dateien:** 32 Dateien, auf die die INIs verweisen, sind auf der CD nicht vorhanden (vor allem Kollisionsmodelle `*_col.cmp` und einige Sprachdateien). Sie stehen in `missing.md`.
+- **Fehlende Dateien:** 32 Ziele, auf die die INIs verweisen, fehlen in `NAP/` (Kollisionsmodelle `*_col.cmp`, 17 `spacepop`-INIs, einige Modelle und Grafiken). Sie stehen in `missing.md`; `tools/check_refs.py` erzeugt die Liste neu.
+- **Hochskalierte Texturen:** Nicht im Spiel geprüft. Sicherung der Originale und Zurückholen: `TODO-texturen-upscale.md`, Abschnitt 9. Vollbildgrafiken (`startupscreen.tga` u. a.) sind nicht hochskaliert.
+- **HD-Pack und Plugins:** Die HD-Plugin-DLLs (`storyfactions`, `Territory`, `ranks`, `HudShift`) gehören nicht zu den Daten; ihre INIs sind wirkungslos, solange die DLLs fehlen (`TODO-plugins.md`).
 - **Programmdateien:** `exe/` und `dlls/` der CD sind nicht Teil von `NAP/`. Sie liegen nur im lokalen Ordner `Freelancer-Daten` und werden von den Skripten nicht verarbeitet.
 - **Groß-/Kleinschreibung:** Alles ist klein geschrieben. Dateien, die intern (in `.thn`, `.page` oder `.3db`) mit anderer Schreibweise referenziert werden, werden nicht geprüft.
-- **Version:** Die CD enthält Version 1.0. Die Korrekturen aus 1.3 und 1.3.1 kommen aus `SDK/`, nicht aus der CD.
+- **Version:** Die CD enthält Version 1.0. Die Korrekturen aus 1.3 und 1.3.1 kommen aus `SDK/`, nicht aus der CD. Die Werte des HD-Packs haben bei Abweichungen Vorrang.
 
 ## Rechtliches
 
