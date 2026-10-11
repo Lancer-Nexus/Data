@@ -20,6 +20,28 @@ Korrekturen gegenüber 1.3. Alle Änderungen betreffen Formatfehler, keine Spiel
 | `initialworld.ini` | Geschützte Leerzeichen (`0xA0`) in 53 Zeilen durch normale Leerzeichen ersetzt; Datei ist jetzt reines ASCII/UTF-8 |
 | `Universe/Systems/Li02/Bases/Rooms/Li02_01_cityscape.ini` | Tippfehler `:gap` → `gap` in `[FlashlightSet]` (Wert wurde nie gelesen) |
 
+### Dateinamen mit Leerzeichen, Korrekturen an Verweisen
+
+Dateien mit Leerzeichen im Namen wurden auf Unterstriche umgestellt. Die Verweise in den INIs wurden angepasst. Die Dateien sind auf der CD vorhanden, nur die Namen weichen ab.
+
+| Alter Name (CD) | Neuer Name | Verweise |
+|---|---|---|
+| `audio/sounds/fx/debri explo 1.wav` … `4.wav` | `debri_explo_1.wav` … `_4.wav` | `Sounds.ini` (4 Blöcke) |
+| `audio/sounds/fx/med explo 1.wav` … `4.wav` | `med_explo_1.wav` … `_4.wav` | `Sounds.ini`, `GfSounds.ini` |
+| `audio/sounds/fx/equip blowing off.wav` | `equip_blowing_off.wav` | `Sounds.ini` |
+| `audio/sounds/ships/exhaust vent.wav` | `exhaust_vent.wav` | `Sounds.ini` |
+| `audio/sounds/ui/incoming trans screen up.wav` | `incoming_trans_screen_up.wav` | `InterfaceSounds.ini` |
+| `audio/sounds/ui/sub target acquired.wav` | `sub_target_acquired.wav` | `InterfaceSounds.ini` (2) |
+| `bases/generic/cv_dig_site test.cmp` | `cv_dig_site_test.cmp` | keine |
+
+Korrekturen in `Concave.ini` (Quelle für die Namen: Discovery-Daten, [DiscoveryGC/Navmap](https://github.com/DiscoveryGC/Navmap)):
+
+| Zeile | Vorher | Nachher |
+|---|---|---|
+| 6 | `solar\dockable\manufacturing_platform.cmp` | `solar\dockable\manufacturing_platform_lod.cmp` |
+| 14 | `solar\dockable\rh_battleship.cmp` | `ships\rheinland\rh_battleship\rh_battleship.cmp` |
+| 17 | `solar\dockable\jump_gate.cmp` | `solar\dockable\jump_gatel.cmp` |
+
 ### Angleichung an die Original-CD
 
 Abweichungen zwischen dem 1.3-SDK und den BINI-Daten der CD, die im 1.3-Changelog nicht enthalten waren (kosmetisch, ohne Wirkung):

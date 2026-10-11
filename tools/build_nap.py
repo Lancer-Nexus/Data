@@ -2,8 +2,8 @@
 """Baut NAP/ aus der Freelancer-CD neu auf.
 
 Quelle: die ISO-Datei oder ein Verzeichnis mit CAB1.CAB und CAB2.CAB (z. B. die gemountete CD).
-Ergebnis: alle Nicht-INI-Daten aus den `data`-Ordnern beider CABs, klein geschrieben und
-in Klassencontainern NAP/<Klasse>/<Pfad> abgelegt (siehe classes.md). Die INIs kommen
+Ergebnis: alle Nicht-INI-Daten aus den `data`-Ordnern beider CABs, klein geschrieben, Leerzeichen
+im Dateinamen durch _ ersetzt, und in Klassencontainern NAP/<Klasse>/<Pfad> abgelegt (siehe classes.md). Die INIs kommen
 anschließend über tools/sync_inis_to_nap.py aus SDK/ dazu.
 
 Mehrfach ausführbar: vorhandene Dateien mit gleichem Inhalt bleiben unberührt, geänderte
@@ -127,6 +127,13 @@ def collect(extract_root):
     return items
 
 
+def rename(rel):
+    """Leerzeichen im Dateinamen werden zu Unterstrichen (z. B. 'debri explo 1.wav' -> 'debri_explo_1.wav')."""
+    head, _, base = rel.rpartition('/')
+    base = base.replace(' ', '_')
+    return f'{head}/{base}' if head else base
+
+
 def classify(rel):
     ext = os.path.splitext(rel)[1].lower()
     if ext in EXT_CLASS:
@@ -165,7 +172,11 @@ def main():
         for rel, src in items.items():
             if rel in EXCLUDE:
                 continue
-            target[f'{classify(rel)}/{rel}'] = src
+            out = rename(rel)
+            key = f'{classify(rel)}/{out}'
+            if key in target:
+                sys.exit(f'Kollision nach Umbenennung: {key}')
+            target[key] = src
         print(f'Datendateien aus der Quelle: {len(items)}, ausgeschlossen: {len(items) - len(target)}')
 
         # Bestehende Nicht-INI-Dateien in den Klassen
@@ -177,7 +188,7 @@ def main():
                     continue
                 for r, _, fs in os.walk(cdir):
                     for f in fs:
-                        if f.lower().endswith('.ini'):
+                        if f.lower().endswith('.ini') or f == '.gitkeep':
                             continue
                         key = os.path.relpath(os.path.join(r, f), nap).replace(os.sep, '/')
                         existing[key] = os.path.join(r, f)

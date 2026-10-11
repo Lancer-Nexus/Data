@@ -72,7 +72,7 @@ Von `NAP/` werden nur die Klassenordner ins Repo übernommen (mit einer leeren `
 
    Das Skript
    - entpackt die `data`-Ordner beider CABs (ohne INIs) in einen temporären Ordner,
-   - schreibt die Dateien klein geschrieben nach `NAP/<Klasse>/<Pfad>`,
+   - schreibt die Dateien klein geschrieben nach `NAP/<Klasse>/<Pfad>`; Leerzeichen im Dateinamen werden zu `_` (z. B. `debri explo 1.wav` → `debri_explo_1.wav`),
    - übernimmt danach die INIs aus `SDK/` über `tools/sync_inis_to_nap.py`,
    - räumt den temporären Ordner wieder auf.
 
