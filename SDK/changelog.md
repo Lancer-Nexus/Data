@@ -1550,6 +1550,25 @@ Prüfung gegen CD und SDK:
 
 </details>
 
+### HD-Pack: INIs
+
+Alle 1254 INIs des HD-Packs (`DATA/` und `EXE/freelancer.ini`) wurden normalisiert mit der SDK verglichen und übernommen (`tools/import_hd_inis.py`). Die HD-Werte gelten.
+
+| Ergebnis | Dateien |
+|---|---:|
+| identisch (nach Normalisierung) | 990 |
+| geändert und übernommen | 254 |
+| neu | 10 |
+| nur in der SDK, nicht im HD-Pack | 9 |
+
+Geänderte Dateien nach Bereich: `universe` 103, `missions` 87, `audio` 21, `equipment` 9, `fx` 8, `interface` 8, Wurzel 5, `ships` 4, `randommissions` 3, `cockpits` 2, `fonts` 2, `characters` 1.
+
+Neu: `Storyfactions.ini`, `fx/EffectsExplosionNew.ini`, `interface/HudShift.ini`, `missions/Ranks.ini`, `missions/m13/M13OpenspNormal.ini`, `missions/m13/M13OpenspPirate.ini`, `ships/LoadoutsRegen.ini`, `universe/Territory.ini`, `universe/systems/intro/bases/Intro4Base.ini`, `universe/systems/intro/bases/rooms/Intro4Waterplanet.ini`.
+
+Normalisierung beim Übernehmen: Dateinamen der SDK bleiben (PascalCase), Verweise auf INIs zeigen auf diese Namen, Verweise auf Daten sind klein geschrieben, Planetenpfade flach, `fl_intro_en_hd.wmv` → `fl_intro.wmv`. Korrekturen der Version 1.3.1 (Li02-Cityscape, `Concave.ini`, Bar-Musik) bleiben erhalten. In `SolarArch.ini` wurden zusätzlich 180 Verweise klein geschrieben.
+
+Nach dem Import fehlen 42 Ziele (vorher 48), siehe `missing.md`.
+
 ### Diffs 1.3 → 1.3.1
 
 #### `initialworld.ini`
