@@ -14,9 +14,11 @@ Ziel: Zu Texturen lassen sich zusätzliche Normal Maps und Cube Maps (Umgebungss
 
 Die Normal Maps sind **aus der Helligkeit der Textur abgeleitet** (Höhenkarte → Sobel), keine echte Geometrie. Sie geben Rillen, Fugen und Nieten Tiefe, falsche Schatten im Bild können als Relief erscheinen. Die Cube Maps sind **prozedural** (Sterne, Sonne, Nebel), keine Abbildung echter Systeme.
 
+Technische Beschreibung der Dateien, der INI-Syntax und der Engine-Anbindung mit Aufgabenliste für den Client: `Client/docs/surface-maps.md`.
+
 ## 2. Was die Engine heute schon kann (Client, geprüft im Quelltext)
 
-- `BasicMaterial` kennt `Nm_name` (Normal Map), `Mt_name`, `Rt_name`, `Bt_name` im `.mat`. Der PBR-Pfad wertet sie aus.
+- `BasicMaterial` kennt `Nm_name` (Normal Map), `Mt_name`, `Rt_name`, `Bt_name` im `.mat`. Der PBR-Pfad wertet sie aus; der Shader liest nur die Kanäle R und G und braucht eine dritte UV-Menge/Tangenten (Original-Modelle haben diese vermutlich nicht, nicht geprüft).
 - Cube Maps liegen als `.mat` mit einem Knoten `CUBE` vor und werden über `material_library` und `envmap_material` in `ships/Shiparch.ini` und `solar/SolarArch.ini` gebunden (z. B. `envmap_material = envmapbasic`). Ein neuer Cube braucht also **keine neue INI-Syntax**, nur eine Zeile dort.
 - Neu ist nur: Normal Maps **per INI** statt im binären `.mat`. Dafür muss die Engine `SurfaceMaps.ini` einlesen und `Nm_name` bei der Materialauflösung ergänzen.
 
