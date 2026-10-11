@@ -7,7 +7,7 @@ Ziel: Zu Texturen lassen sich zusätzliche Normal Maps und Cube Maps (Umgebungss
 | Teil | Ergebnis |
 |---|---|
 | Generator | `tools/make_surface_maps.py` (Pillow, numpy), reproduzierbar aus dem NAP |
-| Normal Maps | 16 Karten in `NAP/Material/fx/normalmaps.txm` (je 1024 × 1024, DDS 24 Bit mit Mip-Kette, 67,1 MB): 7 Schiffe (Liberty, Kusari, Bretonia), 2 Stationen/Basen, 1 Asteroid, 6 Planeten-Detailkarten (kachelnd, Eis, Lava, Fels, Krater, Boden) |
+| Normal Maps | 55 Karten in vier Bibliotheken `NAP/Material/fx/normalmaps_<ships|bases|solar|planets>.txm` (22 / 12 / 6 / 15 Karten, zusammen 77 MB). Je 1024 × 1024, **BC5** (ATI2N, nur X und Y) mit Mips bis 4 × 4. Schiffe: Liberty, Kusari, Bretonia, Piraten, Zivil, Order, Nutzschiffe. Basen: Bretonia/Pygar und Liberty. Solar: Asteroiden, Geschütztürme, Torpedo, Nomaden. Planeten: 8 kachelnde Detailkarten und 7 Oberflächenkarten |
 | Cube Maps | `NAP/Material/fx/envcube_space.mat`, `envcube_sun.mat`, `envcube_nebula.mat` (je 256 px, DDS A8R8G8B8 mit Mips, 2,1 MB), Aufbau wie `envmapbasic.mat` (Knoten `CUBE`) |
 | INI | `SDK/fx/SurfaceMaps.ini` mit `[Texture]`, `[NormalMap]`, `[CubeMap]`, vom Generator erzeugt |
 | Bewertung | `surface-maps-bewertung.md` (Kennzahlen je Karte, vorher/nachher) |
@@ -36,7 +36,13 @@ Technische Beschreibung der Dateien, der INI-Syntax und der Engine-Anbindung mit
 **Sichtprüfung der Normalen und einer Beleuchtung von links oben:**
 - Rumpf-, Gitter- und Paneelkarten: Fugen, Nieten und Lamellen lesbar, nach der Anpassung dezent.
 - Kachelnde Planetenkarten: gleichmäßiges Relief ohne sichtbare Naht.
-- **Ausgeschieden:** `asteroid_belt_04` (ein Billboard mit verstreuten Brocken) und die Stadtkulisse `background_city` (Bild mit beleuchteten Fenstern, daraus entstehen Punkte als Relief). Beide sind keine Oberflächen. Ersatz: `asteroid_rock_4`.
+- **Ausgeschieden (erste Runde):** `asteroid_belt_04` (ein Billboard mit verstreuten Brocken) und die Stadtkulisse `background_city` (Bild mit beleuchteten Fenstern, daraus entstehen Punkte als Relief). Beide sind keine Oberflächen. Ersatz: `asteroid_rock_4`.
+
+**Zweite Runde (55 Karten, BC5):** Mit denselben Einstellungen (Ziel p95 28°, p99 höchstens 60°) kamen 39 Karten dazu: 15 Schiffe, 9 Basen, 5 Solar/Ausrüstung, 10 Planeten. Alle 55 erfüllen die Kriterien (steil höchstens 0,4 %, p95 zwischen 16° und 37°, Körnung 0,26 bis 0,41). Sieben Karten liegen an der Untergrenze der Stärke 0,5 (`li_engine_grill`, `ku_k_panel01`, `br_cap_dtl1`, `br_cap_dtl2`, `cv_g_fighter01`, `ut_liner1`, `eq_turret_wins`, sehr kontrastreiche Texturen; bei `br_cap_dtl1` und `br_cap_dtl2` bleibt p95 mit 31° und 37° über dem Ziel), drei an der Obergrenze 6,0 (`ast_rock_4` mit p95 16°, `pbody_desert01` mit 21°, `planet_ocean` mit 28°; sehr flache Texturen).
+
+**Format:** Von 24-Bit-RGB (230 MB) auf **BC5** umgestellt (77 MB). Die Engine liest `ATI2N` als `Rgtc2` (`DDS.cs`), der Shader nutzt nur X und Y und rekonstruiert Z. Rückprüfung: Dekodiert stimmen die Kanäle bis auf einen mittleren Fehler von unter 1/255; Z-Mittel 0,98.
+
+**Planetenoberflächen (`pbody_*`):** Das sind keine kachelnden Detailkarten, sondern die Farbkarten der Planeten selbst. Die Normal Map daraus zeigt Relief aus Helligkeitsunterschieden (Krater, Gebirge, aber auch aufgemalte Farbwechsel). Gut für Gesteins- und Eiswelten, ungeeignet für Wasser- und Gaswelten (nicht erzeugt).
 
 **Grenzen der Bewertung:**
 - Die Zielwerte sind unsere Festlegung, nicht aus der Engine oder aus Messungen im Spiel abgeleitet. Die Kennzahlen belegen nur, dass die Karten in dieser Spanne liegen.

@@ -12,16 +12,12 @@
    "strength": 0.62,
    "smooth": 1
   },
-  "bw_dig_site_16": {
-   "strength": 0.73,
+  "li_freighter1": {
+   "strength": 0.56,
    "smooth": 1
   },
-  "bw_dig_site_18": {
-   "strength": 1.09,
-   "smooth": 1
-  },
-  "li_ceiling_gen01": {
-   "strength": 2.3,
+  "li_fighter": {
+   "strength": 1.15,
    "smooth": 1
   },
   "ku_k_panel01": {
@@ -40,16 +36,128 @@
    "strength": 1.16,
    "smooth": 1
   },
+  "br_player02": {
+   "strength": 0.96,
+   "smooth": 1
+  },
+  "br_player03": {
+   "strength": 0.68,
+   "smooth": 1
+  },
+  "br_cap_dtl1": {
+   "strength": 0.5,
+   "smooth": 1
+  },
+  "br_cap_dtl2": {
+   "strength": 0.5,
+   "smooth": 1
+  },
+  "co_p_fighter01": {
+   "strength": 0.75,
+   "smooth": 1
+  },
+  "co_p_fighter02": {
+   "strength": 0.84,
+   "smooth": 1
+  },
+  "cv_g_fighter01": {
+   "strength": 0.5,
+   "smooth": 1
+  },
+  "cv_g_fighter02": {
+   "strength": 0.8,
+   "smooth": 1
+  },
+  "or_equip_mstr": {
+   "strength": 0.94,
+   "smooth": 1
+  },
+  "or_liberty1": {
+   "strength": 0.63,
+   "smooth": 1
+  },
+  "or_weaponplate2": {
+   "strength": 0.59,
+   "smooth": 1
+  },
+  "ut_panels01": {
+   "strength": 0.51,
+   "smooth": 1
+  },
+  "ut_liner1": {
+   "strength": 0.5,
+   "smooth": 1
+  },
+  "bw_dig_site_16": {
+   "strength": 0.73,
+   "smooth": 1
+  },
+  "bw_dig_site_18": {
+   "strength": 1.09,
+   "smooth": 1
+  },
+  "bw_dig_site_20": {
+   "strength": 4.48,
+   "smooth": 1
+  },
+  "li_ceiling_gen01": {
+   "strength": 2.3,
+   "smooth": 1
+  },
+  "bw_pygar_door": {
+   "strength": 2.39,
+   "smooth": 1
+  },
+  "bw_pygar_generator": {
+   "strength": 0.95,
+   "smooth": 1
+  },
+  "bw_pygar_fan": {
+   "strength": 3.8,
+   "smooth": 1
+  },
+  "bw_concrete_base": {
+   "strength": 4.26,
+   "smooth": 1
+  },
+  "bw_catwalk": {
+   "strength": 0.88,
+   "smooth": 1
+  },
+  "bw_grate": {
+   "strength": 0.85,
+   "smooth": 1
+  },
+  "bw_landing_pad": {
+   "strength": 0.51,
+   "smooth": 1
+  },
+  "bw_tunnel_panel": {
+   "strength": 2.95,
+   "smooth": 1
+  },
   "ast_rock_4": {
    "strength": 6.0,
    "smooth": 1
   },
-  "planet_ice": {
-   "strength": 2.8,
+  "ast_rock_r04": {
+   "strength": 1.9,
    "smooth": 1
   },
-  "planet_lava": {
-   "strength": 1.28,
+  "eq_turret_mturret": {
+   "strength": 1.26,
+   "smooth": 1
+  },
+  "eq_turret_wins": {
+   "strength": 0.5,
+   "smooth": 1
+  },
+  "eq_torpedo": {
+   "strength": 0.82,
+   "smooth": 1
+  },
+  "no_dtl2": {
+   "strength": 0.87,
    "smooth": 1
   },
   "planet_rock01": {
@@ -60,8 +168,56 @@
    "strength": 1.43,
    "smooth": 1
   },
+  "planet_crater_mid": {
+   "strength": 1.9,
+   "smooth": 1
+  },
+  "planet_crater_low": {
+   "strength": 2.86,
+   "smooth": 1
+  },
   "planet_ground01": {
    "strength": 0.93,
+   "smooth": 1
+  },
+  "planet_ice": {
+   "strength": 2.8,
+   "smooth": 1
+  },
+  "planet_lava": {
+   "strength": 1.28,
+   "smooth": 1
+  },
+  "planet_ocean": {
+   "strength": 6.0,
+   "smooth": 1
+  },
+  "pbody_mercury01": {
+   "strength": 1.02,
+   "smooth": 1
+  },
+  "pbody_cratermoon": {
+   "strength": 1.35,
+   "smooth": 1
+  },
+  "pbody_desert01": {
+   "strength": 6.0,
+   "smooth": 1
+  },
+  "pbody_desert_rock": {
+   "strength": 4.47,
+   "smooth": 1
+  },
+  "pbody_icegrey01": {
+   "strength": 1.47,
+   "smooth": 1
+  },
+  "pbody_icewhiteblue": {
+   "strength": 1.56,
+   "smooth": 1
+  },
+  "pbody_indust01": {
+   "strength": 0.97,
    "smooth": 1
   }
  },

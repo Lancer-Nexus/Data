@@ -44,7 +44,7 @@ Die INIs des HD-Packs (`FLHDE/freelancer-hd-edition`, `DATA/`) wurden mit `tools
 
 ### Zusatzkarten: `fx/SurfaceMaps.ini`
 
-Neue Datei mit `[Texture]`, `[NormalMap]` (9 Normal Maps zu Diffuse-Texturen) und `[CubeMap]` (3 Umgebungskarten). Daten: `Material/fx/normalmaps.txm`, `envcube_space.mat`, `envcube_sun.mat`, `envcube_nebula.mat`. Im Original nicht vorhanden; Auswertung ist Aufgabe der Engine (`TODO-surface-maps.md`).
+Neue Datei mit `[Texture]` (vier Bibliotheken), `[NormalMap]` (55 Normal Maps zu Diffuse-Texturen, BC5) und `[CubeMap]` (3 Umgebungskarten). Daten: `Material/fx/normalmaps_ships.txm`, `normalmaps_bases.txm`, `normalmaps_solar.txm`, `normalmaps_planets.txm`, `envcube_space.mat`, `envcube_sun.mat`, `envcube_nebula.mat`. Im Original nicht vorhanden; Auswertung ist Aufgabe der Engine (`TODO-surface-maps.md`).
 
 ### Audio: WAV → Ogg Vorbis / FLAC
 

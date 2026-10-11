@@ -2,9 +2,9 @@
 """Erzeugt einige Normal Maps und Cube Maps als Zusatzkarten für Texturen.
 
 Normal Maps: aus der Helligkeit einer vorhandenen Textur abgeleitet (Höhenkarte -> Sobel,
-tangentiale Normalen, +Y oben, Z nach außen), kachelbar (wrap), unkomprimiertes DDS 24 Bit mit
-Mip-Kette (Normalen beim Verkleinern renormiert). Eine Bibliothek: NAP/Material/fx/normalmaps.txm,
-je Karte ein Texturknoten `nm_<name>` mit einem Blatt `MIPS`.
+tangentiale Normalen, +Y oben, Z nach außen), kachelbar (wrap), BC5 (ATI2N, nur X und Y) mit
+Mip-Kette (Normalen beim Verkleinern renormiert). Eine Bibliothek je Gruppe
+(NAP/Material/fx/normalmaps_<ships|bases|solar|planets>.txm), je Karte ein Texturknoten `nm_<name>` mit einem Blatt `MIPS`.
 
 Cube Maps: prozedural (Sterne, Sonne, Nebel), 256 px je Fläche, DDS A8R8G8B8 mit Mip-Kette,
 Flächenfolge +X -X +Y -Y +Z -Z. Je Karte eine Materialbibliothek NAP/Material/fx/<name>.mat mit
@@ -44,29 +44,75 @@ ROOT = os.path.normpath(os.path.join(HERE, '..'))
 NAP = os.path.join(ROOT, 'NAP')
 TEMPLATE = os.path.join(NAP, 'Material', 'fx', 'envmapbasic.mat')
 
-# name -> (Container (NAP-relativ), Texturname, Stärke, Glättung, Beschreibung für das Sprachmodell)
+# name -> (Container (NAP-relativ), Texturname, Stärke, Glättung, Beschreibung für das Sprachmodell, Gruppe)
+# Gruppe = Bibliothek: ships | bases | solar | planets  ->  Material/fx/normalmaps_<Gruppe>.txm
+# Stärke und Glättung sind Ausgangswerte, `--tune` setzt sie nach der Bewertung neu.
+def _n(c, t, d, g, s=2.5):
+    return (c, t, s, 1, d, g)
+
+
 NORMALS = {
     # Schiffe
-    'li_elite_hull':    ('Material/ships/liberty/li_playerships.mat', 'elite_256.tga', 2.5, 1, 'Rumpfplatten eines Liberty-Spielerschiffs'),
-    'li_engine_grill':  ('Material/ships/liberty/li_playerships.mat', 'engine_grill01.tga', 3.5, 1, 'Triebwerksgitter, runde Öffnungen'),
-    'li_equip_gen':     ('Material/ships/liberty/li_playerships.mat', 'equip_gen.tga', 2.5, 1, 'Ausrüstungsplatten und Bedienfelder'),
+    'li_elite_hull':    _n('Material/ships/liberty/li_playerships.mat', 'elite_256.tga', 'Rumpfplatten eines Liberty-Spielerschiffs', 'ships'),
+    'li_engine_grill':  _n('Material/ships/liberty/li_playerships.mat', 'engine_grill01.tga', 'Triebwerksgitter, runde Öffnungen', 'ships', 3.5),
+    'li_equip_gen':     _n('Material/ships/liberty/li_playerships.mat', 'equip_gen.tga', 'Ausrüstungsplatten und Bedienfelder', 'ships'),
+    'li_freighter1':    _n('Material/ships/liberty/li_playerships.mat', 'freighter1.tga', 'Rumpf eines Liberty-Frachters', 'ships'),
+    'li_fighter':       _n('Material/ships/liberty/li_playerships.mat', 'l_fighter.tga', 'Rumpf eines Liberty-Jägers', 'ships'),
+    'ku_k_panel01':     _n('Material/ships/kusari/ku_playerships.mat', 'k_panel01_256.tga', 'Rumpfpaneele eines Kusari-Spielerschiffs', 'ships'),
+    'ku_k_wings':       _n('Material/ships/kusari/ku_playerships.mat', 'k_wings.tga', 'Tragflächen eines Kusari-Schiffs', 'ships'),
+    'ku_metal03':       _n('Material/ships/kusari/ku_playerships.mat', 'metal03.tga', 'allgemeine Metallfläche', 'ships'),
+    'br_player01':      _n('Material/ships/bretonia/br_playerships.mat', 'b_player01_256.tga', 'Rumpf eines Bretonia-Spielerschiffs', 'ships'),
+    'br_player02':      _n('Material/ships/bretonia/br_playerships.mat', 'b_player02_256.tga', 'Rumpf eines Bretonia-Spielerschiffs', 'ships'),
+    'br_player03':      _n('Material/ships/bretonia/br_playerships.mat', 'b_player03_256.tga', 'Rumpf eines Bretonia-Spielerschiffs', 'ships'),
+    'br_cap_dtl1':      _n('Material/ships/bretonia/br_capships.mat', 'b-dtl1.tga', 'Detailtextur eines Bretonia-Großkampfschiffs', 'ships'),
+    'br_cap_dtl2':      _n('Material/ships/bretonia/br_capships.mat', 'b-dtl2.tga', 'Detailtextur eines Bretonia-Großkampfschiffs', 'ships'),
+    'co_p_fighter01':   _n('Material/ships/corsair/co_ships.mat', 'p_fighter01.tga', 'Rumpf eines Piraten-Jägers', 'ships'),
+    'co_p_fighter02':   _n('Material/ships/corsair/co_ships.mat', 'p_fighter02.tga', 'Rumpf eines Piraten-Jägers', 'ships'),
+    'cv_g_fighter01':   _n('Material/ships/civilian/cv_ships.mat', 'g_fighter01.tga', 'Rumpf eines zivilen Jägers', 'ships'),
+    'cv_g_fighter02':   _n('Material/ships/civilian/cv_ships.mat', 'g_fighter02.tga', 'Rumpf eines zivilen Jägers', 'ships'),
+    'or_equip_mstr':    _n('Material/ships/order/or_ships.mat', 'equip_mstr.tga', 'Ausrüstungsplatten (Order-Schiffe)', 'ships'),
+    'or_liberty1':      _n('Material/ships/order/or_ships.mat', 'liberty1_256.tga', 'Rumpfplatten (Order-Schiffe)', 'ships'),
+    'or_weaponplate2':  _n('Material/ships/order/or_ships.mat', 'weaponplate2.tga', 'Waffenplatten (Order-Schiffe)', 'ships'),
+    'ut_panels01':      _n('Material/ships/utility/utility_ships.mat', 'utility_panels_01.tga', 'Paneele von Nutzschiffen', 'ships'),
+    'ut_liner1':        _n('Material/ships/utility/utility_liner.mat', 'liner1_256.tga', 'Rumpf eines Passagierschiffs', 'ships'),
     # Stationen und Basen
-    'bw_dig_site_16':   ('Models/bases/generic/bw_pygar_airlock.cmp', 'dig_site_16.tga', 3.0, 1, 'Stationshülle Bretonia, Metallpaneele'),
-    'bw_dig_site_18':   ('Models/bases/generic/bw_pygar_airlock.cmp', 'dig_site_18.tga', 3.0, 1, 'Stationshülle Bretonia, Metallpaneele'),
-    'li_ceiling_gen01': ('Models/bases/liberty/li_manhattan_trader02.cmp', 'ceiling_gen01.tga021111195321', 2.5, 1, 'Deckenplatten einer Liberty-Basis'),
-    'ku_k_panel01':     ('Material/ships/kusari/ku_playerships.mat', 'k_panel01_256.tga', 2.5, 1, 'Rumpfpaneele eines Kusari-Spielerschiffs'),
-    'ku_k_wings':       ('Material/ships/kusari/ku_playerships.mat', 'k_wings.tga', 2.5, 1, 'Tragflächen eines Kusari-Schiffs'),
-    'ku_metal03':       ('Material/ships/kusari/ku_playerships.mat', 'metal03.tga', 2.5, 1, 'allgemeine Metallfläche'),
-    'br_player01':      ('Material/ships/bretonia/br_playerships.mat', 'b_player01_256.tga', 2.5, 1, 'Rumpf eines Bretonia-Spielerschiffs'),
-    # Asteroiden (Gesteinsoberfläche; Billboards wie asteroid_belt_04 und Stadtkulissen sind ungeeignet)
-    'ast_rock_4':       ('Material/solar/asteroids/rock_roids.txm', 'asteroid_rock_4', 3.0, 1, 'Gesteinsoberfläche eines Asteroiden'),
-    # Planeten und Solar
-    'planet_ice':       ('Material/solar/planets/detailmap_ice.txm', 'detailmap_ice', 3.0, 1, 'kachelnde Eisdetailkarte'),
-    'planet_lava':      ('Material/solar/planets/detailmap_lava.txm', 'detailmap_lava', 3.0, 1, 'kachelnde Lavadetailkarte'),
-    'planet_rock01':    ('Material/solar/planets/detailmap_rock01.txm', 'detailmap_rock01', 3.0, 1, 'kachelnde Felsdetailkarte eines Planeten'),
-    'planet_crater_hi': ('Material/solar/planets/detailmap_crater_high.txm', 'detailmap_crater_high', 3.0, 1, 'kachelnde Kraterdetailkarte'),
-    'planet_ground01':  ('Material/solar/planets/detailmap_ground01.txm', 'detailmap_ground01', 2.5, 1, 'kachelnde Bodendetailkarte'),
+    'bw_dig_site_16':   _n('Models/bases/generic/bw_pygar_airlock.cmp', 'dig_site_16.tga', 'Stationshülle Bretonia, Metallpaneele', 'bases', 3.0),
+    'bw_dig_site_18':   _n('Models/bases/generic/bw_pygar_airlock.cmp', 'dig_site_18.tga', 'Stationshülle Bretonia, Metallpaneele', 'bases', 3.0),
+    'bw_dig_site_20':   _n('Models/bases/generic/bw_pygar_airlock.cmp', 'dig_site_20.tga', 'Stationshülle Bretonia, Metallpaneele', 'bases', 3.0),
+    'li_ceiling_gen01': _n('Models/bases/liberty/li_manhattan_trader02.cmp', 'ceiling_gen01.tga021111195321', 'Deckenplatten einer Liberty-Basis', 'bases'),
+    'bw_pygar_door':    _n('Models/bases/generic/bw_pygar_planetscape.cmp', 'pygar_door.tga', 'Tor einer Pygar-Basis', 'bases'),
+    'bw_pygar_generator': _n('Models/bases/generic/bw_pygar_planetscape.cmp', 'pygar_generator.tga', 'Generatorgehäuse einer Pygar-Basis', 'bases'),
+    'bw_pygar_fan':     _n('Models/bases/generic/bw_pygar_planetscape.cmp', 'bw_pygar_fan.tga', 'Lüfter einer Pygar-Basis', 'bases'),
+    'bw_concrete_base': _n('Models/bases/generic/bw_pygar_planetscape.cmp', 'concrete base 2.tga', 'Betonfläche', 'bases'),
+    'bw_catwalk':       _n('Models/bases/generic/bw_pygar_landingdeck.3db', 'catwalk siding.tga', 'Laufsteg, Seitenverkleidung', 'bases'),
+    'bw_grate':         _n('Models/bases/generic/bw_pygar_landingdeck.3db', 'grate.tga', 'Gitterrost', 'bases'),
+    'bw_landing_pad':   _n('Models/bases/generic/bw_pygar_landingdeck.3db', 'landing pad.tga', 'Landeplattform', 'bases'),
+    'bw_tunnel_panel':  _n('Models/bases/generic/bw_pygar_landingdeck.3db', 'tunnel inside panel.tga', 'Tunnelpaneel', 'bases'),
+    # Solar, Ausrüstung, Nomaden, Asteroiden
+    'ast_rock_4':       _n('Material/solar/asteroids/rock_roids.txm', 'asteroid_rock_4', 'Gesteinsoberfläche eines Asteroiden', 'solar', 3.0),
+    'ast_rock_r04':     _n('Models/solar/asteroids/models/asteroid_rock_r04.3db', 'rock4.psd', 'Gesteinsoberfläche eines Asteroiden', 'solar', 3.0),
+    'eq_turret_mturret': _n('Models/equipment/models/turret/weapons_platform_mturret.cmp', 'stadtl2_256.tga', 'Plattform eines Geschützturms', 'solar'),
+    'eq_turret_wins':   _n('Models/equipment/models/turret/weapons_platform_turret.cmp', 'stawins_128.tga', 'Plattform eines Geschützturms', 'solar'),
+    'eq_torpedo':       _n('Models/equipment/models/torpedoes/li_plasma_torpedo.3db', 'weapon_1.tga', 'Torpedohülle', 'solar'),
+    'no_dtl2':          _n('Models/ships/nomad/no_fighter/no_fighter.3db', 'n-dtl2-256.tga', 'Detailtextur der Nomaden', 'solar'),
+    # Planeten: Detailkarten (kachelnd) und Oberflächen (Karte um den Planeten)
+    'planet_rock01':    _n('Material/solar/planets/detailmap_rock01.txm', 'detailmap_rock01', 'kachelnde Felsdetailkarte eines Planeten', 'planets', 3.0),
+    'planet_crater_hi': _n('Material/solar/planets/detailmap_crater_high.txm', 'detailmap_crater_high', 'kachelnde Kraterdetailkarte', 'planets', 3.0),
+    'planet_crater_mid': _n('Material/solar/planets/detailmap_crater_mid.txm', 'detailmap_crater_mid', 'kachelnde Kraterdetailkarte', 'planets', 3.0),
+    'planet_crater_low': _n('Material/solar/planets/detailmap_crater_low.txm', 'detailmap_crater_low', 'kachelnde Kraterdetailkarte', 'planets', 3.0),
+    'planet_ground01':  _n('Material/solar/planets/detailmap_ground01.txm', 'detailmap_ground01', 'kachelnde Bodendetailkarte', 'planets'),
+    'planet_ice':       _n('Material/solar/planets/detailmap_ice.txm', 'detailmap_ice', 'kachelnde Eisdetailkarte', 'planets', 3.0),
+    'planet_lava':      _n('Material/solar/planets/detailmap_lava.txm', 'detailmap_lava', 'kachelnde Lavadetailkarte', 'planets', 3.0),
+    'planet_ocean':     _n('Material/solar/planets/detailmap_ocean.txm', 'detailmap_ocean', 'kachelnde Wasserdetailkarte', 'planets', 2.0),
+    'pbody_mercury01':  _n('Material/solar/planets/mercury.txm', 'mercury01', 'Oberfläche eines kleinen Gesteinsplaneten', 'planets', 3.0),
+    'pbody_cratermoon': _n('Material/solar/planets/cratermoon.txm', 'cratermoon', 'Oberfläche eines kraterübersäten Mondes', 'planets', 3.0),
+    'pbody_desert01':   _n('Material/solar/planets/desert.txm', 'desert01', 'Oberfläche eines Wüstenplaneten', 'planets', 3.0),
+    'pbody_desert_rock': _n('Material/solar/planets/planet_desorgrck.txm', 'desert_rock_01', 'Oberfläche eines Felswüstenplaneten', 'planets', 3.0),
+    'pbody_icegrey01':  _n('Material/solar/planets/icegrey.txm', 'icegrey01', 'Oberfläche eines Eisplaneten', 'planets', 3.0),
+    'pbody_icewhiteblue': _n('Material/solar/planets/icewhiteblue.txm', 'icewhiteblue01', 'Oberfläche eines Eisplaneten', 'planets', 3.0),
+    'pbody_indust01':   _n('Material/solar/planets/indust.txm', 'indust01', 'Oberfläche eines Industrieplaneten', 'planets', 3.0),
 }
+GROUPS = ('ships', 'bases', 'solar', 'planets')
 # Cube Maps: Art und Parameter. Standardwerte entsprechen der ersten Fassung.
 CUBE_DEFAULTS = {
     'envcube_space': {'kind': 'space', 'desc': 'dunkler Weltraum mit vielen Sternen, schwacher Sonne und blauem Hauch',
@@ -135,6 +181,26 @@ def dds_header(w, h, mips, bpp, masks, cube=False):
 
 
 def encode_normal(n):
+    """BC5 (ATI2N): nur X und Y, Z rekonstruiert der Shader. 1 Byte je Pixel, Mips bis 4 x 4."""
+    import etcpak
+    levels = [lv for lv in normal_mips(n) if lv.shape[0] >= 4]
+    body = bytearray()
+    for lv in levels:
+        h_, w_ = lv.shape[:2]
+        rgba = np.zeros((h_, w_, 4), np.uint8)
+        rgba[..., 0] = np.clip((lv[..., 0] * 0.5 + 0.5) * 255 + 0.5, 0, 255)
+        rgba[..., 1] = np.clip((lv[..., 1] * 0.5 + 0.5) * 255 + 0.5, 0, 255)
+        rgba[..., 3] = 255
+        body += etcpak.compress_bc5(rgba.tobytes(), w_, h_)
+    top = levels[0]
+    hd = struct.pack('<4s7I44s', b'DDS ', 124, 0x1 | 0x2 | 0x4 | 0x1000 | 0x20000 | 0x80000,
+                     top.shape[0], top.shape[1], top.shape[0] * top.shape[1], 0, len(levels), b'\0' * 44)
+    pf = struct.pack('<8I', 32, 0x4, struct.unpack('<I', b'ATI2')[0], 0, 0, 0, 0, 0)
+    caps = struct.pack('<5I', 0x1000 | 0x8 | 0x400000, 0, 0, 0, 0)
+    return hd + pf + caps + bytes(body)
+
+
+def encode_normal_rgb(n):
     levels = normal_mips(n)
     body = bytearray()
     for lv in levels:
@@ -475,18 +541,18 @@ INI_HEADER = """; SurfaceMaps.ini - Zusatzkarten (Normal Maps, Cube Maps) zu Tex
 ;   kind       Hinweis: space | sun | nebula
 ;   strength   Vorschlag fuer die Staerke der Spiegelung (0..1)
 
-[Texture]
-file = fx\\normalmaps.txm
-name = surface_normalmaps
 """
 CUBE_STRENGTH = {'space': 0.35, 'sun': 0.5, 'nebula': 0.4}
 
 
 def write_ini(path, normals, cubes):
-    """normals: {key: (Textur, Beschreibung, params)}, cubes: {name: params}."""
+    """normals: {key: (Textur, Beschreibung, Gruppe, params)}, cubes: {name: params}."""
     out = [INI_HEADER]
-    for key, (tex, desc, pr) in normals.items():
-        out.append(f"\n; {desc}\n[NormalMap]\ntexture = {tex}\nlibrary = surface_normalmaps\n"
+    for g in GROUPS:
+        if any(v[2] == g for v in normals.values()):
+            out.append(f"\n[Texture]\nfile = fx\\normalmaps_{g}.txm\nname = surface_normalmaps_{g}\n")
+    for key, (tex, desc, group, pr) in normals.items():
+        out.append(f"\n; {desc}\n[NormalMap]\ntexture = {tex}\nlibrary = surface_normalmaps_{group}\n"
                    f"map = nm_{key}\nstrength = {pr['strength']:g}\n")
     for name, pr in cubes.items():
         out.append(f"\n[CubeMap]\nnickname = {name}\nfile = fx\\{name}.mat\nkind = {pr['kind']}\n"
@@ -549,12 +615,18 @@ def main():
     out_dir = os.path.join(NAP, 'Material', 'fx')
     made = []
 
-    nm = {}
+    nm = {g: {} for g in GROUPS}
     previews = {}
     chosen = {}
     report = []
-    for key, (container, tex, strength, smooth, desc) in NORMALS.items():
-        img = read_texture(container, tex)
+    used = {}
+    for key, (container, tex, strength, smooth, desc, group) in NORMALS.items():
+        try:
+            img = read_texture(container, tex)
+        except (KeyError, OSError, ValueError) as e:
+            print(f'  {key}: übersprungen ({e})')
+            continue
+        used[key] = (tex, desc, group)
         base = {'strength': strength, 'smooth': smooth}
         pr = clamp_normal(params.get('normal', {}).get(key, {}), base)
         if llm:
@@ -582,13 +654,19 @@ def main():
         report.append((key, tex, before, m0, pr, m1))
         chosen.setdefault('normal', {})[key] = pr
         n = normal_from_height(h, pr['strength'])
-        nm['nm_' + key] = encode_normal(n)
+        nm[group]['nm_' + key] = encode_normal(n)
         previews[key] = np.clip((n * 0.5 + 0.5) * 255, 0, 255).astype(np.uint8)
-    header, root = build_library(nm, 'MIPS')
-    p = os.path.join(out_dir, 'normalmaps.txm')
-    W.save(p, header, root)
-    made.append('Material/fx/normalmaps.txm')
-    print(f'normalmaps.txm: {len(nm)} Karten, {os.path.getsize(p) / 1e6:.1f} MB')
+    old = os.path.join(out_dir, 'normalmaps.txm')   # frühere Einzelbibliothek
+    if os.path.isfile(old):
+        os.remove(old)
+    for g in GROUPS:
+        if not nm[g]:
+            continue
+        header, root = build_library(nm[g], 'MIPS')
+        p = os.path.join(out_dir, f'normalmaps_{g}.txm')
+        W.save(p, header, root)
+        made.append(f'Material/fx/normalmaps_{g}.txm')
+        print(f'normalmaps_{g}.txm: {len(nm[g])} Karten, {os.path.getsize(p) / 1e6:.1f} MB')
 
     for c in CUBES:
         pr = clamp_cube(params.get('cube', {}).get(c, {}), CUBE_DEFAULTS[c])
@@ -609,7 +687,7 @@ def main():
         previews[c] = faces
 
     write_ini(os.path.join(ROOT, 'SDK', 'fx', 'SurfaceMaps.ini'),
-              {k: (NORMALS[k][1], NORMALS[k][4], chosen['normal'][k]) for k in NORMALS},
+              {k: (used[k][0], used[k][1], used[k][2], chosen['normal'][k]) for k in used},
               {c: chosen['cube'][c] for c in CUBES})
     if a.evaluate or a.tune:
         write_report(report, a.tune, os.path.join(ROOT, 'surface-maps-bewertung.md'))
