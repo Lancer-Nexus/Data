@@ -118,7 +118,7 @@ Wichtig: `build_nap.py` schließt zwei README-Kopien aus (`EXCLUDE`), weil wir s
 - Die 32 fehlenden Ziele (`missing.md`), vor allem die Kollisionsmodelle.
 - **Engine-Test:** HD-Daten (1024- und 2048-Texturen, neue INI-Schlüssel) und die hochskalierten Texturen sind nur strukturell geprüft, nicht im Spiel (`TODO-hd-pack.md`, `TODO-texturen-upscale.md`).
 - Plugin-Funktionen des HD-Packs (`storyfactions`, `Territory`, `ranks`, `HudShift`): Quellcode als Referenz in `reference/freelancer-plugins/`, Umsetzung offen (`TODO-plugins.md`).
-- Hochskalierung der Vollbildgrafiken (`startupscreen.tga` u. a.) und der 17 HD-Videos (Videos: `TODO-video.md`).
+- Hochskalierung der Vollbildgrafiken (`startupscreen.tga` u. a.) (Videos: `TODO-video.md`).
 - Die Engine selbst ist nicht im Repo. Alles, was über die Auswertung der INIs und der Containerformate hinausgeht, ist nicht geprüft.
 
 ## 13. HD-Pack
