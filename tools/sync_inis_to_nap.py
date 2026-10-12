@@ -18,8 +18,9 @@ import argparse
 import collections
 import filecmp
 import os
-import shutil
 import sys
+
+from atomic_file import atomic_copy
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 SDK_DIR = os.path.normpath(os.path.join(HERE, '..', 'SDK'))
@@ -101,7 +102,7 @@ def main():
                 print(f'[{action}] {cls}/{rel}')
                 continue
             os.makedirs(os.path.dirname(dst), exist_ok=True)
-            shutil.copy2(src, dst)
+            atomic_copy(src, dst)
 
     mode = 'Testlauf' if args.dry_run else 'Fertig'
     print(f'{mode}: neu {stats["neu"]}, aktualisiert {stats["aktualisiert"]}, '

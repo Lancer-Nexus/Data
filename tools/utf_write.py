@@ -11,6 +11,8 @@ und vergleicht Baum und Daten.
 import struct
 import sys
 
+from atomic_file import atomic_open
+
 ENTRY = struct.Struct('<11I')  # next, name, flags, zero, child/data, alloc, size, size2, t1, t2, t3
 
 
@@ -110,7 +112,7 @@ def save(path, header, root):
     struct.pack_into('<II', h, 8, tree_off, len(entries))
     struct.pack_into('<III', h, 24, names_off, len(names), used)
     struct.pack_into('<I', h, 36, data_off)
-    with open(path, 'wb') as f:
+    with atomic_open(path, 'wb') as f:
         f.write(bytes(h) + bytes(entries) + bytes(names) + bytes(data))
 
 

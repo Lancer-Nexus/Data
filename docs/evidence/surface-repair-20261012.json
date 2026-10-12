@@ -1,0 +1,284 @@
+{
+  "scope": "UTF bounds, DDS mip/cube payload sizes and Surface INI target nodes; no diffuse matching, active snapshot or visual validation",
+  "iniNodeReferences": 7005,
+  "files": [
+    {
+      "path": "fx/SurfaceMaps.ini",
+      "bytes": 13788,
+      "sha256": "1aca51b42d17fc3d4604ca65299648a8b02bc6d31dd0394ccb1741e3dbf77cfa"
+    },
+    {
+      "path": "fx/SurfaceMapsBases.ini",
+      "bytes": 578434,
+      "sha256": "90031058acc016386190ead5c174f67d25f6c05eb9bae8c66cc24d4092dd1aaf"
+    },
+    {
+      "path": "fx/SurfaceMapsShips.ini",
+      "bytes": 10711,
+      "sha256": "7712f5c090d7a0fb2ef4d117ffb5c6958c186c80af04cdd12e28fd0492ac59e0"
+    },
+    {
+      "path": "fx/SurfaceMapsSolar.ini",
+      "bytes": 18797,
+      "sha256": "697a3e7db90a793f3d797934fbb4bf74fddd1c90be65c39679afe537833b5c3f"
+    },
+    {
+      "path": "fx/envcube_nebula.mat",
+      "bytes": 2098592,
+      "textures": 1,
+      "sha256": "c360f2222aea189f6bf0c62d37ff2ba2bd2d82c8bde4a14cb110abd0a30af0eb"
+    },
+    {
+      "path": "fx/envcube_space.mat",
+      "bytes": 2098592,
+      "textures": 1,
+      "sha256": "c0b9908383e7e6837bf61d7c9f256636bf16cb455f800e3ebe9a10ebe3eba9db"
+    },
+    {
+      "path": "fx/envcube_sun.mat",
+      "bytes": 2098588,
+      "textures": 1,
+      "sha256": "862be2bc062cf6d636c998b88c6fb9ca36434c7d5ff862544d0a78eba0b2b70f"
+    },
+    {
+      "path": "fx/normalmaps_bases.txm",
+      "bytes": 17791372,
+      "textures": 35,
+      "sha256": "df3f50163e28c3517effaa86d17f2803d1a9b0a7805c01efd097ea7656d3cac2"
+    },
+    {
+      "path": "fx/normalmaps_bases_backdrops_1.txm",
+      "bytes": 7395464,
+      "textures": 43,
+      "sha256": "a2f294254b6ba09403fc1bb0b09ff0a05fdea2328e279654e21165f70b0a4275"
+    },
+    {
+      "path": "fx/normalmaps_bases_bretonia_1.txm",
+      "bytes": 50007716,
+      "textures": 289,
+      "sha256": "cef71909a43938a3ab26697bd9ec6302e3a5faba4f1fe47c58a49b3d25e5ed8b"
+    },
+    {
+      "path": "fx/normalmaps_bases_bretonia_2.txm",
+      "bytes": 50357196,
+      "textures": 290,
+      "sha256": "765ae82fb7ea03e727b04c6496b2db1414ced0639807a92a1ef6e90f57fd595a"
+    },
+    {
+      "path": "fx/normalmaps_bases_bretonia_3.txm",
+      "bytes": 50053392,
+      "textures": 297,
+      "sha256": "99b0afa3f999e842a7950ec90e4d52b7de670e1183ff8196e989afdddef6670d"
+    },
+    {
+      "path": "fx/normalmaps_bases_bretonia_4.txm",
+      "bytes": 50055552,
+      "textures": 311,
+      "sha256": "3880af003c60eaca9a45cf2daa86620bf2bf386a692f2a133452d6f8ad71c162"
+    },
+    {
+      "path": "fx/normalmaps_bases_bretonia_5.txm",
+      "bytes": 2057528,
+      "textures": 12,
+      "sha256": "83000d345d162ef2ac22974a8beb5f2197034874d34729dfd80ab8ca53175f98"
+    },
+    {
+      "path": "fx/normalmaps_bases_generic_1.txm",
+      "bytes": 49968580,
+      "textures": 309,
+      "sha256": "9003db53fb7de9ca10f6053ea5e37ac3859d1b18132cda29cd9822f19d58fd52"
+    },
+    {
+      "path": "fx/normalmaps_bases_generic_2.txm",
+      "bytes": 15797948,
+      "textures": 102,
+      "sha256": "a2809db4d24dc78ee7cf1d39f7e22f665d556146606f1da4349187cc634ccb78"
+    },
+    {
+      "path": "fx/normalmaps_bases_kusari_1.txm",
+      "bytes": 50138360,
+      "textures": 292,
+      "sha256": "393a88180b710bffd630e9f3f4e2f486d65c88cb223abb1a46eaf92217491914"
+    },
+    {
+      "path": "fx/normalmaps_bases_kusari_2.txm",
+      "bytes": 50052628,
+      "textures": 297,
+      "sha256": "f10b019ad8091c9514277cbf549e0a136e323e64f183fee5fd4b39e8b077fa8b"
+    },
+    {
+      "path": "fx/normalmaps_bases_kusari_3.txm",
+      "bytes": 50268944,
+      "textures": 288,
+      "sha256": "9f0d7075561d45cec5819c228e5f4d97722beb5e0b0a3da7c4640efbffa25b06"
+    },
+    {
+      "path": "fx/normalmaps_bases_kusari_4.txm",
+      "bytes": 50182276,
+      "textures": 286,
+      "sha256": "ab4afe16828c2ba33fe158a46d669c71d3ef69458eb301608bf5f17d57200b34"
+    },
+    {
+      "path": "fx/normalmaps_bases_kusari_5.txm",
+      "bytes": 40871360,
+      "textures": 269,
+      "sha256": "fa828cfa71068f50075f5243b2ffc1960c41201a8703c420372b7dcc87ce83ad"
+    },
+    {
+      "path": "fx/normalmaps_bases_liberty_1.txm",
+      "bytes": 50223348,
+      "textures": 280,
+      "sha256": "7d6d526db407f1dfd09dbf35b7f0996d987fcbb1ffe15314f0bcdd255366179e"
+    },
+    {
+      "path": "fx/normalmaps_bases_liberty_2.txm",
+      "bytes": 50052500,
+      "textures": 297,
+      "sha256": "ef24877e6da063408f26ab4bd16df45b4933bb2262b4096463ef5656cd36e382"
+    },
+    {
+      "path": "fx/normalmaps_bases_liberty_3.txm",
+      "bytes": 50177172,
+      "textures": 272,
+      "sha256": "c11704e3c0bde48f1d669c20e33fba42602d4b2c153fc439397ca1d758b5c852"
+    },
+    {
+      "path": "fx/normalmaps_bases_liberty_4.txm",
+      "bytes": 50093832,
+      "textures": 284,
+      "sha256": "38767f51884d63b41413a26d013433e2db0eaa4e5847768a7053176902d6f884"
+    },
+    {
+      "path": "fx/normalmaps_bases_liberty_5.txm",
+      "bytes": 50013772,
+      "textures": 317,
+      "sha256": "8c35bbf47a2e848fa7d0c00bbc3cec86026de56234082b66a6b9cd9eb896b047"
+    },
+    {
+      "path": "fx/normalmaps_bases_liberty_6.txm",
+      "bytes": 2976600,
+      "textures": 19,
+      "sha256": "d25b50e75f161ffcf273c8dc359238cfd3194360b6b242d0cf510ce01036c5d5"
+    },
+    {
+      "path": "fx/normalmaps_bases_pirate_1.txm",
+      "bytes": 50231032,
+      "textures": 315,
+      "sha256": "22702af6b0919a230a7580eaa24b1cbc4bfa7a2e14eacf056abc08739eef752a"
+    },
+    {
+      "path": "fx/normalmaps_bases_pirate_2.txm",
+      "bytes": 44195600,
+      "textures": 282,
+      "sha256": "95efe6a490948c81f53bc14d734ec8adde156564b8769923e725183baccaccae"
+    },
+    {
+      "path": "fx/normalmaps_bases_rheinland_1.txm",
+      "bytes": 50137584,
+      "textures": 285,
+      "sha256": "384e5b5f31df476ca8ab57e4280e38f13a0dd50b43aa67bcf7fac30efb51ece2"
+    },
+    {
+      "path": "fx/normalmaps_bases_rheinland_2.txm",
+      "bytes": 50234684,
+      "textures": 329,
+      "sha256": "0a778394c8537babe0a7f72e3692c12e4e2fe75e2cc7b69b4360172b2903cb55"
+    },
+    {
+      "path": "fx/normalmaps_bases_rheinland_3.txm",
+      "bytes": 50359996,
+      "textures": 304,
+      "sha256": "6112e85ac467e3ed3ae8ce2432564541c435593c10f0f3bd3cd6f192d0ac273a"
+    },
+    {
+      "path": "fx/normalmaps_bases_rheinland_4.txm",
+      "bytes": 50361836,
+      "textures": 311,
+      "sha256": "2429131be05de1204dd3a883cba7f84651a6fb7fa4a46e57b483bc7a448ad326"
+    },
+    {
+      "path": "fx/normalmaps_bases_rheinland_5.txm",
+      "bytes": 21572976,
+      "textures": 136,
+      "sha256": "da775ab9001a9d37b331b36ab3acd046f14ddafdad6ff455a53ba19b8cc2f27f"
+    },
+    {
+      "path": "fx/normalmaps_planets.txm",
+      "bytes": 20976176,
+      "textures": 15,
+      "sha256": "75a9f480e50fb083f00284a4f7873df392c01e23c91741e86cf488403dc3d67b"
+    },
+    {
+      "path": "fx/normalmaps_ships.txm",
+      "bytes": 38289088,
+      "textures": 65,
+      "sha256": "482cc62e05372a027df508afe1c69f2e1203e7745edd7f7c64111bfba5c601c2"
+    },
+    {
+      "path": "fx/normalmaps_ships_auto_1.txm",
+      "bytes": 48779368,
+      "textures": 83,
+      "sha256": "febf0109b0619076a62c0b9d070e8d2979e4ad5f73fa5310077cbde346ec23ef"
+    },
+    {
+      "path": "fx/normalmaps_ships_auto_2.txm",
+      "bytes": 31121176,
+      "textures": 52,
+      "sha256": "6a9d4317a0ee28bec3ba764b207e93a79c2c93ec4502979335560a3e75a5c938"
+    },
+    {
+      "path": "fx/normalmaps_solar.txm",
+      "bytes": 8874304,
+      "textures": 17,
+      "sha256": "4e9ed4f1c91391147dfbf3f0035d2d934affe7b6b4388a3afece4196fdb59a06"
+    },
+    {
+      "path": "fx/normalmaps_solar_auto_1.txm",
+      "bytes": 50099124,
+      "textures": 121,
+      "sha256": "fcb45a3a4598183a35a25a82000df9326f3f1a891b21360d1f83febd52a329fe"
+    },
+    {
+      "path": "fx/normalmaps_solar_auto_2.txm",
+      "bytes": 38996452,
+      "textures": 98,
+      "sha256": "e6127cacbf1cbaae84a414b19d4cc500d4c4eeeb34cddb23bdec896277545808"
+    }
+  ],
+  "formats": {
+    "RGB32": 3,
+    "ATI2": 2807,
+    "ATI1": 4195
+  },
+  "errors": [],
+  "date": "2026-10-12",
+  "archive": {
+    "file": "surface.nap",
+    "bytes": 1163429174,
+    "sha256": "915a6b9a58faa9882a716f82f0b96b4619df2d887e070cdcb9efa5f97dbf6873",
+    "verifiedEntries": 41,
+    "activeClientSnapshotVerified": false
+  },
+  "generation": {
+    "candidates": 2781,
+    "normalMaps": 2752,
+    "libraries": 30,
+    "skippedTooFlat": 18,
+    "skippedNoRelief": 11,
+    "pythonEncoder": "etcpak 0.9.15"
+  },
+  "sdkSync": {
+    "identicalIniFiles": 1266,
+    "pendingCopies": 0
+  },
+  "beforeRepair": {
+    "emptyLibraries": 26,
+    "truncatedLibraries": 1,
+    "emptySurfaceInis": 4
+  },
+  "limitations": [
+    "No runtime NAP-only launch with this repaired surface.nap yet",
+    "No visual/material diffuse mapping proof",
+    "Multi-file publication is not transactional"
+  ]
+}

@@ -16,7 +16,7 @@ Datenrepository des [Lancer Nexus](https://github.com/Lancer-Nexus)-Projekts: Sp
 | `tools/` | Skripte zum Aufbau von `NAP/` aus der CD und zum Prüfen der INI-Dateiverweise | ja |
 | `BASE/`, `CLIENT/` | leer, für später vorgesehen | – |
 
-Branches: `main` enthält den ursprünglichen Upload. Die Arbeit liegt auf `sdk-1.3.1`.
+Die laufende Arbeit liegt auf `main`.
 
 ## SDK
 
@@ -56,7 +56,7 @@ Von `NAP/` werden nur die Klassenordner ins Repo übernommen (mit einer leeren `
 1. **Repo auf den Stand bringen**
    ```bash
    cd LN-Data
-   git checkout sdk-1.3.1
+   git checkout main
    ```
 
 2. **Testlauf** (zeigt nur, was passieren würde):
@@ -159,3 +159,43 @@ Der Bericht gilt für den jeweiligen Stand. Nach Änderungen an Texturen oder IN
 ## Rechtliches
 
 Die Spieldaten gehören den Rechteinhabern von Freelancer. Dieses Repo enthält nur die INI-Dateien und Skripte. `NAP/` ist ignoriert und darf nicht hochgeladen werden. Die Skripte setzen eine eigene Kopie der CD oder ISO voraus.
+
+## Surface-Dateien sicher neu erzeugen
+
+```bash
+python3 tools/make_surface_maps_bulk.py --dry-run
+python3 tools/make_surface_maps_bulk.py --jobs 4
+python3 tools/sync_inis_to_nap.py --dry-run
+python3 tools/sync_inis_to_nap.py
+python3 tools/check_surface_assets.py --output /tmp/surface-audit.json
+```
+
+Der Massenlauf benötigt Pillow, NumPy und `etcpak` in derselben Python-Umgebung.
+Fehlt der BC4/BC5-Encoder, bricht er vor dem Scan ab.
+
+Der Massenlauf schreibt zunächst alle Bibliotheken, SDK-INIs, Parameter und den
+Bericht in ein temporäres Verzeichnis im Datenrepository. Erst nach erfolgreicher
+Generierung und Prüfung der UTF-Dateigrenzen und DDS-Mip-/Cubemap-Daten
+werden die Ergebnisse übernommen. Fehler bei der Texturerzeugung
+oder ein leerer Ergebnissatz brechen vor dieser Übernahme ab. Alte, nicht mehr
+benötigte Bibliotheken werden zuletzt entfernt. `--limit` ist ausschließlich
+für den Testlauf erlaubt, damit eine Teilmenge keine vollständigen Bibliotheken
+ersetzt. Für den Zwischenstand ist zusätzlich Platz in der Größenordnung der
+erzeugten Surface-Dateien erforderlich.
+
+UTF-Dateien und synchronisierte INIs werden über eine temporäre Datei im
+Zielverzeichnis geschrieben und nach vollständigem Schreiben mit `os.replace`
+ausgetauscht. Ein Schreibfehler erhält die bisherige Zieldatei. Der Austausch
+ist pro Datei atomar; mehrere Bibliotheken und ihre INIs bilden keine gemeinsame
+Transaktion. Ein Abbruch während der Übernahme erfordert einen erneuten Lauf,
+bevor daraus NAP-Archive gebaut werden.
+
+`check_surface_assets.py` meldet leere Dateien, unzulässige UTF-Verweise und
+unvollständige DDS-Payloads. Der Bericht enthält Dateihashes und Formatanzahlen.
+Bei strukturell gültigen Dateien prüft er außerdem die Bibliotheksdateien und
+Texturknoten aus den Surface-INIs. Er belegt weder die Zuordnung zu tatsächlichen
+Diffuse-Materialien noch die sichtbare Wirkung oder einen aktiven Snapshot im Client.
+
+Der verifizierte Reparaturstand vom 12.10.2026 ist in
+[`docs/evidence/surface-repair-20261012.json`](docs/evidence/surface-repair-20261012.json)
+festgehalten. Das lokale Archiv bleibt außerhalb des Git-Repositories.

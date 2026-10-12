@@ -24,11 +24,16 @@ import collections
 import concurrent.futures as cf
 import hashlib
 import io
+import importlib.util
 import json
 import os
 import re
 import struct
 import sys
+import tempfile
+from pathlib import Path
+
+from atomic_file import atomic_copy, atomic_open
 
 import numpy as np
 from PIL import Image
@@ -173,6 +178,48 @@ def main():
     ap.add_argument('--jobs', type=int, default=8)
     ap.add_argument('--dry-run', action='store_true')
     a = ap.parse_args()
+    if a.jobs < 1 or (a.limit is not None and a.limit < 1):
+        ap.error('--jobs und --limit müssen positiv sein')
+    if a.limit and not a.dry_run:
+        ap.error('--limit ist nur mit --dry-run erlaubt; Teilmengen ersetzen keine vollständigen Bibliotheken')
+    if a.dry_run:
+        generate(a)
+        return
+    if importlib.util.find_spec('etcpak') is None:
+        ap.error('BC4/BC5-Encoder fehlt: etcpak in der verwendeten Python-Umgebung installieren')
+    # Keep every current library until the entire generation succeeds.
+    global INI_PATHS, PARAMS_JSON, EXTRA_LIST, REPORT
+    destinations = dict(INI_PATHS)
+    original_params, original_extra, original_report = PARAMS_JSON, EXTRA_LIST, REPORT
+    surface = os.path.join(NAP, 'Surface', 'fx')
+    with tempfile.TemporaryDirectory(prefix='.surface-generation-', dir=ROOT) as stage:
+        INI_PATHS = {group: os.path.join(stage, os.path.basename(path)) for group, path in destinations.items()}
+        PARAMS_JSON = os.path.join(stage, 'surface_maps_auto.json')
+        EXTRA_LIST = os.path.join(stage, 'extra_maps_auto.txt')
+        REPORT = os.path.join(stage, 'report.md')
+        try:
+            made = generate(a, stage)
+            from check_surface_assets import check_utf
+            for relative in made:
+                check_utf(Path(stage) / relative)
+            # Individual replacements are atomic; the whole set is not a transaction.
+            for relative in made:
+                atomic_copy(os.path.join(stage, relative), os.path.join(NAP, relative))
+            for group, destination in destinations.items():
+                atomic_copy(INI_PATHS[group], destination)
+            for source, destination in ((PARAMS_JSON, original_params), (EXTRA_LIST, original_extra), (REPORT, original_report)):
+                atomic_copy(source, destination)
+            current = {os.path.basename(relative) for relative in made}
+            for old in os.listdir(surface):
+                if re.match(r'normalmaps_(ships_auto|bases|solar_auto)_', old) and old not in current:
+                    os.remove(os.path.join(surface, old))
+        finally:
+            INI_PATHS = destinations
+            PARAMS_JSON, EXTRA_LIST, REPORT = original_params, original_extra, original_report
+
+
+def generate(a, output_root=None):
+    output_root = output_root or NAP
     cands, stat = scan()
     if a.limit:
         cands = cands[:a.limit]
@@ -190,6 +237,10 @@ def main():
                 results[c['md5']] = (c, {'skip': 'Fehler: ' + str(e)[:60]})
             if i % 200 == 0:
                 print(f'  {i}/{len(cands)}', flush=True)
+
+    errors = [r['skip'] for _, r in results.values() if r and r.get('skip', '').startswith('Fehler: ')]
+    if errors:
+        raise RuntimeError(f'{len(errors)} Texturen konnten nicht erzeugt werden: {errors[:5]}')
 
     # Schlüssel eindeutig machen und in Bibliotheken packen
     used_keys = set()
@@ -213,11 +264,11 @@ def main():
         if 'rm' in r:
             params[key].update(r['rm'])
 
+    if not params:
+        raise RuntimeError('Keine Karten erzeugt; vorhandene Bibliotheken bleiben unverändert')
+
     made, ini = [], []
     lib_names = {}
-    for old in os.listdir(os.path.join(NAP, 'Surface', 'fx')) if os.path.isdir(os.path.join(NAP, 'Surface', 'fx')) else []:
-        if re.match(r'normalmaps_(ships_auto|bases|solar_auto)_', old):   # frühere Läufe
-            os.remove(os.path.join(NAP, 'Surface', 'fx', old))
     for (group, sset), items in sorted(libs.items()):
         idx, cur, cur_bytes = 1, {}, 0
         chunks = []
@@ -238,7 +289,7 @@ def main():
             lname = f'normalmaps_{group}_{sset}_{i}' if sset != 'all' else f'normalmaps_{group}_auto_{i}'
             lname = re.sub(r'[^a-z0-9_]+', '_', lname.lower())
             header, root = M.build_library({k: v[1] for k, v in ch.items()}, 'MIPS')
-            path = os.path.join(NAP, 'Surface', 'fx', lname + '.txm')
+            path = os.path.join(output_root, 'Surface', 'fx', lname + '.txm')
             os.makedirs(os.path.dirname(path), exist_ok=True)
             W.save(path, header, root)
             made.append(f'Surface/fx/{lname}.txm')
@@ -258,23 +309,24 @@ def main():
                     extra = M.rm_ini_lines(c['key'], r['rm'])
                 body.append(f"\n[NormalMap]\ntexture = {c['name']}\nlibrary = {lib_names[c['key']]}\n"
                             f"map = nm_{c['key']}\nstrength = {r['strength']:g}\n{extra}")
-        with open(path, 'w', encoding='utf-8', newline='\n') as f:
+        with atomic_open(path, 'w', encoding='utf-8', newline='\n') as f:
             f.write(f'; SurfaceMaps{group.capitalize()}.ini - automatisch erzeugte Normal Maps fuer {"Schiffs" if group == "ships" else "Basis"}texturen.\n'
                     '; Syntax wie SurfaceMaps.ini. Erzeugt von tools/make_surface_maps_bulk.py, nicht von Hand aendern.\n'
                     '; Eine Textur kommt hoechstens einmal vor; Namen mit verschiedenem Inhalt wurden ausgelassen.\n')
             f.write(''.join(tex_blocks) + ''.join(body))
-    with open(PARAMS_JSON, 'w', encoding='utf-8', newline='\n') as f:
+    with atomic_open(PARAMS_JSON, 'w', encoding='utf-8', newline='\n') as f:
         json.dump(params, f, indent=0, ensure_ascii=False, sort_keys=True)
         f.write('\n')
-    with open(EXTRA_LIST, 'w', encoding='utf-8', newline='\n') as f:
+    with atomic_open(EXTRA_LIST, 'w', encoding='utf-8', newline='\n') as f:
         f.write('# Von tools/make_surface_maps_bulk.py erzeugte Normal-Map-Bibliotheken (Klasse/Pfad)\n')
         f.write('\n'.join(made) + '\n')
-    write_report(cands, stat, skipped, params, libs, made)
+    write_report(cands, stat, skipped, params, libs, made, output_root)
     print('fertig:', len(params), 'Karten in', len(made), 'Dateien; übersprungen', dict(skipped))
+    return made
 
 
-def write_report(cands, stat, skipped, params, libs, made):
-    total = sum(os.path.getsize(os.path.join(NAP, m)) for m in made)
+def write_report(cands, stat, skipped, params, libs, made, output_root):
+    total = sum(os.path.getsize(os.path.join(output_root, m)) for m in made)
     p95 = np.array([v['p95'] for v in params.values()]) if params else np.array([0.0])
     s = np.array([v['strength'] for v in params.values()]) if params else np.array([0.0])
     L = ['# Bewertung der automatisch erzeugten Normal Maps (Schiffe und Basen)', '',
@@ -299,8 +351,9 @@ def write_report(cands, stat, skipped, params, libs, made):
                      f"{np.mean([v['metal_mean'] for v in vs]):.2f} | {np.mean([v['metal_std'] for v in vs]):.2f} | {sum(1 for v in vs if v['metal_mean'] < 0.05)} |")
     L += ['', '## Bibliotheken', '', '| Datei | Größe |', '|---|---:|']
     for m in made:
-        L.append(f'| `{m}` | {os.path.getsize(os.path.join(NAP, m)) / 1e6:.1f} MB |')
-    open(REPORT, 'w', encoding='utf-8', newline='\n').write('\n'.join(L) + '\n')
+        L.append(f'| `{m}` | {os.path.getsize(os.path.join(output_root, m)) / 1e6:.1f} MB |')
+    with atomic_open(REPORT, 'w', encoding='utf-8', newline='\n') as stream:
+        stream.write('\n'.join(L) + '\n')
 
 
 if __name__ == '__main__':

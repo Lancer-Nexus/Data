@@ -518,20 +518,6 @@
 "texture": "2PS_20.tga"
 },
 "bases_animatedpiller2": {
-"container": "Models/bases/bretonia/br_03_warwick_cityscape.cmp",
-"flat": 0.039,
-"md5": "90101dc0194bf80ab4e3ec628d322f04",
-"metal_mean": 0.25,
-"metal_std": 0.215,
-"p95": 28.0,
-"rough_mean": 0.6,
-"rough_std": 0.1,
-"size": 512,
-"smooth": 1,
-"strength": 1.92,
-"texture": "animatedpiller2.tga021028150205"
-},
-"bases_animatedpiller2_2": {
 "container": "Models/bases/liberty/li_01_manhattan_cityscape_nosigns.cmp",
 "flat": 0.216,
 "md5": "b6510520d5eabe7a45b823d0a7177359",
@@ -544,6 +530,20 @@
 "smooth": 1,
 "strength": 1.95,
 "texture": "animatedpiller2.TGA"
+},
+"bases_animatedpiller2_2": {
+"container": "Models/bases/liberty/li_04_forbes_cityscape.cmp",
+"flat": 0.039,
+"md5": "90101dc0194bf80ab4e3ec628d322f04",
+"metal_mean": 0.25,
+"metal_std": 0.215,
+"p95": 28.0,
+"rough_mean": 0.6,
+"rough_std": 0.1,
+"size": 512,
+"smooth": 1,
+"strength": 1.92,
+"texture": "animatedpiller2.tga021219145903"
 },
 "bases_animatedpiller2_3": {
 "container": "Models/bases/liberty/li_01_manhattan_cityscape.cmp",
@@ -2422,20 +2422,6 @@
 "texture": "bg_extra3.tga030110120803"
 },
 "bases_bg_extra4": {
-"container": "Models/bases/bretonia/br_01_avalon_cityscape.cmp",
-"flat": 0.06,
-"md5": "3fb450c8ecb52d1312ee507f023bd191",
-"metal_mean": 0.25,
-"metal_std": 0.176,
-"p95": 28.1,
-"rough_mean": 0.6,
-"rough_std": 0.1,
-"size": 512,
-"smooth": 1,
-"strength": 0.99,
-"texture": "bg_extra4.tga021022095954"
-},
-"bases_bg_extra4_2": {
 "container": "Models/bases/liberty/li_01_manhattan_cityscape_nosigns.cmp",
 "flat": 0.136,
 "md5": "4d8924f0a143e9ff39473869cbb43d17",
@@ -2448,6 +2434,20 @@
 "smooth": 1,
 "strength": 0.98,
 "texture": "bg_extra4.tga"
+},
+"bases_bg_extra4_2": {
+"container": "Models/bases/liberty/li_02_california_cityscape.cmp",
+"flat": 0.06,
+"md5": "3fb450c8ecb52d1312ee507f023bd191",
+"metal_mean": 0.25,
+"metal_std": 0.176,
+"p95": 28.1,
+"rough_mean": 0.6,
+"rough_std": 0.1,
+"size": 512,
+"smooth": 1,
+"strength": 0.99,
+"texture": "bg_extra4.tga021204124211"
 },
 "bases_bg_extra4_3": {
 "container": "Models/bases/liberty/li_01_manhattan_cityscape.cmp",
@@ -8274,7 +8274,7 @@
 "texture": "calif_weapon.tga021204124211"
 },
 "bases_car": {
-"container": "Models/bases/kusari/ku_01_hokkaido_cityscape.cmp",
+"container": "Models/bases/pirate/bw_01_curacao_cityscape.cmp",
 "flat": 0.156,
 "md5": "5acc25d48ec94b359a34eafee68d547e",
 "metal_mean": 0.25,
@@ -8285,7 +8285,7 @@
 "size": 512,
 "smooth": 1,
 "strength": 1.27,
-"texture": "Car.tga030123140205"
+"texture": "Car.tga021119133333"
 },
 "bases_catwalk_support": {
 "container": "Models/bases/generic/bw_pygar_landingdeck.3db",
@@ -8302,20 +8302,6 @@
 "texture": "Catwalk Support.tga"
 },
 "bases_ceiling_cap": {
-"container": "Models/bases/bretonia/br_avalon_bar.cmp",
-"flat": 0.151,
-"md5": "ea30fefd4cbf6d790ca422b09f07e626",
-"metal_mean": 0.0,
-"metal_std": 0.0,
-"p95": 20.5,
-"rough_mean": 0.6,
-"rough_std": 0.1,
-"size": 512,
-"smooth": 1,
-"strength": 6.0,
-"texture": "ceiling_cap.tga021211150031"
-},
-"bases_ceiling_cap_2": {
 "container": "Models/bases/liberty/li_forbes_bar.cmp",
 "flat": 0.238,
 "md5": "f1b21fa8a597ee5cc0208b3602da4517",
@@ -8328,6 +8314,20 @@
 "smooth": 1,
 "strength": 6.0,
 "texture": "ceiling_cap.tga021202141659"
+},
+"bases_ceiling_cap_2": {
+"container": "Models/bases/pirate/co_curacao_bar.cmp",
+"flat": 0.151,
+"md5": "ea30fefd4cbf6d790ca422b09f07e626",
+"metal_mean": 0.0,
+"metal_std": 0.0,
+"p95": 20.5,
+"rough_mean": 0.6,
+"rough_std": 0.1,
+"size": 512,
+"smooth": 1,
+"strength": 6.0,
+"texture": "ceiling_cap.tga021210192838"
 },
 "bases_ceiling_cap_3": {
 "container": "Models/bases/rheinland/rh_battleship_bar.cmp",
@@ -8344,20 +8344,6 @@
 "texture": "ceiling_cap.tga021124184643"
 },
 "bases_ceiling_gen01": {
-"container": "Models/bases/bretonia/br_barbican_station_deck.cmp",
-"flat": 0.121,
-"md5": "c46326d3c905194c4513e830a7dde425",
-"metal_mean": 0.25,
-"metal_std": 0.136,
-"p95": 28.0,
-"rough_mean": 0.6,
-"rough_std": 0.1,
-"size": 512,
-"smooth": 1,
-"strength": 2.71,
-"texture": "ceiling_gen01.tga021211170613"
-},
-"bases_ceiling_gen01_2": {
 "container": "Models/bases/liberty/li_manhattan_shipdealer.cmp",
 "flat": 0.017,
 "md5": "c1253943c2a0d39c841042878b12d1c7",
@@ -8904,7 +8890,7 @@
 "texture": "Dig_site_15.tga"
 },
 "bases_dig_site_16": {
-"container": "Models/bases/generic/cv_dig_site.cmp",
+"container": "Models/bases/pirate/bw_order_planetscape.cmp",
 "flat": 0.123,
 "md5": "65625fd600dfd8bedf696e5653eefc27",
 "metal_mean": 0.166,
@@ -8915,10 +8901,10 @@
 "size": 512,
 "smooth": 1,
 "strength": 0.97,
-"texture": "Dig_site_16.TGA021216222343"
+"texture": "Dig_site_16.TGA021126124128"
 },
 "bases_dig_site_18": {
-"container": "Models/bases/generic/cv_dig_site.cmp",
+"container": "Models/bases/pirate/bw_order_planetscape.cmp",
 "flat": 0.113,
 "md5": "ec07e9ef6dbba4465e245231aebcfa51",
 "metal_mean": 0.151,
@@ -8929,7 +8915,7 @@
 "size": 512,
 "smooth": 1,
 "strength": 0.8,
-"texture": "Dig_site_18.TGA021216222343"
+"texture": "Dig_site_18.TGA021126124128"
 },
 "bases_dig_site_19": {
 "container": "Models/bases/generic/cv_dig_site.cmp",
@@ -8946,7 +8932,7 @@
 "texture": "Dig_site_19.TGA021216222343"
 },
 "bases_dig_site_20": {
-"container": "Models/bases/generic/cv_dig_site.cmp",
+"container": "Models/bases/pirate/bw_order_planetscape.cmp",
 "flat": 0.073,
 "md5": "49472b76796044d80becf5364c35d738",
 "metal_mean": 0.018,
@@ -8957,7 +8943,7 @@
 "size": 512,
 "smooth": 1,
 "strength": 3.78,
-"texture": "Dig_site_20.tga021216222343"
+"texture": "Dig_site_20.tga021126124128"
 },
 "bases_dig_site_23": {
 "container": "Models/bases/generic/cv_dig_site.cmp",
@@ -9016,34 +9002,20 @@
 "texture": "dish.tga021206172714"
 },
 "bases_dome": {
-"container": "Models/bases/generic/bw_tau31_planetscape.cmp",
-"flat": 0.008,
-"md5": "8966cfb68d2a05a21e11c1711d7ffcdf",
+"container": "Models/bases/pirate/hi_01_madrid_cityscape.cmp",
+"flat": 0.011,
+"md5": "ae4951636a90bab69bc1cad446b0e8a3",
 "metal_mean": 0.25,
-"metal_std": 0.004,
-"p95": 28.1,
-"rough_mean": 0.6,
-"rough_std": 0.1,
-"size": 512,
-"smooth": 1,
-"strength": 1.67,
-"texture": "dome.tga"
-},
-"bases_dome2": {
-"container": "Models/bases/generic/bw_tau31_planetscape.cmp",
-"flat": 0.009,
-"md5": "4221281439bcee7176ae8ce42322ee97",
-"metal_mean": 0.25,
-"metal_std": 0.09,
+"metal_std": 0.079,
 "p95": 28.0,
 "rough_mean": 0.6,
 "rough_std": 0.1,
 "size": 512,
 "smooth": 1,
-"strength": 1.57,
-"texture": "dome2.tga"
+"strength": 2.07,
+"texture": "dome.tga021029165830"
 },
-"bases_dome2_2": {
+"bases_dome2": {
 "container": "Models/bases/pirate/hi_01_madrid_cityscape.cmp",
 "flat": 0.01,
 "md5": "67c567ee800a3c804b55ed94f0bab81f",
@@ -9056,6 +9028,20 @@
 "smooth": 1,
 "strength": 2.37,
 "texture": "dome2.tga021029165830"
+},
+"bases_dome2_2": {
+"container": "Models/bases/pirate/bw_tau31_planetscape.cmp",
+"flat": 0.009,
+"md5": "4221281439bcee7176ae8ce42322ee97",
+"metal_mean": 0.25,
+"metal_std": 0.09,
+"p95": 28.0,
+"rough_mean": 0.6,
+"rough_std": 0.1,
+"size": 512,
+"smooth": 1,
+"strength": 1.57,
+"texture": "dome2.tga021111172438"
 },
 "bases_dome3": {
 "container": "Models/bases/pirate/hi_01_madrid_cityscape.cmp",
@@ -9072,18 +9058,18 @@
 "texture": "dome3.tga021029165830"
 },
 "bases_dome_2": {
-"container": "Models/bases/pirate/hi_01_madrid_cityscape.cmp",
-"flat": 0.011,
-"md5": "ae4951636a90bab69bc1cad446b0e8a3",
+"container": "Models/bases/pirate/bw_tau31_planetscape.cmp",
+"flat": 0.008,
+"md5": "8966cfb68d2a05a21e11c1711d7ffcdf",
 "metal_mean": 0.25,
-"metal_std": 0.079,
-"p95": 28.0,
+"metal_std": 0.004,
+"p95": 28.1,
 "rough_mean": 0.6,
 "rough_std": 0.1,
 "size": 512,
 "smooth": 1,
-"strength": 2.07,
-"texture": "dome.tga021029165830"
+"strength": 1.67,
+"texture": "dome.tga021111172438"
 },
 "bases_dome_base": {
 "container": "Models/bases/bretonia/br_02_cambridge_cityscape.cmp",
@@ -9100,7 +9086,7 @@
 "texture": "dome_base.tga021029165713"
 },
 "bases_domeplatforms": {
-"container": "Models/bases/generic/bw_tau31_planetscape.cmp",
+"container": "Models/bases/pirate/bw_tau31_planetscape.cmp",
 "flat": 0.391,
 "md5": "5a13688bef532e064e701f23dea49eee",
 "metal_mean": 0.25,
@@ -9111,7 +9097,7 @@
 "size": 512,
 "smooth": 1,
 "strength": 1.7,
-"texture": "domeplatforms.tga"
+"texture": "domeplatforms.tga021111172438"
 },
 "bases_door": {
 "container": "Models/bases/generic/bw_pygar_landingdeck.3db",
@@ -9128,7 +9114,7 @@
 "texture": "Door .tga"
 },
 "bases_door_guard": {
-"container": "Models/bases/generic/bw_pygar_depot.3db",
+"container": "Models/bases/pirate/bw_order_planetscape.cmp",
 "flat": 0.06,
 "md5": "d30d1f8234a17392de34fb261d76f6a7",
 "metal_mean": 0.25,
@@ -9139,7 +9125,7 @@
 "size": 512,
 "smooth": 1,
 "strength": 1.07,
-"texture": "Door Guard.tga"
+"texture": "Door Guard.tga021126124128"
 },
 "bases_dragonbtm_128": {
 "container": "Models/bases/kusari/ku_sanctum_conference.cmp",
@@ -9184,20 +9170,6 @@
 "texture": "dtl_grate.tga021124183652"
 },
 "bases_dtl_grid_tile": {
-"container": "Models/bases/bretonia/br_cambridge_equip.cmp",
-"flat": 0.084,
-"md5": "c73a870212d26558ee3c9c2b445b7ef9",
-"metal_mean": 0.25,
-"metal_std": 0.027,
-"p95": 28.0,
-"rough_mean": 0.6,
-"rough_std": 0.1,
-"size": 512,
-"smooth": 1,
-"strength": 1.8,
-"texture": "dtl_grid_tile.tga"
-},
-"bases_dtl_grid_tile_2": {
 "container": "Models/bases/kusari/ku_junyo_waterscape.cmp",
 "flat": 0.113,
 "md5": "21eb02d4ae363aaec56ab931a9ed175c",
@@ -9210,6 +9182,20 @@
 "smooth": 1,
 "strength": 1.8,
 "texture": "dtl_grid_tile.tga021114155608"
+},
+"bases_dtl_grid_tile_2": {
+"container": "Models/bases/pirate/bw_02_ochorios_cityscape.cmp",
+"flat": 0.084,
+"md5": "c73a870212d26558ee3c9c2b445b7ef9",
+"metal_mean": 0.25,
+"metal_std": 0.027,
+"p95": 28.0,
+"rough_mean": 0.6,
+"rough_std": 0.1,
+"size": 512,
+"smooth": 1,
+"strength": 1.8,
+"texture": "dtl_grid_tile.tga021119132259"
 },
 "bases_dtl_grid_tile_3": {
 "container": "Models/bases/rheinland/rh_01_bizmark_cityscape.cmp",
@@ -9226,9 +9212,9 @@
 "texture": "dtl_grid_tile.tga021028164103"
 },
 "bases_dtl_tile": {
-"container": "Models/bases/bretonia/br_battleship_deck.cmp",
-"flat": 0.043,
-"md5": "02c9b98e1a81379457a311e8df606304",
+"container": "Models/bases/pirate/co_curacao_equip.cmp",
+"flat": 0.041,
+"md5": "c01f18a8ac01e6398219b0e18f1fb323",
 "metal_mean": 0.25,
 "metal_std": 0.001,
 "p95": 28.0,
@@ -9236,11 +9222,11 @@
 "rough_std": 0.1,
 "size": 512,
 "smooth": 1,
-"strength": 2.46,
-"texture": "dtl_tile.tga021220105935"
+"strength": 2.79,
+"texture": "dtl_tile.tga021030140705"
 },
 "bases_dtl_tile01": {
-"container": "Models/bases/generic/cv_space_base_bar.cmp",
+"container": "Models/bases/pirate/bw_01_curacao_cityscape.cmp",
 "flat": 0.014,
 "md5": "18545c95d57b944eebfcf5049d3a0f35",
 "metal_mean": 0.25,
@@ -9251,7 +9237,7 @@
 "size": 512,
 "smooth": 1,
 "strength": 2.86,
-"texture": "dtl_tile01.tga021212150840"
+"texture": "dtl_tile01.tga021119133333"
 },
 "bases_dtl_tile01_brite": {
 "container": "Models/bases/liberty/li_01_manhattan_cityscape.cmp",
@@ -9338,7 +9324,7 @@
 "texture": "dtl_tile03.tga021202141112"
 },
 "bases_dtl_tile04": {
-"container": "Models/bases/bretonia/br_02_cambridge_cityscape.cmp",
+"container": "Models/bases/pirate/bw_01_curacao_cityscape.cmp",
 "flat": 0.039,
 "md5": "60b0e8b6304bd33af2ae538d1320aea3",
 "metal_mean": 0.25,
@@ -9349,10 +9335,10 @@
 "size": 512,
 "smooth": 1,
 "strength": 2.43,
-"texture": "dtl_tile04.tga021029165713"
+"texture": "dtl_tile04.tga021119133333"
 },
 "bases_dtl_tile05": {
-"container": "Models/bases/bretonia/br_warwick_equip.cmp",
+"container": "Models/bases/pirate/bw_tau31_planetscape.cmp",
 "flat": 0.135,
 "md5": "4fc1ec07473351b4cda1513e65567db6",
 "metal_mean": 0.25,
@@ -9363,10 +9349,10 @@
 "size": 512,
 "smooth": 1,
 "strength": 1.83,
-"texture": "dtl_tile05.tga"
+"texture": "dtl_tile05.tga021111172438"
 },
 "bases_dtl_tile05_2": {
-"container": "Models/bases/bretonia/br_battleship_deck.cmp",
+"container": "Models/bases/rheinland/rh_bizmark_equip.cmp",
 "flat": 0.322,
 "md5": "dcf2e13e0be8fe38cbc6129d4be3272c",
 "metal_mean": 0.25,
@@ -9377,7 +9363,7 @@
 "size": 512,
 "smooth": 1,
 "strength": 1.52,
-"texture": "dtl_tile05.tga021220105935"
+"texture": "dtl_tile05.tga021120172231"
 },
 "bases_dtl_tile06": {
 "container": "Models/bases/kusari/ku_honshu_bar.cmp",
@@ -9408,7 +9394,7 @@
 "texture": "dtl_tile07.tga021025110021"
 },
 "bases_dtl_tile08": {
-"container": "Models/bases/bretonia/br_warwick_trader.cmp",
+"container": "Models/bases/pirate/co_curacao_bar.cmp",
 "flat": 0.006,
 "md5": "5b90a7fe0333f4e7919f1de1d8b3a124",
 "metal_mean": 0.25,
@@ -9419,7 +9405,7 @@
 "size": 512,
 "smooth": 1,
 "strength": 3.32,
-"texture": "dtl_tile08.tga"
+"texture": "dtl_tile08.tga021210192838"
 },
 "bases_dtl_tile08_2": {
 "container": "Models/bases/rheinland/rh_berlin_bar.cmp",
@@ -9436,7 +9422,7 @@
 "texture": "dtl_tile08.tga021124183228"
 },
 "bases_dtl_tile09": {
-"container": "Models/bases/bretonia/br_barbican_station_deck.cmp",
+"container": "Models/bases/kusari/ku_battleship_bar.cmp",
 "flat": 0.008,
 "md5": "96a4c435391be7572c9ce60d608eb4ef",
 "metal_mean": 0.25,
@@ -9447,7 +9433,7 @@
 "size": 512,
 "smooth": 1,
 "strength": 2.6,
-"texture": "dtl_tile09.tga021211170613"
+"texture": "dtl_tile09.tga021125085241"
 },
 "bases_dtl_tile10": {
 "container": "Models/bases/bretonia/br_01_avalon_cityscape.cmp",
@@ -9478,7 +9464,7 @@
 "texture": "dtl_tile10.tga"
 },
 "bases_dtl_tile11": {
-"container": "Models/bases/bretonia/br_barbican_station_bar.cmp",
+"container": "Models/bases/pirate/co_curacao_bar.cmp",
 "flat": 0.005,
 "md5": "99c7a4cda1f33999e14f7ad1b6ee69c8",
 "metal_mean": 0.25,
@@ -9489,7 +9475,7 @@
 "size": 512,
 "smooth": 1,
 "strength": 2.55,
-"texture": "dtl_tile11.tga021210213524"
+"texture": "dtl_tile11.tga021210192838"
 },
 "bases_dtl_tile11_2": {
 "container": "Models/bases/rheinland/rh_berlin_trader.cmp",
@@ -11326,7 +11312,7 @@
 "texture": "Hand Rail.tga"
 },
 "bases_hand_rail_2": {
-"container": "Models/bases/generic/bw_pygar_depot.3db",
+"container": "Models/bases/pirate/bw_order_planetscape.cmp",
 "flat": 0.016,
 "md5": "b5aa5e7b1e81d7943a7148be2ade5347",
 "metal_mean": 0.25,
@@ -11337,7 +11323,7 @@
 "size": 512,
 "smooth": 1,
 "strength": 2.2,
-"texture": "Hand Rail 2.tga"
+"texture": "Hand Rail 2.tga021126124128"
 },
 "bases_handheld": {
 "container": "Models/bases/generic/cv_dig_site.cmp",
@@ -21042,7 +21028,7 @@
 "texture": "Landing_deck 2.tga021119133333"
 },
 "bases_landing_pad_leg": {
-"container": "Models/bases/generic/bw_pygar_depot.3db",
+"container": "Models/bases/pirate/bw_order_planetscape.cmp",
 "flat": 0.014,
 "md5": "d352767e30d8fbc96b6bd9971c0742b4",
 "metal_mean": 0.25,
@@ -21053,7 +21039,7 @@
 "size": 512,
 "smooth": 1,
 "strength": 2.28,
-"texture": "Landing Pad Leg.tga"
+"texture": "Landing Pad Leg.tga021126124128"
 },
 "bases_lb_depo_room_01": {
 "container": "Models/bases/liberty/li_depot_deck.cmp",
@@ -25186,20 +25172,6 @@
 "texture": "news_031.tga021124184643"
 },
 "bases_news_2": {
-"container": "Models/bases/bretonia/br_barbican_station_bar.cmp",
-"flat": 0.376,
-"md5": "b9e789e7b5158a5d5531aa5ab76f0a88",
-"metal_mean": 0.032,
-"metal_std": 0.131,
-"p95": 28.1,
-"rough_mean": 0.6,
-"rough_std": 0.1,
-"size": 512,
-"smooth": 1,
-"strength": 1.31,
-"texture": "news-2.tga021210213524"
-},
-"bases_news_3": {
 "container": "Models/bases/liberty/li_californio_bar.cmp",
 "flat": 0.347,
 "md5": "a33f06daf0338bccadac697b974abef5",
@@ -25212,6 +25184,20 @@
 "smooth": 1,
 "strength": 0.57,
 "texture": "news.tga030106132759"
+},
+"bases_news_2_2": {
+"container": "Models/bases/pirate/co_curacao_bar.cmp",
+"flat": 0.376,
+"md5": "b9e789e7b5158a5d5531aa5ab76f0a88",
+"metal_mean": 0.032,
+"metal_std": 0.131,
+"p95": 28.1,
+"rough_mean": 0.6,
+"rough_std": 0.1,
+"size": 512,
+"smooth": 1,
+"strength": 1.31,
+"texture": "news-2.tga021210192838"
 },
 "bases_news_red": {
 "container": "Models/bases/rheinland/rh_bizmark_bar.cmp",
@@ -27048,20 +27034,6 @@
 "texture": "pitt_clifftile2.tga021023125717"
 },
 "bases_pitt_door": {
-"container": "Models/bases/generic/bw_tau31_planetscape.cmp",
-"flat": 0.098,
-"md5": "13d04869f8ecb0ffe0c34238c5d82e7c",
-"metal_mean": 0.236,
-"metal_std": 0.39,
-"p95": 28.1,
-"rough_mean": 0.6,
-"rough_std": 0.1,
-"size": 512,
-"smooth": 1,
-"strength": 0.83,
-"texture": "pitt_door.TGA"
-},
-"bases_pitt_door_2": {
 "container": "Models/bases/liberty/li_pittsburgh_planetscape.cmp",
 "flat": 0.105,
 "md5": "4a1aea0ddab1c27200773c1bd52abd22",
@@ -27074,6 +27046,20 @@
 "smooth": 1,
 "strength": 0.9,
 "texture": "pitt_door.TGA021023125717"
+},
+"bases_pitt_door_2": {
+"container": "Models/bases/pirate/bw_tau31_planetscape.cmp",
+"flat": 0.098,
+"md5": "13d04869f8ecb0ffe0c34238c5d82e7c",
+"metal_mean": 0.236,
+"metal_std": 0.39,
+"p95": 28.1,
+"rough_mean": 0.6,
+"rough_std": 0.1,
+"size": 512,
+"smooth": 1,
+"strength": 0.83,
+"texture": "pitt_door.TGA021111172438"
 },
 "bases_pitt_interior": {
 "container": "Models/bases/liberty/li_cal_minor_facade.cmp",
@@ -27103,21 +27089,21 @@
 "strength": 1.73,
 "texture": "pitt_panels2.tga021023125717"
 },
-"bases_pitt_tanks2": {
-"container": "Models/bases/generic/bw_tau31_planetscape.cmp",
-"flat": 0.035,
-"md5": "1f2e5896085ef202b25cc5773a64e7dc",
+"bases_pitt_panels2_2": {
+"container": "Models/bases/pirate/bw_tau31_planetscape.cmp",
+"flat": 0.027,
+"md5": "69397b29a26ad35a83fb960cd2917be3",
 "metal_mean": 0.25,
-"metal_std": 0.154,
-"p95": 28.1,
+"metal_std": 0.379,
+"p95": 27.9,
 "rough_mean": 0.6,
-"rough_std": 0.128,
+"rough_std": 0.1,
 "size": 512,
 "smooth": 1,
-"strength": 1.2,
-"texture": "pitt_tanks2.tga"
+"strength": 1.56,
+"texture": "pitt_panels2.tga021111172438"
 },
-"bases_pitt_tanks2_2": {
+"bases_pitt_tanks2": {
 "container": "Models/bases/liberty/li_pittsburgh_planetscape.cmp",
 "flat": 0.031,
 "md5": "901ad0786f6e77c497d8b93f75a83596",
@@ -27131,21 +27117,21 @@
 "strength": 1.28,
 "texture": "pitt_tanks2.tga021023125717"
 },
-"bases_pitt_tanks3": {
-"container": "Models/bases/generic/bw_tau31_planetscape.cmp",
-"flat": 0.021,
-"md5": "3c5e188e291731d0c31f6189781594f7",
+"bases_pitt_tanks2_2": {
+"container": "Models/bases/pirate/bw_tau31_planetscape.cmp",
+"flat": 0.035,
+"md5": "1f2e5896085ef202b25cc5773a64e7dc",
 "metal_mean": 0.25,
-"metal_std": 0.24,
-"p95": 27.9,
+"metal_std": 0.154,
+"p95": 28.1,
 "rough_mean": 0.6,
-"rough_std": 0.131,
+"rough_std": 0.128,
 "size": 512,
 "smooth": 1,
-"strength": 1.16,
-"texture": "pitt_tanks3.tga"
+"strength": 1.2,
+"texture": "pitt_tanks2.tga021111172438"
 },
-"bases_pitt_tanks3_2": {
+"bases_pitt_tanks3": {
 "container": "Models/bases/liberty/li_pittsburgh_planetscape.cmp",
 "flat": 0.024,
 "md5": "d11bb39b6bb8ec92a4c68c00bf58c425",
@@ -27158,6 +27144,20 @@
 "smooth": 1,
 "strength": 1.24,
 "texture": "pitt_tanks3.tga021023125717"
+},
+"bases_pitt_tanks3_2": {
+"container": "Models/bases/pirate/bw_tau31_planetscape.cmp",
+"flat": 0.021,
+"md5": "3c5e188e291731d0c31f6189781594f7",
+"metal_mean": 0.25,
+"metal_std": 0.24,
+"p95": 27.9,
+"rough_mean": 0.6,
+"rough_std": 0.131,
+"size": 512,
+"smooth": 1,
+"strength": 1.16,
+"texture": "pitt_tanks3.tga021111172438"
 },
 "bases_pitt_tanks4": {
 "container": "Models/bases/liberty/li_pittsburgh_planetscape.cmp",
@@ -27214,6 +27214,20 @@
 "smooth": 1,
 "strength": 1.11,
 "texture": "pitt_vent.TGA021023125717"
+},
+"bases_pittsp_b_room_09": {
+"container": "Models/bases/pirate/bw_tau31_planetscape.cmp",
+"flat": 0.068,
+"md5": "f5c56380f43ac9ab79ef9c14175e93f5",
+"metal_mean": 0.016,
+"metal_std": 0.053,
+"p95": 28.1,
+"rough_mean": 0.6,
+"rough_std": 0.1,
+"size": 512,
+"smooth": 1,
+"strength": 1.53,
+"texture": "pittSp_B_Room-09.tga021111172438"
 },
 "bases_planet": {
 "container": "Models/bases/rheinland/rh_bizmark_shipdealer.cmp",
@@ -34692,7 +34706,7 @@
 "texture": "TALE-1.tga021212150840"
 },
 "bases_tau31_terrain_tile09": {
-"container": "Models/bases/generic/bw_tau31_planetscape.cmp",
+"container": "Models/bases/pirate/bw_tau31_planetscape.cmp",
 "flat": 0.007,
 "md5": "30efc5518882d2f7f423ae9d93c28557",
 "metal_mean": 0.069,
@@ -34703,7 +34717,7 @@
 "size": 512,
 "smooth": 1,
 "strength": 0.94,
-"texture": "tau31_terrain_tile09.tga"
+"texture": "tau31_terrain_tile09.tga021111172438"
 },
 "bases_tr_r_15": {
 "container": "Models/bases/liberty/li_manhattan_trader02.cmp",
@@ -36260,7 +36274,7 @@
 "texture": "tyrell.TGA030110120803"
 },
 "bases_utility_panels_03b": {
-"container": "Models/bases/generic/bw_tau31_planetscape.cmp",
+"container": "Models/bases/pirate/bw_tau31_planetscape.cmp",
 "flat": 0.021,
 "md5": "247291b6182051aaeb41334501361caa",
 "metal_mean": 0.25,
@@ -36271,7 +36285,7 @@
 "size": 512,
 "smooth": 1,
 "strength": 1.36,
-"texture": "utility_panels_03b.TGA"
+"texture": "utility_panels_03b.TGA021111172438"
 },
 "bases_w_trade2": {
 "container": "Models/bases/bretonia/br_03_warwick_cityscape.cmp",
@@ -36848,7 +36862,7 @@
 "texture": "esc_pod_64.tga"
 },
 "ships_exhaust": {
-"container": "Material/ships/order/or_ships.mat",
+"container": "Material/ships/liberty/li_capships.mat",
 "flat": 0.192,
 "md5": "666d48e8dbb0b3442ca23c2da62f6dfe",
 "metal_mean": 0.303,
@@ -36876,7 +36890,7 @@
 "texture": "g_fighter03.TGA"
 },
 "ships_hangardoor2_128": {
-"container": "Material/ships/order/or_ships.mat",
+"container": "Material/ships/liberty/li_capships.mat",
 "flat": 0.026,
 "md5": "6a00526cb31604c9594433dc31e1a4c5",
 "metal_mean": 0.35,
@@ -36974,7 +36988,7 @@
 "texture": "K_panel_trim.TGA"
 },
 "ships_l_r_wnds_256": {
-"container": "Material/ships/order/or_ships.mat",
+"container": "Material/ships/liberty/li_capships.mat",
 "flat": 0.24,
 "md5": "f95e97cc4a3a3b7548f6598ff75ae4e0",
 "metal_mean": 0.35,
@@ -37002,7 +37016,7 @@
 "texture": "L_wing_128.TGA"
 },
 "ships_liberty2_256": {
-"container": "Material/ships/order/or_ships.mat",
+"container": "Material/ships/liberty/li_capships.mat",
 "flat": 0.08,
 "md5": "8abc61ee956118a5cb62fe06db651030",
 "metal_mean": 0.35,
@@ -37016,7 +37030,7 @@
 "texture": "liberty2_256.TGA"
 },
 "ships_liberty_baydoors": {
-"container": "Material/ships/order/or_ships.mat",
+"container": "Material/ships/liberty/li_capships.mat",
 "flat": 0.055,
 "md5": "bb890f12bdf8c2ae3347ec7fbaf478a5",
 "metal_mean": 0.35,
@@ -37100,7 +37114,7 @@
 "texture": "mip0.tga"
 },
 "ships_n_dtl2_256g": {
-"container": "Models/ships/nomad/no_battleship/no_battleship.3db",
+"container": "Models/ships/nomad/no_gunship/no_gunship.3db",
 "flat": 0.047,
 "md5": "0013938bb1bb7c1a8f30ed1919af91c3",
 "metal_mean": 0.019,
