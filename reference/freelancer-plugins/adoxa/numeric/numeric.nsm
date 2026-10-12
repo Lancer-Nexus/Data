@@ -1,0 +1,164 @@
+;
+; flhack.nsm - Additional code to implement FL Hack options.
+;
+; Jason Hood, 24 to 27 February, 2009.
+;
+; 10 & 11 March, 2009:
+;   added closer docking.
+;
+; 14 March, 2009:
+;   remove the jump-in jump gate/hole waypoint; fixed MP crash.
+;   create a random list of intros.
+;
+; 17 March, 2009:
+;   allocate the code dynamically, putting the data at the end of .text.
+;
+; 19 to 22 March, 2009:
+;   added flexible bribes;
+;   added higher paying jobs.
+;
+; 6 April, 2009:
+;   added reverse status.
+;
+; 13 to 15 April, 2009:
+;   added hypercruise and cruise_on.
+;
+; 6 May, 2009:
+;   added tl_decel;
+;   don't assume Server & Content are the same version (Discovery problem).
+;
+; 11 July, 2009:
+;   fixed Content version check (jobs wasn't working).
+;
+; 30 July, 2009:
+;   use FNSTSW;
+;   added save in space.
+;
+; 25 August, 2009:
+;   added test_auto_cm;
+;   used the (almost) correct bribe value, rounding it like Freelancer.
+;
+; 12 October, 2009:
+;   added ignore version.
+;
+; 26 October, 2009:
+;   test Content being zero as well, since Console keeps Server loaded.
+;
+
+	global	_copy_damage, _display_damage
+
+
+%define CALL(addr)	 call dword [a %+ addr]
+%define FindFirst	 call dword [0x5c649c]	; EquipManager::FindFirst
+%define ftol		 call dword [0x5c71e4]
+%define sprintf 	 call dword [0x5c71ec]
+
+
+	section .data
+
+a0x4EEF50	dd	0x4EEF50
+a0x58A580	dd	0x58A580
+
+hull		dd	0
+shield		dd	0
+buf		db	"12345678901", 0
+
+
+	section .text
+
+	; Make a copy of the hull and shield values.
+	align 16
+_copy_damage
+	xor	eax, eax
+	test	edi, edi
+	mov	[hull], eax
+	mov	[shield], eax
+	jz	.invalid
+	test	bl, bl			; ignore hull for solars
+	jz	.shield
+	mov	edx, [edi+0x4C] 	; any armor?
+	and	edx, 0x103
+	cmp	edx, 0x103
+	jne	.invalid
+	fld	dword [edi+0xB8]	; hull damage
+	push	0x1000000		; CEArmor
+	lea	ecx, [edi+0xE4]
+	FindFirst
+	test	eax, eax
+	jz	.hull
+	mov	eax, [eax+0x0C] 	; CEArmor::ArmorArch
+	fmul	dword [eax+0x70]	; hit_pts_scale
+.hull:
+	ftol
+	mov	[hull], eax
+.shield:
+	cmp	dword [esp+0x30], 0	; is there a shield?
+	jz	.invalid
+	fld	dword [esp+0x74]	; shield damage
+	ftol
+	mov	[shield], eax
+.invalid:
+	mov	eax, [esp+0x4C] 	; original code
+	test	eax, eax
+	ret
+
+
+	; Display the damage numerically.
+	align 16
+_display_damage
+	CALL(	0x4EEF50 )		; original distance call
+	lea	edx, [esp+0x9C]
+	fld	dword [edx+4]		; y offset
+	fsub	qword [0x5C7720]	; shift down by 0.1
+	fstp	dword [edx+4]		;  to the bottom of the bar
+	fld	dword [edx]		; x offset
+	fsub	dword [0x5CB88C]	; shift back by 0.05
+	fstp	dword [edx]		;  to the left of the bar
+	cmp	dword [hull], 0 	; is there a hull value?
+	jz	.shield
+	push	dword [hull]		; convert to string
+	push	0x5D7C04		; "%d"
+	push	buf
+	sprintf
+	add	esp, 12
+	mov	ecx, [ebp+0x40C]
+	push	buf
+	CALL(	0x58A580 )
+	lea	edx, [esp+0x9C]
+	mov	ecx, [ebp+0x40C]
+	mov	eax, [ecx]
+	push	0
+	push	edx
+	push	5
+	call	[eax+0xA8]
+	mov	ecx, [ebp+0x40C]
+	mov	eax, [ecx]
+	call	[eax+0x34]
+.shield:
+	lea	edx, [esp+0x9C]
+	fld	dword [edx]
+	fadd	qword [0x5C7720]	; shift across by 0.1
+	fstp	dword [edx]		;  to the right of the bar
+	cmp	dword [shield], 0	; is there a shield?
+	jz	.ret
+	push	dword [shield]
+	push	0x5D7C04		; "%d"
+	push	buf
+	sprintf
+	add	esp, 12
+	mov	ecx, [ebp+0x40C]
+	push	buf
+	CALL(	0x58A580 )
+	lea	edx, [esp+0x9C]
+	mov	ecx, [ebp+0x40C]
+	mov	eax, [ecx]
+	push	0
+	push	edx
+	push	5
+	call	[eax+0xA8]
+	mov	ecx, [ebp+0x40C]
+	mov	eax, [ecx]
+	call	[eax+0x34]
+.ret:
+	push	0x4EFD93		; back to the original code
+	ret

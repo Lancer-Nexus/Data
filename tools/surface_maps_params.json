@@ -1,0 +1,550 @@
+{
+ "normal": {
+  "li_elite_hull": {
+   "strength": 0.62,
+   "smooth": 1,
+   "rm": {
+    "rough_mean": 0.45,
+    "rough_std": 0.114,
+    "metal_mean": 0.35,
+    "metal_std": 0.054
+   }
+  },
+  "li_engine_grill": {
+   "strength": 0.5,
+   "smooth": 1,
+   "rm": {
+    "rough_mean": 0.45,
+    "rough_std": 0.1,
+    "metal_mean": 0.03,
+    "metal_std": 0.09
+   }
+  },
+  "li_equip_gen": {
+   "strength": 0.62,
+   "smooth": 1,
+   "rm": {
+    "rough_mean": 0.45,
+    "rough_std": 0.11,
+    "metal_mean": 0.35,
+    "metal_std": 0.296
+   }
+  },
+  "li_freighter1": {
+   "strength": 0.56,
+   "smooth": 1,
+   "rm": {
+    "rough_mean": 0.45,
+    "rough_std": 0.134,
+    "metal_mean": 0.35,
+    "metal_std": 0.097
+   }
+  },
+  "li_fighter": {
+   "strength": 1.15,
+   "smooth": 1,
+   "rm": {
+    "rough_mean": 0.45,
+    "rough_std": 0.104,
+    "metal_mean": 0.35,
+    "metal_std": 0.054
+   }
+  },
+  "ku_k_panel01": {
+   "strength": 0.5,
+   "smooth": 1,
+   "rm": {
+    "rough_mean": 0.45,
+    "rough_std": 0.114,
+    "metal_mean": 0.35,
+    "metal_std": 0.121
+   }
+  },
+  "ku_k_wings": {
+   "strength": 0.72,
+   "smooth": 1,
+   "rm": {
+    "rough_mean": 0.45,
+    "rough_std": 0.108,
+    "metal_mean": 0.35,
+    "metal_std": 0.07
+   }
+  },
+  "ku_metal03": {
+   "strength": 2.23,
+   "smooth": 1,
+   "rm": {
+    "rough_mean": 0.45,
+    "rough_std": 0.1,
+    "metal_mean": 0.35,
+    "metal_std": 0.051
+   }
+  },
+  "br_player01": {
+   "strength": 1.16,
+   "smooth": 1,
+   "rm": {
+    "rough_mean": 0.45,
+    "rough_std": 0.154,
+    "metal_mean": 0.35,
+    "metal_std": 0.09
+   }
+  },
+  "br_player02": {
+   "strength": 0.96,
+   "smooth": 1,
+   "rm": {
+    "rough_mean": 0.45,
+    "rough_std": 0.136,
+    "metal_mean": 0.35,
+    "metal_std": 0.112
+   }
+  },
+  "br_player03": {
+   "strength": 0.68,
+   "smooth": 1,
+   "rm": {
+    "rough_mean": 0.45,
+    "rough_std": 0.152,
+    "metal_mean": 0.35,
+    "metal_std": 0.105
+   }
+  },
+  "br_cap_dtl1": {
+   "strength": 0.5,
+   "smooth": 1,
+   "rm": {
+    "rough_mean": 0.45,
+    "rough_std": 0.148,
+    "metal_mean": 0.35,
+    "metal_std": 0.051
+   }
+  },
+  "br_cap_dtl2": {
+   "strength": 0.5,
+   "smooth": 1,
+   "rm": {
+    "rough_mean": 0.45,
+    "rough_std": 0.138,
+    "metal_mean": 0.35,
+    "metal_std": 0.136
+   }
+  },
+  "co_p_fighter01": {
+   "strength": 0.75,
+   "smooth": 1,
+   "rm": {
+    "rough_mean": 0.45,
+    "rough_std": 0.123,
+    "metal_mean": 0.35,
+    "metal_std": 0.055
+   }
+  },
+  "co_p_fighter02": {
+   "strength": 0.84,
+   "smooth": 1,
+   "rm": {
+    "rough_mean": 0.45,
+    "rough_std": 0.11,
+    "metal_mean": 0.35,
+    "metal_std": 0.05
+   }
+  },
+  "cv_g_fighter01": {
+   "strength": 0.5,
+   "smooth": 1,
+   "rm": {
+    "rough_mean": 0.45,
+    "rough_std": 0.153,
+    "metal_mean": 0.35,
+    "metal_std": 0.122
+   }
+  },
+  "cv_g_fighter02": {
+   "strength": 0.8,
+   "smooth": 1,
+   "rm": {
+    "rough_mean": 0.45,
+    "rough_std": 0.121,
+    "metal_mean": 0.35,
+    "metal_std": 0.059
+   }
+  },
+  "or_equip_mstr": {
+   "strength": 0.94,
+   "smooth": 1,
+   "rm": {
+    "rough_mean": 0.45,
+    "rough_std": 0.1,
+    "metal_mean": 0.35,
+    "metal_std": 0.282
+   }
+  },
+  "or_liberty1": {
+   "strength": 0.63,
+   "smooth": 1,
+   "rm": {
+    "rough_mean": 0.45,
+    "rough_std": 0.112,
+    "metal_mean": 0.35,
+    "metal_std": 0.062
+   }
+  },
+  "or_weaponplate2": {
+   "strength": 0.59,
+   "smooth": 1,
+   "rm": {
+    "rough_mean": 0.45,
+    "rough_std": 0.14,
+    "metal_mean": 0.35,
+    "metal_std": 0.211
+   }
+  },
+  "ut_panels01": {
+   "strength": 0.51,
+   "smooth": 1,
+   "rm": {
+    "rough_mean": 0.45,
+    "rough_std": 0.146,
+    "metal_mean": 0.35,
+    "metal_std": 0.057
+   }
+  },
+  "ut_liner1": {
+   "strength": 0.5,
+   "smooth": 1,
+   "rm": {
+    "rough_mean": 0.45,
+    "rough_std": 0.122,
+    "metal_mean": 0.35,
+    "metal_std": 0.028
+   }
+  },
+  "bw_dig_site_16": {
+   "strength": 0.73,
+   "smooth": 1,
+   "rm": {
+    "rough_mean": 0.6,
+    "rough_std": 0.124,
+    "metal_mean": 0.208,
+    "metal_std": 0.22
+   }
+  },
+  "bw_dig_site_18": {
+   "strength": 1.09,
+   "smooth": 1,
+   "rm": {
+    "rough_mean": 0.6,
+    "rough_std": 0.113,
+    "metal_mean": 0.131,
+    "metal_std": 0.167
+   }
+  },
+  "bw_dig_site_20": {
+   "strength": 4.48,
+   "smooth": 1,
+   "rm": {
+    "rough_mean": 0.6,
+    "rough_std": 0.1,
+    "metal_mean": 0.019,
+    "metal_std": 0.07
+   }
+  },
+  "li_ceiling_gen01": {
+   "strength": 2.3,
+   "smooth": 1,
+   "rm": {
+    "rough_mean": 0.6,
+    "rough_std": 0.1,
+    "metal_mean": 0.25,
+    "metal_std": 0.137
+   }
+  },
+  "bw_pygar_door": {
+   "strength": 2.39,
+   "smooth": 1,
+   "rm": {
+    "rough_mean": 0.6,
+    "rough_std": 0.1,
+    "metal_mean": 0.25,
+    "metal_std": 0.069
+   }
+  },
+  "bw_pygar_generator": {
+   "strength": 0.95,
+   "smooth": 1,
+   "rm": {
+    "rough_mean": 0.6,
+    "rough_std": 0.113,
+    "metal_mean": 0.25,
+    "metal_std": 0.151
+   }
+  },
+  "bw_pygar_fan": {
+   "strength": 3.8,
+   "smooth": 1,
+   "rm": {
+    "rough_mean": 0.6,
+    "rough_std": 0.1,
+    "metal_mean": 0.25,
+    "metal_std": 0.192
+   }
+  },
+  "bw_concrete_base": {
+   "strength": 4.26,
+   "smooth": 1,
+   "rm": {
+    "rough_mean": 0.6,
+    "rough_std": 0.1,
+    "metal_mean": 0.25,
+    "metal_std": 0.134
+   }
+  },
+  "bw_catwalk": {
+   "strength": 0.88,
+   "smooth": 1,
+   "rm": {
+    "rough_mean": 0.6,
+    "rough_std": 0.1,
+    "metal_mean": 0.25,
+    "metal_std": 0.229
+   }
+  },
+  "bw_grate": {
+   "strength": 0.85,
+   "smooth": 1,
+   "rm": {
+    "rough_mean": 0.6,
+    "rough_std": 0.1,
+    "metal_mean": 0.25,
+    "metal_std": 0.184
+   }
+  },
+  "bw_landing_pad": {
+   "strength": 0.51,
+   "smooth": 1,
+   "rm": {
+    "rough_mean": 0.6,
+    "rough_std": 0.1,
+    "metal_mean": 0.25,
+    "metal_std": 0.162
+   }
+  },
+  "bw_tunnel_panel": {
+   "strength": 2.95,
+   "smooth": 1,
+   "rm": {
+    "rough_mean": 0.6,
+    "rough_std": 0.1,
+    "metal_mean": 0.25,
+    "metal_std": 0.04
+   }
+  },
+  "ast_rock_4": {
+   "strength": 6.0,
+   "smooth": 1,
+   "rm": {
+    "rough_mean": 0.55,
+    "rough_std": 0.1,
+    "metal_mean": 0.3,
+    "metal_std": 0.3
+   }
+  },
+  "ast_rock_r04": {
+   "strength": 1.9,
+   "smooth": 1,
+   "rm": {
+    "rough_mean": 0.55,
+    "rough_std": 0.1,
+    "metal_mean": 0.3,
+    "metal_std": 0.064
+   }
+  },
+  "eq_turret_mturret": {
+   "strength": 1.26,
+   "smooth": 1,
+   "rm": {
+    "rough_mean": 0.55,
+    "rough_std": 0.1,
+    "metal_mean": 0.3,
+    "metal_std": 0.173
+   }
+  },
+  "eq_turret_wins": {
+   "strength": 0.5,
+   "smooth": 1,
+   "rm": {
+    "rough_mean": 0.55,
+    "rough_std": 0.17,
+    "metal_mean": 0.3,
+    "metal_std": 0.174
+   }
+  },
+  "eq_torpedo": {
+   "strength": 0.82,
+   "smooth": 1,
+   "rm": {
+    "rough_mean": 0.55,
+    "rough_std": 0.135,
+    "metal_mean": 0.3,
+    "metal_std": 0.11
+   }
+  },
+  "no_dtl2": {
+   "strength": 0.87,
+   "smooth": 1,
+   "rm": {
+    "rough_mean": 0.55,
+    "rough_std": 0.1,
+    "metal_mean": 0.019,
+    "metal_std": 0.073
+   }
+  },
+  "planet_rock01": {
+   "strength": 1.01,
+   "smooth": 1
+  },
+  "planet_crater_hi": {
+   "strength": 1.43,
+   "smooth": 1
+  },
+  "planet_crater_mid": {
+   "strength": 1.9,
+   "smooth": 1
+  },
+  "planet_crater_low": {
+   "strength": 2.86,
+   "smooth": 1
+  },
+  "planet_ground01": {
+   "strength": 0.93,
+   "smooth": 1
+  },
+  "planet_ice": {
+   "strength": 2.8,
+   "smooth": 1
+  },
+  "planet_lava": {
+   "strength": 1.28,
+   "smooth": 1
+  },
+  "planet_ocean": {
+   "strength": 6.0,
+   "smooth": 1
+  },
+  "pbody_mercury01": {
+   "strength": 1.02,
+   "smooth": 1
+  },
+  "pbody_cratermoon": {
+   "strength": 1.35,
+   "smooth": 1
+  },
+  "pbody_desert01": {
+   "strength": 6.0,
+   "smooth": 1
+  },
+  "pbody_desert_rock": {
+   "strength": 4.47,
+   "smooth": 1
+  },
+  "pbody_icegrey01": {
+   "strength": 1.47,
+   "smooth": 1
+  },
+  "pbody_icewhiteblue": {
+   "strength": 1.56,
+   "smooth": 1
+  },
+  "pbody_indust01": {
+   "strength": 0.97,
+   "smooth": 1
+  }
+ },
+ "cube": {
+  "envcube_space": {
+   "kind": "space",
+   "desc": "dunkler Weltraum mit vielen Sternen, schwacher Sonne und blauem Hauch",
+   "star_count": 3500,
+   "star_gain": 1.0,
+   "sun_dir": [
+    0.6,
+    0.35,
+    0.72
+   ],
+   "sun_color": [
+    0.5,
+    0.5,
+    0.55
+   ],
+   "sun_exp": 400.0,
+   "ambient": [
+    0.01,
+    0.012,
+    0.03
+   ],
+   "seed": 11
+  },
+  "envcube_sun": {
+   "kind": "sun",
+   "desc": "warme Sonne mit Schein, dunkler Umgebung, wenig Sternen",
+   "star_count": 1200,
+   "star_gain": 0.6,
+   "sun_dir": [
+    0.6,
+    0.35,
+    0.72
+   ],
+   "sun_color": [
+    0.55,
+    0.38,
+    0.2
+   ],
+   "sun_exp": 12.0,
+   "ambient": [
+    0.016,
+    0.018,
+    0.024
+   ],
+   "seed": 11
+  },
+  "envcube_nebula": {
+   "kind": "nebula",
+   "desc": "violetter Nebel mit kühlen Blautönen und Sternen",
+   "star_count": 3500,
+   "star_gain": 0.7,
+   "sun_dir": [
+    0.6,
+    0.35,
+    0.72
+   ],
+   "sun_color": [
+    0.55,
+    0.15,
+    0.7
+   ],
+   "sun_exp": 12.0,
+   "ambient": [
+    0.015,
+    0.015,
+    0.015
+   ],
+   "seed": 11,
+   "nebula_a": [
+    0.55,
+    0.15,
+    0.7
+   ],
+   "nebula_b": [
+    0.2,
+    0.35,
+    0.1
+   ],
+   "nebula_cover": 0.35
+  }
+ },
+ "_info": {
+  "model": null,
+  "vision": false
+ }
+}

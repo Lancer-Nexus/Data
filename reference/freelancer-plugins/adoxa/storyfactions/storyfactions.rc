@@ -1,0 +1,30 @@
+/*
+  storyfactions.rc - Version resource for STORYFACTIONS.DLL.
+
+  Jason Hood, 23 March, 2010.
+*/
+
+1 VERSIONINFO
+FILEVERSION    1,0,0,1
+PRODUCTVERSION 1,0,0,1
+FILEOS	       0x40004
+FILETYPE       0x1
+{
+  BLOCK "StringFileInfo"
+  {
+    BLOCK "040904B0"
+    {
+      VALUE "CompanyName",     "Jason Hood"
+      VALUE "FileDescription", "Story Factions"
+      VALUE "FileVersion",     "1.01"
+      VALUE "ProductName",     "Freelancer"
+      VALUE "ProductVersion",  "1, 0, 0, 1"
+      VALUE "Comments",        "http://adoxa.altervista.org/freelancer/"
+    }
+  }
+
+  BLOCK "VarFileInfo"
+  {
+    VALUE "Translation", 0x0409, 0x04B0
+  }
+}

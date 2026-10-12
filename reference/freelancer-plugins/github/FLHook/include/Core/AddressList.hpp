@@ -1,0 +1,106 @@
+#pragma once
+enum class AddressList : uint
+{
+    Absolute = 0,
+
+    // FLServer.exe Offsets
+
+    Update = 0x1BAB4,
+    Startup = 0x1BABC,
+    Shutdown = 0x1BAB8,
+    CrcAntiCheat = 0x6FAF0,
+    CreateChar = 0x6B790,
+    FlNew = 0x80012,
+    ServerFlServer = 0x1BC90,
+    DisableNpcSpawns1 = 0x5987B,
+    DisableNpcSpawns2 = 0x59CD3,
+    DataPtr = 0x277EC,
+
+    // Remove Client Offsets
+
+    RcDisconnect = 0x93E0,
+    RcSendChat = 0x7F30,
+    CpList = 0x43D74,
+
+    // Dalib.dll Offsets
+
+    DalibDiscSuppress = 0x49C6,
+    CdpServer = 0xA284,
+
+    // Server.dll Offsets
+
+    GetCommodities = 0x32EC2,
+    MaxGroupSize = 0x3A068,
+    MaxGroupSize2 = 0x3A46E,
+    GetInspect = 0x206C0,
+    GetFlName = 0x66370,
+    PlayerDbMaxPlayersPatch = 0x64BC3,
+    PlayerDbMaxPlayers = 0xB0264,
+    RepArrayFree = 0x7F3F0,
+    SaveFileHouseEntrySaveAndLoad = 0x679C6,
+    SaveFileHouseEntrySaveAndLoadPatch = 0x78B39,
+    SolarRefireRateBug = 0x02C057,
+    FixNpcAnnouncer = 0x173da,
+    UpdateCharacterFile = 0x6c547,
+    UpdateCharacterFile2 = 0x6c9cd,
+    SaveCharacter = 0x7EFA8,
+    BannedFileCheck = 0x76b3e,
+    ReadCharacterName1 = 0x72fe0,
+    ReadCharacterName2 = 0x717be,
+    CreateSolar = 0x2A62A,
+    RemoveDefaultDeathMessages = 0x39124,
+    ShipDestroyedInvoke = 0xB512,
+    CObjectFind = 0x84464,
+    GetObjectInspect1 = 0x87CD4,
+    GetObjectInspect2 = 0x2074A,
+    GetObjectInspect3 = 0x207BF,
+    SendComm = 0x19230,
+    FireRemoveAmmoFuncCall = 0x6F260,
+    EqObjExplosionHit = 0x9500,
+    CGuidedInitCallAddr = 0x846A0,
+    SkipCSolarPacketSend = 0x2A62A,
+    SkipCSolarPacket1 = 0x163F0,
+    SkipCSolarPacket2 = 0x27950,
+    RadiationPatch1 = 0x2118A,
+    RadiationPatch2 = 0x211BE,
+    RadiationPatch3 = 0x211C4,
+    RadiationPatch4 = 0x211C8,
+    RadiationPatch5 = 0x211F0,
+    RadiationPatch6 = 0x21258,
+    RadiationPatch7 = 0x87088,
+    ServerEquipRepairFactor = 0x8AE7C,
+
+    // Common.dll Offsets
+
+    CommonVfTableShip = 0x139838,
+    CommonVfTablePower = 0x1398F4,
+    CommonVfTableScanner = 0x139920,
+    CommonVfTableLight = 0x13994C,
+    CommonVfTableTractor = 0x139978,
+    CommonVfTableMine = 0x139D14,
+    CommonVfTableMineDropper = 0x139C64,
+    CommonVfTableCmDropper = 0x139C90,
+    CommonVfTableCm = 0x139D40,
+    CommonVfTableGun = 0x139C38,
+    CommonVfTableShieldGen = 0x139BB4,
+    CommonVfTableThruster = 0x139BE0,
+    CommonVfTableShieldBat = 0x1399FC,
+    CommonVfTableNanobot = 0x1399D0,
+    CommonVfTableMunition = 0x139CE8,
+    CommonVfTableEngine = 0x139AAC,
+    CommonCObjDestructor = 0x4F45D,
+    CommonCObjectAllocator = 0x4EE50,
+
+    CommonIZoneGetDistance = 0xD9B00,
+    CommonGetAmmoCapacityCallEq = 0x3E60D,
+    CommonGetAmmoCapacityHashCall1 = 0x535E7,
+    CommonGetAmmoCapacityHashCall2 = 0x535F8,
+    CommonHullRepairFactor = 0x4A28,
+    CommonCShipGetAmmoCapacity = 0x53220,
+
+    CommonCShipGetSpaceForCargoType = 0x532E0,
+
+    CommonCETractorVerifyTarget = 0x3E4A0,
+    CommonCETractorVerifyTargetCall1 = 0x3E292,
+    CommonCETractorVerifyTargetCall2 = 0x3DC6C,
+};

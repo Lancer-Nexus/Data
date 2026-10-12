@@ -59,6 +59,8 @@ DIR_CLASS = {
 def pick_class(rel):
     """Klasse einer INI anhand ihres Hauptordners. INIs in der Wurzel gehen nach System."""
     top = rel.split('/')[0]
+    if os.path.basename(rel).lower().startswith('surfacemaps') and rel.lower().startswith('fx/'):
+        return 'Surface'   # Zusatzkarten (Normal/Roughness/Metallic/Cube) liegen in eigener Klasse
     if '/' not in rel:
         return ROOT_CLASS
     return DIR_CLASS.get(top, 'Models')

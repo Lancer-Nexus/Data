@@ -28,15 +28,15 @@ Die INIs sagen dem Spiel, **welche** Daten es lädt und **wie** sie verwendet we
 
 ## 3. Klassencontainer und virtueller Root
 
-`NAP/` enthält zehn Klassenordner: `Effects`, `Material`, `Mission`, `Models`, `Script`, `Sounds`, `System`, `UI`, `Video`, `World`. Die Zuordnung steht in `classes.md`. Sie folgt der Dateiendung und sonst dem Hauptordner.
+`NAP/` enthält zwölf Klassenordner: `Effects`, `Equipment`, `Surface`, `Material`, `Mission`, `Models`, `Script`, `Sounds`, `System`, `UI`, `Video`, `World`. Die Zuordnung steht in `classes.md`. Sie folgt der Dateiendung und sonst dem Hauptordner.
 
 Das Spiel lädt alle Klassenordner in einen **virtuellen Root**. Dort liegen die Dateien so, wie die INIs sie erwarten. Der Klassenname gehört nicht zum Pfad:
 
 ```
-NAP/Sounds/audio/sounds/fx/debri_explo_1.wav   ->   im Spiel: audio/sounds/fx/debri_explo_1.wav
+NAP/Sounds/audio/sounds/fx/debri_explo_1.ogg   ->   im Spiel: audio/sounds/fx/debri_explo_1.ogg
 ```
 
-Deshalb verweisen die INIs auf Pfade wie `audio\sounds\fx\debri_explo_1.wav`, ohne Klasse.
+Deshalb verweisen die INIs auf Pfade wie `audio\sounds\fx\debri_explo_1.ogg`, ohne Klasse.
 
 ## 4. Verweise: wie INIs auf Dateien zeigen
 
@@ -76,10 +76,11 @@ Die Dateien `debri explo 1–4` und `med explo 1–4` sind auf der CD vorhanden.
 Die mit `tools/check_ini_references.py` ermittelte Fehlziel-Liste steht in `missing.md`. Ihre aktuelle Zahl ist nur mit dem vollständigen NAP-Datenbestand reproduzierbar. Die wichtigsten bekannten Gruppen:
 
 - **Schiffs-Kollisionsmodelle** `*_col.cmp`: 5 Stück. Die Modelle selbst sind vorhanden, die Kollisionsmodelle nicht.
-- **Station und TLR:** einige Verweise haben keinen eindeutigen Ersatz.
-- **Interface und HUD:** `interface/baseside/*.3db`, `hud_commsicon.3db` u. a.
+- **Intro-Szenen:** 17 `spacepop`-INIs in `universe/systems/intro/Intro.ini`.
+- **Station und TLR:** `tlr_a.3db`, `tlr_d.3db`, `tlr_tube_a.cmp`, `trading_depot.cmp` ohne eindeutigen Ersatz.
+- **Interface:** `interface/baseside/unknown.3db`, `hudtarget.txm`, `roids.txm`, `exit.tga`, `openingscreen.tga`.
 
-Korrekturen wurden nur gemacht, wenn eine andere Quelle denselben Namen für dieselbe Rolle nutzt. Das ist bei `jump_gatel`, `manufacturing_platform_lod` und `rh_battleship` der Fall.
+Das HD-Pack hat `interface/baseside/{elite,exit,fighter,frieghter}.3db`, `hud_commsicon.3db` und `multi_blackdragonmale.3db` geliefert, die vorher fehlten. Korrekturen wurden nur gemacht, wenn eine andere Quelle denselben Namen für dieselbe Rolle nutzt (`jump_gatel`, `manufacturing_platform_lod`, `rh_battleship`).
 
 ## 9. Externe Quellen, die wir geprüft haben
 
@@ -90,7 +91,7 @@ Korrekturen wurden nur gemacht, wenn eine andere Quelle denselben Namen für die
 | `treewyrm/freelancer` | TypeScript-Bibliothek für die Formate. Läuft mit Node 22 oder 24, Tests bestehen. Schreiben über den Einstieg `dist/ini/index.js` ist nicht geprüft. |
 | FLCompanion | Windows-Anwendung, nicht geprüft. |
 
-Die HD-Edition hat Modelle und Texturen, die bei uns fehlen oder anders sind. Ob sie übernommen werden, ist noch nicht entschieden.
+Das HD-Pack ist übernommen (Abschnitt 13).
 
 ## 10. Werkzeuge
 
@@ -98,8 +99,12 @@ Die HD-Edition hat Modelle und Texturen, die bei uns fehlen oder anders sind. Ob
 |---|---|
 | `tools/build_nap.py` | Baut `NAP/` aus der ISO oder den CABs. Benennt um, ordnet Klassen zu, entfernt Dateien, die nicht mehr aus der Quelle stammen. |
 | `tools/sync_inis_to_nap.py` | Kopiert die INIs aus `SDK/` nach `NAP/`. Mehrfach ausführbar. |
+| `tools/import_hd_pack.py`, `tools/import_hd_inis.py` | Übernehmen Daten und INIs des HD-Packs (Abschnitt 13). |
+| `tools/utf_textures.py`, `tools/check_textures.py` | Texturmaße lesen, Formen und Materialnamen prüfen, Bericht `textur-pruefung.md`. |
+| `tools/extract_textures.py`, `tools/upscale_textures.py`, `tools/utf_write.py`, `tools/scale_shape_inis.py`, `tools/verify_upscaled.py` | KI-Hochskalierung der Originaltexturen (Abschnitt 14). |
+| `tools/check_refs.py` | Prüft alle Datei-Verweise der INIs, schreibt `missing.md`. |
 
-Wichtig: `build_nap.py` schließt zwei README-Kopien aus (`EXCLUDE`), weil wir sie entfernt haben. Sie würden sonst wieder erscheinen.
+Wichtig: `build_nap.py` schließt zwei README-Kopien aus (`EXCLUDE`), weil wir sie entfernt haben. Sie würden sonst wieder erscheinen. Dateien aus `hd_overrides.txt` und `upscaled_containers.txt` überschreibt und löscht es nicht.
 
 ## 11. Git
 
@@ -110,7 +115,43 @@ Wichtig: `build_nap.py` schließt zwei README-Kopien aus (`EXCLUDE`), weil wir s
 ## 12. Offene Punkte
 
 - Mehrere Musiktitel pro Raum (Gamecode, siehe `TODO-musik.md`).
-- Die 21 fehlenden Dateien, mit offenen Entscheidungen zu den Kollisionsmodellen.
-- Entscheidung, ob HD-Modelle und HD-Texturen übernommen werden und welche INI-Werte dazu nötig sind.
-- Prüfung, ob die Modelle und Texturen intern auf Materialien verweisen, die nur in HD liegen. Das ist mit `treewyrm` möglich.
-- Die Engine selbst ist nicht im Repo. Alles, was über die Auswertung der INIs hinausgeht, ist nicht geprüft.
+- Die 32 fehlenden Ziele (`missing.md`), vor allem die Kollisionsmodelle.
+- **Engine-Test:** HD-Daten (1024- und 2048-Texturen, neue INI-Schlüssel) und die hochskalierten Texturen sind nur strukturell geprüft, nicht im Spiel (`TODO-hd-pack.md`, `TODO-texturen-upscale.md`).
+- Plugin-Funktionen des HD-Packs (`storyfactions`, `Territory`, `ranks`, `HudShift`): Quellcode als Referenz in `reference/freelancer-plugins/`, Umsetzung offen (`TODO-plugins.md`).
+- Hochskalierung der Vollbildgrafiken (`startupscreen.tga` u. a.) (Videos: `TODO-video.md`).
+- Die Engine selbst ist nicht im Repo. Alles, was über die Auswertung der INIs und der Containerformate hinausgeht, ist nicht geprüft.
+
+## 13. HD-Pack
+
+Quelle: `FLHDE/freelancer-hd-edition`, nur `DATA/` und `EXE/freelancer.ini`. Entscheidungen (`PLAN-hd-pack.md`): HD-Werte gewinnen; geänderte HD-Texturen werden übernommen und die INIs richten sich nach Textur und Modell; kein Backup (Rückweg ist ISO plus Manifest).
+
+- **Daten:** `import_hd_pack.py` hat 1250 Nicht-INI-Dateien nach `NAP/` übernommen (1001 überschrieben, 249 neu) und in `hd_overrides.txt` eingetragen. Namen sind nach unseren Regeln normalisiert (klein, `_`; Planeten flach; `fl_intro_en_hd.wmv` → `fl_intro.wmv`).
+- **INIs:** `import_hd_inis.py` hat 254 INIs geändert und 10 neu aufgenommen (990 waren identisch). Zusätzlich Asteroiden (152 INIs), Black Hole, Solar (Nebel, Ringe) und `Music.ini`.
+- **Texturen:** 302 Texturen haben eine andere Größe als auf der CD, überwiegend ×4 (256 → 1024, 128 → 512), Planeten ×8. Die Formkoordinaten in den INIs passen (0 außerhalb, 0 halb abgedeckt, `textur-pruefung.md`).
+- **Nicht im Umfang:** `EXE/`, `DLLS/`, `FLDOCS/`, `JFLP/` des HD-Packs. Die Plugin-INIs sind ohne die DLLs wirkungslos.
+
+## 14. Texturen hochskalieren
+
+Texturen, die das HD-Pack nicht anfasst (343 Container, 605 Texturen), sind mit KI um Faktor 4 hochskaliert, im selben Format zurückgeschrieben und im NAP ersetzt. Das entspricht dem Verhältnis der HD-Texturen (gemessen an 6214: ×4 dominiert).
+
+- **Modelle:** PBRify V4 (CC0) für Basen, Solar, FX, Backdrops und Ausrüstung; RealESRGAN x4plus (BSD-3) für Interface und Symbole. Alpha getrennt: Symbole per Modell, Glows und Sprites bikubisch.
+- **Format:** DXT1/3/5, DDS unkomprimiert, TGA 8/16/24/32 bleiben erhalten (DXT über `etcpak`, eigener UTF-Schreiber).
+- **INIs:** `scale_shape_inis.py` hat 40 Formen in zwei INIs ×4 genommen.
+- **Sicherung:** `~/Dokumente/Freelancer-Backup-NAP-vor-Upscale/` (nicht im Repo). Liste der Container: `tools/upscaled_containers.txt`.
+- **Offen:** Spieltest; Vollbildgrafiken. Einzelheiten und Zahlen: `TODO-texturen-upscale.md`.
+
+## 15. Audioformate
+
+Die CD liefert 1700 `.wav`: 1620 davon sind **MP3 in einem WAV-Container** (Formatkennung 85, Freelancer-spezifisch), 80 unkomprimierte PCM-Dateien. Sie sind gewandelt (`tools/convert_audio.py`, 254 MB → 216 MB):
+
+| Quelle | Ziel | Anzahl | Begründung |
+|---|---|---:|---|
+| PCM-WAV | FLAC (verlustfrei) | 80 | kleiner, ohne Verlust |
+| MP3-in-WAV | Ogg Vorbis, Bitrate wie die MP3-Quelle (48 bis 256 kbit/s), Kanäle und Abtastrate unverändert | 1620 | Standardformat, lückenlose Schleifen (kein MP3-Padding), kein Sonderformat im WAV-Container |
+
+- **Warum nicht Opus:** Nach dem Audit des Clients (`Client/docs/asset-packages/audio-pipeline.md`) lädt `libopusfile` unter Linux nicht (32/64-Bit) und die Windows-Bibliothek fehlt im Build.
+- **Qualität:** Die MP3-Quellen sind schon verlustbehaftet; Vorbis ist eine zweite Generation. Bei gleicher Bitrate ist der Unterschied klein, bringt aber keinen Qualitätsgewinn. Der Gewinn liegt in Format und Schleifen, nicht in der Qualität.
+- **Prüfung:** Je Datei Kanäle, Abtastrate und dekodierte Dauer (Abweichung höchstens 0,1 s). Alle 1700 bestanden.
+- **INIs:** 7 INIs in `SDK/audio/` zeigen auf `.ogg` bzw. `.flac`, ein `.thn` (`s059x_nrml_jonner_rh_01_bar_01.thn`, gleiche Länge `.wav` → `.ogg`).
+- **Folge:** Der Original-Client kann die Dateien nicht laden. Für LibreLancer gilt: nicht im Spiel geprüft; es gibt noch keine Loop-Start/Ende-Metadaten (siehe Audit).
+- **Rückweg:** `~/Dokumente/Freelancer-Backup-Audio-vor-Konvertierung/` (Originale, die sieben INIs, die `.thn`), Zuordnung `tools/audio_converted.csv`. `build_nap.py` legt die `.wav` nicht neu an und schützt die neuen Dateien.
