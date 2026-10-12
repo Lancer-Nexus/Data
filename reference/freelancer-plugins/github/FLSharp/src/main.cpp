@@ -1,0 +1,144 @@
+#include "feature_config.h"
+#include "config_reader.h"
+#include "version_check.h"
+#include "logger.h"
+#include "dacom.h"
+#include "update.h"
+#include "waypoint.h"
+#include "waypoint_names.h"
+#include "projectiles.h"
+#include "resolutions.h"
+#include "test_sounds.h"
+#include "trade_lane_lights.h"
+#include "copy_paste.h"
+#include "ui_anim.h"
+#include "weapon_anim.h"
+#include "flash_particles.h"
+#include "rep_requirements.h"
+#include "exit.h"
+#include "flight_controls.h"
+#include "infocards.h"
+#include "save_crash.h"
+#include "alchemy_crash.h"
+#include "blank_faction.h"
+#include "server_filter.h"
+#include "dll_crash.h"
+#include "shield_capacity.h"
+#include "dealer_fixes.h"
+#include "cheat_detection.h"
+#include "group_members.h"
+#include "cursor_colors.h"
+#include "base_info.h"
+#include "mouse.h"
+#include "pilot_names.h"
+#include "camera.h"
+#include "maneuver_frame.h"
+#include "player_lights.h"
+#include "light_limit.h"
+#include "equip_stats.h"
+#include "sub_target.h"
+#include "target_trade.h"
+
+FeatureManager manager;
+
+static void CheckDllVersions()
+{
+    // Stores for each DLL its module name and known 1.0 build version.
+    std::pair<LPCSTR, UINT32> dlls[] =
+    {
+        { "common.dll", 1223 },
+        { "server.dll", 1223 },
+    };
+
+    // Checks if any of the DLLs are 1.0 instead of 1.1.
+    for (const auto &dll : dlls)
+    {
+        // If the build version is anything higher than the 1.0 build, we'll consider it 1.1.
+        if (GetDllProductBuildVersion(dll.first) <= dll.second)
+        {
+            Logger::PrintV10Warning(dll.first);
+        }
+    }
+}
+
+void Init()
+{
+    // All registered features must be able to work independently of each other.
+    // They must not assume a certain load order or that another feature is active/inactive.
+
+    // Client only fixes
+    manager.RegisterFeature("better_updates",           InitBetterUpdates,          nullptr,                    ApplyOnlyOnClient);
+    manager.RegisterFeature("waypoint_fixes",           InitWaypointFixes,          nullptr,                    ApplyOnlyOnClient);
+    manager.RegisterFeature("waypoint_name_fixes",      InitWaypointNameFixes,      nullptr,                    ApplyOnlyOnClient);
+    manager.RegisterFeature("projectiles_sound_fix",    InitProjectilesSoundFix,    nullptr,                    ApplyOnlyOnClient);
+    manager.RegisterFeature("better_resolutions",       InitBetterResolutions,      CleanupBetterResolutions,   ApplyOnlyOnClient);
+    manager.RegisterFeature("more_test_sounds",         InitTestSounds,             nullptr,                    ApplyOnlyOnClient);
+    manager.RegisterFeature("trade_lane_lights_fix",    InitTradeLaneLightsFix,     nullptr,                    ApplyOnlyOnClient);
+    manager.RegisterFeature("copy_paste_feature",       InitCopyPasteFeature,       nullptr,                    ApplyOnlyOnClient);
+    manager.RegisterFeature("slide_ui_anim_fix",        InitSlideUiAnimFix,         nullptr,                    ApplyOnlyOnClient);
+    manager.RegisterFeature("weapon_anim_fix",          InitWeaponAnimFix,          nullptr,                    ApplyOnlyOnClient);
+    manager.RegisterFeature("flash_particle_fix",       InitFlashParticlesFix,      nullptr,                    ApplyOnlyOnClient);
+    manager.RegisterFeature("print_rep_requirements",   InitPrintRepRequirements,   nullptr,                    ApplyOnlyOnClient);
+    manager.RegisterFeature("post_game_deadlock_fix",   InitPostGameDeadlockFix,    nullptr,                    ApplyOnlyOnClient);
+    manager.RegisterFeature("quit_message_fix",         InitQuitMessageFix,         CleanupQuitMessageFix,      ApplyOnlyOnClient);
+    manager.RegisterFeature("flight_controls_fix",      InitFlightControlsFix,      nullptr,                    ApplyOnlyOnClient);
+    manager.RegisterFeature("dynamic_solar_infocards",  InitDynamicSolarInfocards,  nullptr,                    ApplyOnlyOnClient);
+    manager.RegisterFeature("alchemy_crash_fix",        InitAlchemyCrashFix,        nullptr,                    ApplyOnlyOnClient);
+    manager.RegisterFeature("blank_faction_fix",        InitBlankFactionNameFix,    nullptr,                    ApplyOnlyOnClient);
+    manager.RegisterFeature("server_filter_crash_fix",  InitServerFilterCrashFix,   nullptr,                    ApplyOnlyOnClient);
+    manager.RegisterFeature("server_filter_speed_fix",  InitServerFilterSpeedFix,   nullptr,                    ApplyOnlyOnClient);
+    manager.RegisterFeature("shield_capacity_fix",      InitShieldCapacityFix,      nullptr,                    ApplyOnlyOnClient);
+    manager.RegisterFeature("dealer_menu_open_fix",     InitDealerOpenFix,          nullptr,                    ApplyOnlyOnClient);
+    manager.RegisterFeature("dealer_crash_fix",         InitDealerCrashFix,         nullptr,                    ApplyOnlyOnClient);
+    manager.RegisterFeature("hostile_group_formation",  InitHostileGroupFormation,  nullptr,                    ApplyOnlyOnClient);
+    manager.RegisterFeature("unhostile_group_members",  InitHostileGroupMembersFix, nullptr,                    ApplyOnlyOnClient);
+    manager.RegisterFeature("group_member_attitude",    InitGroupMemberAttitudeFix, nullptr,                    ApplyOnlyOnClient);
+    manager.RegisterFeature("more_cursor_colors",       InitMoreCursorColors,       nullptr,                    ApplyOnlyOnClient);
+    manager.RegisterFeature("base_info_spacing_fix",    InitBaseInfoSpacingFix,     nullptr,                    ApplyOnlyOnClient);
+    manager.RegisterFeature("cursor_fix",               InitCursorFix,              nullptr,                    ApplyOnlyOnClient);
+    manager.RegisterFeature("mouse_warp_fix",           InitMouseWarpFix,           nullptr,                    ApplyOnlyOnClient);
+    manager.RegisterFeature("mouse_pos_fix",            InitMenuMousePosFix,        nullptr,                    ApplyOnlyOnClient);
+    manager.RegisterFeature("pilot_names_fix",          InitPilotNamesFix,          nullptr,                    ApplyOnlyOnClient);
+    manager.RegisterFeature("camera_switch_fix",        InitCameraSwitchFix,        nullptr,                    ApplyOnlyOnClient);
+    manager.RegisterFeature("camera_motion_fix",        InitCameraMotionFix,        nullptr,                    ApplyOnlyOnClient);
+    manager.RegisterFeature("maneuver_frame_fix",       InitManeuverFrameFix,       nullptr,                    ApplyOnlyOnClient);
+    manager.RegisterFeature("player_lights_fix",        InitPlayerLightsFix,        nullptr,                    ApplyOnlyOnClient);
+    manager.RegisterFeature("increased_light_limit",    InitIncreaseLightLimit,     nullptr,                    ApplyOnlyOnClient);
+    manager.RegisterFeature("equip_stat_flicker_fix",   InitEquipStatFlickerFix,    CleanupEquipStatFlickerFix, ApplyOnlyOnClient);
+    manager.RegisterFeature("sub_target_fix",           InitSubTargetFix,           nullptr,                    ApplyOnlyOnClient);
+    manager.RegisterFeature("formation_list_fix",       InitFormationListFix,       nullptr,                    ApplyOnlyOnClient);
+    manager.RegisterFeature("target_trade_blink_fix",   InitTargetTradeBlinkFix,    nullptr,                    ApplyOnlyOnClient);
+
+    // Server only fixes
+    manager.RegisterFeature("ship_buy_kick_fix",        InitShipBuyKickFix,         nullptr,                    ApplyOnlyOnServer);
+
+    // Client and server fixes
+    manager.RegisterFeature("projectiles_server_fix",   InitProjectilesServerFix,   nullptr,                    ApplyAlways);
+    manager.RegisterFeature("save_crash_fix",           InitSaveCrashFix,           nullptr,                    ApplyAlways);
+    manager.RegisterFeature("freelancer_dll_crash_fix", InitMissingDllCrashFix,     nullptr,                    ApplyAlways);
+
+    ReadConfig("FLSharp.ini", manager);
+
+    manager.InitFeatures();
+}
+
+void Cleanup()
+{
+    manager.CleanupFeatures();
+}
+
+BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpReserved)
+{
+    if (fdwReason == DLL_PROCESS_ATTACH)
+    {
+        DisableThreadLibraryCalls(hinstDLL);
+        CheckDllVersions();
+        Init();
+    }
+    else if (fdwReason == DLL_PROCESS_DETACH)
+    {
+        Cleanup();
+    }
+
+    return TRUE;
+}

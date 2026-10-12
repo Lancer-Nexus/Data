@@ -1,0 +1,47 @@
+/*
+  ranks.rc - Resources for RANKS.DLL.
+
+  Jason Hood, 16 August, 2010
+*/
+
+#include <windows.h>
+
+
+STRINGTABLE
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+{
+  0, "%%d - %s"
+  1, "Recruit"
+  2, "Pilot"
+  3, "Ace"
+  4, "Veteran"
+}
+
+
+VS_VERSION_INFO VERSIONINFO
+FILEVERSION	1,0,0,0
+PRODUCTVERSION	1,0,0,0
+FILEOS		VOS__WINDOWS32
+FILETYPE	VFT_DLL
+{
+  BLOCK "StringFileInfo"
+  {
+    BLOCK "040904B0"
+    {
+      VALUE "Comments",         "http://freelancer.adoxa.cjb.net/"
+      VALUE "CompanyName",      "Jason Hood"
+      VALUE "FileDescription",  "Ranks"
+      VALUE "FileVersion",      "1.00"
+      VALUE "InternalName",     "ranks"
+      VALUE "LegalCopyright",   "Copyright 2010 Jason Hood"
+      VALUE "OriginalFilename", "ranks.dll"
+      VALUE "ProductName",      "Freelancer"
+      VALUE "ProductVersion",   "1, 0, 0, 0"
+    }
+  }
+
+  BLOCK "VarFileInfo"
+  {
+    VALUE "Translation", 0x0409, 0x04B0
+  }
+}

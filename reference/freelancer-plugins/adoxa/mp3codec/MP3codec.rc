@@ -1,0 +1,35 @@
+/*
+  MP3codec.rc - Version resource for MP3CODEC.DLL.
+
+  Jason Hood, 30 January, 2011.
+*/
+
+#include <winver.h>
+
+VS_VERSION_INFO VERSIONINFO
+FILEVERSION	1,1,0,2
+PRODUCTVERSION	1,1,0,2
+FILEOS		VOS__WINDOWS32
+FILETYPE	VFT_DLL
+{
+  BLOCK "StringFileInfo"
+  {
+    BLOCK "040904B0"
+    {
+      VALUE "Comments",         "http://freelancer.adoxa.vze.com/"
+      VALUE "CompanyName",      "Jason Hood"
+      VALUE "FileDescription",  "MP3 Codec Fix"
+      VALUE "FileVersion",      "1.12"
+      VALUE "InternalName",     "MP3codec"
+      VALUE "LegalCopyright",   "None"
+      VALUE "OriginalFilename", "MP3codec.dll"
+      VALUE "ProductName",      "Freelancer"
+      VALUE "ProductVersion",   "1, 0, 0, 0"
+    }
+  }
+
+  BLOCK "VarFileInfo"
+  {
+    VALUE "Translation", 0x0409, 0x04B0
+  }
+}

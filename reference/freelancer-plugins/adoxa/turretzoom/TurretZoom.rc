@@ -1,0 +1,35 @@
+/*
+  TurretZoom.rc - Version resource for TURRETZOOM.DLL.
+
+  Jason Hood, 21 May, 2011.
+*/
+
+#include <winver.h>
+
+VS_VERSION_INFO VERSIONINFO
+FILEVERSION	1,4,0,1
+PRODUCTVERSION	1,4,0,1
+FILEOS		VOS__WINDOWS32
+FILETYPE	VFT_DLL
+{
+  BLOCK "StringFileInfo"
+  {
+    BLOCK "040904B0"
+    {
+      VALUE "Comments",         "http://freelancer.adoxa.cjb.net/"
+      VALUE "CompanyName",      "Jason Hood"
+      VALUE "FileDescription",  "Turret Zoom"
+      VALUE "FileVersion",      "1.41"
+      VALUE "InternalName",     "TurretZoom"
+      VALUE "LegalCopyright",   "Copyright 2011 Jason Hood"
+      VALUE "OriginalFilename", "TurretZoom.dll"
+      VALUE "ProductName",      "Freelancer"
+      VALUE "ProductVersion",   "1, 0, 0, 0"
+    }
+  }
+
+  BLOCK "VarFileInfo"
+  {
+    VALUE "Translation", 0x0409, 0x04B0
+  }
+}

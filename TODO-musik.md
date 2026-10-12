@@ -28,15 +28,21 @@ Die 16 Dateien `music_bar_br04`, `music_bar_generic04` usw. sind inzwischen einz
 
 Ein Raum soll **mehrere Musiktitel** haben, die **wechseln** (z. B. zufällig oder der Reihe nach). Das Ändern dieser Liste soll **in der INI** möglich sein, ohne Code anzupassen.
 
+## Audioformat
+
+Seit der Konvertierung liegt die Musik als Ogg Vorbis vor (`.ogg`, siehe `WISSEN.md`, Abschnitt 15). Das Audit des Clients nennt keine Loop-Start/Ende-Metadaten; Schleifen gelten für den ganzen Track. Vorbis hat kein MP3-Padding und ist für Schleifen besser geeignet.
+
 ## Aufgaben für den Gamecode
 
-- [ ] Prüfen, wie `[Room_Sound]` `music` heute ausgewertet wird (Engine, nicht Teil dieses Repos).
-- [ ] Mehrere Nicknames in `music` akzeptieren, z. B. `music = music_bar_generic04, music_bar_generic05, music_bar_generic06`.
-- [ ] Wechsel-Modus festlegen und umsetzen. Vorschlag: zufällig, mit Wiederholung vermeiden.
-- [ ] Verhalten bei `oneshot` definieren, wenn mehrere Titel angegeben sind.
-- [ ] Abwärtskompatibilität: Ein einzelner Nickname muss weiter funktionieren, das betrifft alle 363 bestehenden Einträge.
-- [ ] Entscheiden, ob der Wechsel an den Raumwechsel oder an einen Timer gekoppelt ist.
-- [ ] Testen mit einem Raum mit mehreren Titeln (z. B. `Br0104Bar.ini`).
+Umgesetzt im Client durch den Patch `2171-room-music-playlists.patch` (Repository `Client`, Commit `7a3518ce8`):
+
+- [x] Auswertung von `[Room_Sound] music` geprüft: `RoomSound` speichert jetzt `MusicTracks`, `Music` bleibt der erste Titel.
+- [x] Mehrere Nicknames in `music` werden akzeptiert, z. B. `music = music_bar_generic04, music_bar_generic05, music_bar_generic06`.
+- [x] Wechselmodus: zufällig, ohne direkte Wiederholung; der nächste Titel startet, wenn der aktuelle endet.
+- [x] `oneshot`: Bei mehreren Titeln mit `oneshot` wird einmalig ein Titel gespielt und nicht gewechselt. Ohne `oneshot` spielt jeder Titel einmal, danach folgt der nächste.
+- [x] Abwärtskompatibilität: Ein einzelner Nickname verhält sich wie zuvor (Schleife, außer bei `oneshot`), geprüft in `RoomMusicPlaylistTests`.
+- [x] Kopplung: Wechsel am Titelende, nicht an Raumwechsel oder Timer. Beim Betreten eines Raums wird ein neuer Titel gewählt.
+- [ ] Wiedergabetest im Client mit einem Raum mit mehreren Titeln (z. B. `Br0104Bar.ini`) und mit `.ogg`-Dateien (siehe oben).
 
 ## Spätere Änderungen in der INI
 

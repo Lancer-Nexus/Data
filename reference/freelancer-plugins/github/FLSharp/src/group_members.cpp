@@ -1,0 +1,150 @@
+#include "group_members.h"
+#include "utils.h"
+#include "Freelancer.h"
+#include "logger.h"
+#include "fl_func.h"
+
+#define FASTCALL __fastcall
+#define NEUTRAL_REP (0.0f)
+
+FL_FUNC(AttitudeType GetAttitudeType(const IObjRW* towards, const IObjRW* from), 0x45A490)
+
+float hostileRepThreshold = -0.6f;
+
+int FASTCALL get_attitude_towards_Hook(const IObjRW& target, float& attitude, const IObjRW* player)
+{
+    int result = target.get_attitude_towards(attitude, player);
+
+    // FL doesn't test the return value so why should I?
+    // Check if the reported attitude is hostile and if the target is a player.
+    // As a sanity check I'm also checking if the "player" actually is the player.
+    if (attitude <= hostileRepThreshold && target.is_player()
+        && player && player == GetPlayerIObjRW() && player->cobject)
+    {
+        if (AreIObjRWsInSameGroup(*player, target))
+        {
+            // Set the attitude to a value such that FL's return value check thinks the ship is non-hostile.
+            attitude = NEUTRAL_REP;
+            return S_OK;
+        }
+    }
+
+    return result;
+}
+
+AttitudeType GetAttitudeType_Hook(const IObjRW* towards, const IObjRW* from)
+{
+    // Call the original function.
+    AttitudeType result = GetAttitudeType(towards, from);
+
+    if (result != AttitudeType::Hostile)
+        return result;
+
+    // If GetAttitudeType returned Attitude::Hostile, that implies towards and from are both non-zero.
+    // Check if the towards object is the player and if "from" is another player.
+    if (from->is_player() && towards == GetPlayerIObjRW() && towards != from && towards->cobject)
+    {
+        // If they're in the same group, treat them as neutral rather than hostile.
+        if (AreIObjRWsInSameGroup(*towards, *from))
+        {
+            return AttitudeType::Neutral;
+        }
+    }
+
+    return result;
+}
+
+#define NEUTRAL_ATTITUDE_IDS 1589
+#define GROUP_MEMBER_IDS 1551
+
+// Prints "GROUP MEMBER" as the "ATTITUDE" in the current information window if the ship is a group member.
+void GetAttitudeString_Hook(const IObjRW& towards, const IObjRW* from)
+{
+    UINT ids;
+
+    // Is the target a group member?
+    if (from && from->is_player() && AreIObjRWsInSameGroup(towards, *from))
+    {
+        // TODO: GROUP_MEMBER_IDS is capitalized, as opposed to the attitude IDS'.
+        // It could be converted to lowercase using towlower but this may not work on localizations that use non-Latin characters.
+        // For now I changed the other attitude IDS' to capitalized versions as well, since the "ATTITUDE: " prefix is spelled in all caps too.
+        ids = GROUP_MEMBER_IDS;
+    }
+    else
+    {
+        AttitudeType attitude = GetAttitudeType(&towards, from);
+        ids = (UINT) ((int) NEUTRAL_ATTITUDE_IDS - attitude);
+    }
+
+    GetFlString(ids, FL_BUFFER_1, FL_BUFFER_LEN);
+}
+
+// Called as part of the "Closest Enemy" function.
+// CShip is the player and obj is the target candidate.
+// We want to ensure group members cannot be chosen as nearest enemies.
+bool CShip::is_enemy_Hook(IObjInspect *obj)
+{
+    bool enemy = is_enemy(obj);
+
+    if (enemy && obj->is_player())
+    {
+        return !AreShipsInSameGroup(this, (CShip*) obj->cobject);
+    }
+
+    return enemy;
+}
+
+// In Freelancer, it's not possible to enter formation with group members that are hostile to you.
+// This code fixes that by checking if the player's selected target is a group member.
+void InitHostileGroupFormation()
+{
+    #define GROUP_FORMATION_REP_CHECK_COMMON_OFFSET 0x6C37C
+    #define HOSTILE_REP_THRESHOLD_COMMON_OFFSET 0x13F540
+
+    DWORD commonHandle = (DWORD) GetModuleHandle("common.dll");
+
+    if (commonHandle)
+    {
+        Hook(commonHandle + GROUP_FORMATION_REP_CHECK_COMMON_OFFSET, get_attitude_towards_Hook, 6);
+        hostileRepThreshold = *(float*) (commonHandle + HOSTILE_REP_THRESHOLD_COMMON_OFFSET);
+    }
+    else
+    {
+        Logger::PrintModuleError("InitHostileGroupFormation", "common.dll");
+    }
+}
+
+// Ensures hostile group members are no longer treated as hostile.
+// For example if you are near a hostile group member, then you will hear the danger/battle music.
+// For such group members there is also an attack marker displayed.
+// These things can be quite distracting. The code below ensures they are treated as neutral instead.
+void InitHostileGroupMembersFix()
+{
+    // Doing a trampoline hook was inconvenient here, so just manually hook all the call locations,
+    // except for 0x475770 which is handled by a different fix.
+    const DWORD getAttitudeTypeCalls[] = {
+        0x48AEAB, 0x4E4950, 0x4EC10E, 0x4EC71A, 0x4EC891, 0x4F1CFF, 0x4F22E4,
+        0x4F2465, 0x53A98C, 0x553290, 0x5532AD, 0x553325, 0x5552A8 };
+
+    for (const auto &call : getAttitudeTypeCalls)
+        SetRelPointer(call + 1, GetAttitudeType_Hook);
+
+    // Fixes enemy group members being selected as "nearest enemies".
+    #define NEAREST_ENEMY_CHECK_ADDR (0x544A8E)
+    Hook(NEAREST_ENEMY_CHECK_ADDR, &CShip::is_enemy_Hook, 6);
+}
+
+// If the Current Information window is opened on a group member, this code will make it show "GROUP MEMBER" as the attitude.
+void InitGroupMemberAttitudeFix()
+{
+    #define GET_ATTITUDE_TYPE_CURRENT_INFO_ADDR 0x475770
+    #define CLEAN_STACK_GET_ATTITUDE_STRING_ADDR 0x47579F
+    #define ATTITUDE_CHECK_CURRENT_INFO_ADDR 0x4757A2
+    #define CLEAN_WCSCAT_STACK_ADDR 0x47580B
+
+    Nop(GET_ATTITUDE_TYPE_CURRENT_INFO_ADDR, 5); // wipe out GetAttitudeType call
+    GetValue<BYTE>(CLEAN_STACK_GET_ATTITUDE_STRING_ADDR + 2) -= sizeof(DWORD) * 2; // ensure "towards" and "from" remain on the stack
+    Hook(ATTITUDE_CHECK_CURRENT_INFO_ADDR, GetAttitudeString_Hook, 5);
+    Patch<WORD>(ATTITUDE_CHECK_CURRENT_INFO_ADDR + 5, 0x56EB); // Jump directly to wcscat after our hook executed
+    GetValue<BYTE>(CLEAN_WCSCAT_STACK_ADDR + 2) -= sizeof(DWORD) * 2; // two params were removed so do not clean them up
+}
