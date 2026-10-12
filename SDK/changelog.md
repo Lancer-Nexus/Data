@@ -6,8 +6,21 @@
 |---|---|---|---|
 | [1.3.1](#131) | 1.3 | Korrekturen am SDK (diese Sammlung) | 6 + 3 neu (`exe/`) |
 | [1.3](#13-gegenüber-10) | 1.0 | Offizieller Patch 1.0 → 1.3 | 129 |
+| [Lancer Nexus](#lancer-nexus-erweiterungen) | 1.3.1 | Playlists für generische Bar-Räume | 131 Raum-INIs |
 
 > Die Diffs stammen aus dem Textvergleich der jeweiligen Dateien. `-` ist der Zustand der Basisversion, `+` der neue Zustand. Zeilennummern beziehen sich auf die jeweilige Datei.
+
+## Lancer Nexus Erweiterungen
+
+### Mehrspur-Playlists in generischen Bars (2026-10-12)
+
+Nach erfolgreichem Client-Lauf wurden 131 Bar-Raum-INIs so angepasst, dass jede
+generische Playlist die zehn bereits in `audio/Music.ini` definierten Titel
+`music_bar_generic01` bis `music_bar_generic10` enthält. Die Sound-Definitionen
+und lokalen Audiodateien selbst wurden nicht verändert. Regional benannte
+Bar-Musik blieb unverändert. Die Client-Playlist-Auswahl startet zufällig und
+vermeidet direkte Wiederholungen; Details und Laufzeitnachweis stehen in
+[`TODO-musik.md`](../TODO-musik.md).
 
 ## 1.3.1
 

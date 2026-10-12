@@ -45,7 +45,7 @@ Deshalb verweisen die INIs auf Pfade wie `audio\sounds\fx\debri_explo_1.wav`, oh
 - Mehrere Werte stehen durch Komma getrennt, z. B. `Act_CallThorn = missions\m07\x.thn, Player`.
 - Ein Nickname ist ein Name im Spiel, den andere Stellen verwenden. Die Datei dahinter steht in der Zeile `file = …`. **Nickname und Dateiname sind nicht dasselbe.** Beispiel: `music_bar_br04` zeigt auf `music_bar_br02.wav`, bis wir es umgestellt haben.
 
-Die Prüfung ergibt heute: 17 036 Verweise lösen sich exakt auf. 21 Ziele fehlen, sie stehen in `missing.md`.
+Die früheren Verweis- und Fehlzielzahlen sind veraltet. `tools/check_ini_references.py` prüft Dateiverweise reproduzierbar; den vollständigen NAP-Datenbestand verwenden, weil HD-Dateien im lokalen CD-Rohdatenbaum fehlen können.
 
 ## 5. Namenskonvention
 
@@ -73,7 +73,7 @@ Die Dateien `debri explo 1–4` und `med explo 1–4` sind auf der CD vorhanden.
 
 ## 8. Fehlende Dateien
 
-21 Ziele werden von INIs referenziert, sind aber auf der CD nicht vorhanden. Die Liste steht in `missing.md`. Die wichtigsten Gruppen:
+Die mit `tools/check_ini_references.py` ermittelte Fehlziel-Liste steht in `missing.md`. Ihre aktuelle Zahl ist nur mit dem vollständigen NAP-Datenbestand reproduzierbar. Die wichtigsten bekannten Gruppen:
 
 - **Schiffs-Kollisionsmodelle** `*_col.cmp`: 5 Stück. Die Modelle selbst sind vorhanden, die Kollisionsmodelle nicht.
 - **Station und TLR:** einige Verweise haben keinen eindeutigen Ersatz.

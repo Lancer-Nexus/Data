@@ -12,7 +12,7 @@ Datenrepository des [Lancer Nexus](https://github.com/Lancer-Nexus)-Projekts: Sp
 | `NAP/` | Spieldaten (Modelle, Töne, Texturen, Skripte, Videos …) als Klassencontainer | nur die Klassenordner (Inhalt ignoriert) |
 | `classes.md` | Einteilung der Spieldaten in Klassen und Regeln | ja |
 | `missing.md` | Dateien, auf die die INIs verweisen, die aber auf der CD fehlen | ja |
-| `tools/` | Skripte zum Aufbau von `NAP/` aus der CD | ja |
+| `tools/` | Skripte zum Aufbau von `NAP/` aus der CD und zum Prüfen der INI-Dateiverweise | ja |
 | `BASE/`, `CLIENT/` | leer, für später vorgesehen | – |
 
 Branches: `main` enthält den ursprünglichen Upload. Die Arbeit liegt auf `sdk-1.3.1`.
@@ -76,7 +76,19 @@ Von `NAP/` werden nur die Klassenordner ins Repo übernommen (mit einer leeren `
    - übernimmt danach die INIs aus `SDK/` über `tools/sync_inis_to_nap.py`,
    - räumt den temporären Ordner wieder auf.
 
-4. **Kontrolle:** `missing.md` enthält die Dateien, die die INIs referenzieren, die auf der CD aber fehlen. Im Normalfall ändert sich die Liste nicht.
+4. **Kontrolle:** Den Fehlbestand reproduzierbar prüfen:
+   ```bash
+   python3 tools/check_ini_references.py --nap NAP --output missing.md
+   ```
+   Das Skript erwartet echte Assetdateien in den NAP-Klassenordnern und bricht
+   bei einem leeren Container ab, statt alle Verweise fälschlich als fehlend zu
+   melden. Einen lokalen, entpackten CD-Datenbaum kann es read-only prüfen:
+   ```bash
+   python3 tools/check_ini_references.py --data-root /pfad/zur/Freelancer/DATA --output /tmp/missing-local-data.md
+   ```
+   Dieser Rohdatenlauf übernimmt die Umbenennungsregeln aus `build_nap.py` und
+   die INIs aus `SDK/`; HD-Dateien, die nur in NAP liegen, sind darin nicht
+   enthalten. Daher bleibt der vollständige NAP-Lauf maßgeblich für `missing.md`.
 
 ### Optionen von `build_nap.py`
 
@@ -104,7 +116,7 @@ Die Klasse einer INI richtet sich nach ihrem Hauptordner (`audio` → `Sounds`, 
 
 ## Bekannte Grenzen
 
-- **Fehlende Dateien:** 32 Dateien, auf die die INIs verweisen, sind auf der CD nicht vorhanden (vor allem Kollisionsmodelle `*_col.cmp` und einige Sprachdateien). Sie stehen in `missing.md`.
+- **Fehlende Dateien:** `missing.md` wird mit `tools/check_ini_references.py` aus dem vollständigen NAP-Datenbestand erzeugt. Frühere Zählungen sind veraltet; ein Rohdatenlauf berücksichtigt keine ausschließlich im NAP vorhandenen HD-Dateien.
 - **Programmdateien:** `exe/` und `dlls/` der CD sind nicht Teil von `NAP/`. Sie liegen nur im lokalen Ordner `Freelancer-Daten` und werden von den Skripten nicht verarbeitet.
 - **Groß-/Kleinschreibung:** Alles ist klein geschrieben. Dateien, die intern (in `.thn`, `.page` oder `.3db`) mit anderer Schreibweise referenziert werden, werden nicht geprüft.
 - **Version:** Die CD enthält Version 1.0. Die Korrekturen aus 1.3 und 1.3.1 kommen aus `SDK/`, nicht aus der CD.

@@ -1,72 +1,57 @@
-# TODO: Mehrere Musiktitel pro Raum (Gamecode)
+# Mehrere Musiktitel pro Raum
 
-## Ausgangslage
+Stand: 2026-10-12. Client-Unterstützung, Laufzeitnachweis und Umstellung der
+generischen Bar-Räume sind umgesetzt. Original-CD-DATA-Dateien und Audiodateien
+bleiben lokale Testdaten und werden nicht in Git übernommen; die angepassten
+SDK-Raum-INIs und deren Changelog sind versioniert.
 
-In `SDK/audio/Music.ini` hat jeder Musiktitel einen Nickname und eine Datei:
+## Verhalten und Syntax
 
-```ini
-[Sound]
-nickname = music_bar_br04
-file = audio\music\music_bar_br04.wav
-type = music
-attenuation = -15
-streamer = true
-```
-
-Die Räume verweisen über einen Nickname auf die Musik. Das steht in `[Room_Sound]`:
+`[Room_Sound] music` akzeptiert einen oder mehrere Sound-Nicknames. Titel werden
+beim Betreten eines Raums zufällig gewählt; nach Trackende folgt ein anderer
+Titel ohne unmittelbare Wiederholung. Ein einzelner Titel wird wiederholt.
+Mit dem Suffix `oneshot` wird ein Titel einmal abgespielt; bei mehreren Titeln
+wird dafür ein zufälliger Titel gewählt und die Playlist endet anschließend.
+Es gibt keinen Timerwechsel.
 
 ```ini
 [Room_Sound]
-music = music_bar_br04
+music = music_bar_generic01, music_bar_generic02, music_bar_generic03
 ```
 
-Ein Raum kann heute nur **einen** Musiktitel haben. Die Syntax `music = <nickname>, oneshot` wird ebenfalls genutzt (22 von 363 `music`-Zeilen).
+## Client-Umsetzung und Laufzeitnachweis
 
-Die 16 Dateien `music_bar_br04`, `music_bar_generic04` usw. sind inzwischen einzeln eingebunden. Vorher spielten mehrere Nicknames dieselbe Datei. Die Bar-Räume bekommen dadurch eine andere Musik als vorher.
+- [x] `[Room_Sound] music` vom Parser über `GameItemDb`, `BaseRoom` und
+  `RoomGameplay` bis `SoundManager.PlayMusic` nachverfolgt.
+- [x] Kommagetrennte Nicknames und das bestehende `oneshot`-Suffix unterstützen.
+- [x] Zufällige Auswahl ohne direkte Wiederholung sowie Trackwechsel nach EOF
+  umsetzen.
+- [x] Verhalten für Mehrspur-`oneshot`, einzelne Titel und leere Werte festlegen.
+- [x] Kompatibilität bestehender Einzeltitel sicherstellen.
+- [x] Parser- und Auswahltests für Mehrspur, `oneshot`, Einzeltrack, Leerwert
+  und direkte Wiederholungen ergänzen.
+- [x] Playlist am 2026-10-12 im echten Debug-Client im Raum `Br01_04_Bar`
+  ausgeführt. Der Lauf nutzte eine isolierte Kopie der lokalen Retail-DATA,
+  startete `Br01_04_Base` direkt in der Bar und ersetzte dort die Musik durch
+  zwei synthetische Ogg-Tracks (0,7 s und 0,9 s). Das Log zeigt den erfolgreichen
+  Daten-/UI-Start und zehn Trackwechsel im Wechsel `test_bar_b` / `test_bar_a`,
+  ohne Error-, Fatal- oder Exception-Einträge. OpenAL lief im Null-Treiber;
+  der Lauf bestätigt Parser, Streamende und Playlist-Auswahl, aber keinen
+  Hörtest der Original-Bar-Musik oder der Loop-Grenzqualität.
 
-## Ziel
+## Datenänderungen
 
-Ein Raum soll **mehrere Musiktitel** haben, die **wechseln** (z. B. zufällig oder der Reihe nach). Das Ändern dieser Liste soll **in der INI** möglich sein, ohne Code anzupassen.
+- [x] Syntax und Rollout im `SDK/changelog.md` dokumentieren.
+- [x] Alle 131 generischen Bar-Räume auf die zehn bestehenden Titel
+  `music_bar_generic01` bis `music_bar_generic10` umstellen. Regional benannte
+  Bar-Musik bleibt unverändert.
+- [x] `tools/sync_inis_to_nap.py` ausgeführt: erster Lauf übertrug 1252
+  SDK-INIs. Nach Erhalt der SDK-Zeilenenden wurden 131 Dateien aktualisiert;
+  1121 blieben unverändert. Der finale Dry-Run meldete 1252 unveränderte
+  Dateien. Alle 131 Bar-INIs in `NAP/World` sind byte-identisch.
 
-## Aufgaben für den Gamecode
-
-- [ ] Prüfen, wie `[Room_Sound]` `music` heute ausgewertet wird (Engine, nicht Teil dieses Repos).
-- [ ] Mehrere Nicknames in `music` akzeptieren, z. B. `music = music_bar_generic04, music_bar_generic05, music_bar_generic06`.
-- [ ] Wechsel-Modus festlegen und umsetzen. Vorschlag: zufällig, mit Wiederholung vermeiden.
-- [ ] Verhalten bei `oneshot` definieren, wenn mehrere Titel angegeben sind.
-- [ ] Abwärtskompatibilität: Ein einzelner Nickname muss weiter funktionieren, das betrifft alle 363 bestehenden Einträge.
-- [ ] Entscheiden, ob der Wechsel an den Raumwechsel oder an einen Timer gekoppelt ist.
-- [ ] Testen mit einem Raum mit mehreren Titeln (z. B. `Br0104Bar.ini`).
-
-## Spätere Änderungen in der INI
-
-Nach der Code-Änderung soll sich die Liste direkt in den Raum-INIs pflegen lassen:
-
-- [ ] Syntax in `docs` bzw. im Changelog festhalten.
-- [ ] Bar-Räume mit mehreren Titeln umstellen, z. B. Generic-Räume mit den Titeln `music_bar_generic01` bis `music_bar_generic10`.
-- [ ] `tools/sync_inis_to_nap.py` laufen lassen, damit `NAP/` aktuell ist.
-
-## Betroffene Räume (Stand heute)
-
-Bar-Nicknames in Raum-INIs, mit Anzahl der Verweise:
-
-| Nickname | Verweise |
-|---|---:|
-| `music_bar_generic04` | 15 |
-| `music_bar_generic06` | 15 |
-| `music_bar_generic07` | 14 |
-| `music_bar_generic01` | 13 |
-| `music_bar_generic03` | 13 |
-| `music_bar_generic05` | 13 |
-| `music_bar_generic09` | 13 |
-| `music_bar_generic10` | 12 |
-| `music_bar_generic02` | 12 |
-| `music_bar_generic08` | 11 |
-| andere Bar-Nicknames (br, ku, li, rh) | je 1–3 |
-
-Insgesamt 172 Verweise in Raum-INIs auf 30 Bar-Nicknames.
-
-## Hinweise
-
-- Die Raum-INIs liegen unter `SDK/universe/systems/<system>/bases/rooms/`.
-- Die Nicknames in `Music.ini` bleiben bestehen. Für einen Wechsel müssen nur die `music`-Zeilen der Räume geändert werden.
+Die zehn Titel sind in `SDK/audio/Music.ini` definiert; alle zehn lokalen
+Retail-WAV-Dateien sind vorhanden. Vor der Umstellung verwiesen die 131
+generischen Raumzeilen jeweils auf einen einzelnen Titel. Danach enthält jede
+generische Bar-Playlist alle zehn Titel; die 41 regionalen Bar-Verweise blieben
+unverändert.

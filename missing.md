@@ -2,7 +2,7 @@
 
 Dateien, auf die die INIs im SDK verweisen, die aber nicht in `NAP/` liegen. Geprüft wurden alle Asset- und INI-Verweise in `SDK/**/*.ini` (ohne `exe/`) gegen den virtuellen Root von `NAP/` (Groß-/Kleinschreibung ignoriert).
 
-**48 fehlende Ziele**, Fundstellen: **48**.
+**48 Zielpfade** in der zuletzt erstellten NAP-Liste. Diese Zahl bezeichnet Tabellenzeilen, nicht einzelne INI-Zeilen; mehrere Zeilen können dasselbe Ziel referenzieren.
 
 Hinweis: Verweise ohne Ordner (z. B. `ocean_blue.cmp` in `PetalDB.ini`) sind in der Prüfung als fehlend markiert, die Dateien liegen aber unter `bases/generic/`. Diese Zeilen sind unten gekennzeichnet.
 
@@ -58,6 +58,21 @@ Hinweis: Verweise ohne Ordner (z. B. `ocean_blue.cmp` in `PetalDB.ini`) sind in 
 | `solar/dockable/trading_depot.cmp` | `Concave.ini` |  |
 | `solar/dockable/trading_outpost_lod_col.cmp` | `Concave.ini` | Kollisionsmodell fehlt auf der CD |
 | `startupscreen.tga` | `interface/Intro.ini` |  |
+
+## Reproduzierbarkeit (2026-10-12)
+
+`tools/check_ini_references.py --nap NAP --output missing.md` erzeugt diese
+Liste aus einem vollständigen NAP-Klassenbestand. In diesem Checkout enthält
+`NAP/` aktuell nur `.gitkeep`-Dateien; der vollständige NAP-Lauf ist hier daher
+nicht erneut ausführbar. Ein read-only Lauf gegen die lokale CD-DATA mit den
+Build-Umbenennungen und dem aktuellen SDK-INI-Overlay ergab 50 fehlende
+Zielpfade und 83 INI-Zeilen. Die zwei zusätzlichen Ziele
+`solar/planets/detailmap_gas.txm` und `solar/planets/detailmap_ice.txm` sind als
+HD-Dateien in `tools/hd_overrides.txt` deklariert, aber in diesem Checkout nicht
+physisch vorhanden. Die 48 übrigen Zielpfade stimmen mit der Tabelle oben
+überein. Der Rohdatenlauf bestätigt die Zielmenge nur unter der Annahme, dass
+diese beiden HD-Dateien tatsächlich in NAP liegen; er ersetzt keine Prüfung
+des vollständigen NAP-Bestands.
 
 ## Hinweise
 
