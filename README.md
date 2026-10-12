@@ -199,3 +199,10 @@ Diffuse-Materialien noch die sichtbare Wirkung oder einen aktiven Snapshot im Cl
 Der verifizierte Reparaturstand vom 12.10.2026 ist in
 [`docs/evidence/surface-repair-20261012.json`](docs/evidence/surface-repair-20261012.json)
 festgehalten. Das lokale Archiv bleibt außerhalb des Git-Repositories.
+
+## Client-Test mit NAP
+
+Der [NAP-Client-Test vom 12.10.2026](docs/nap-client-smoke-20261012.md) beschreibt
+den verifizierten lokalen Snapshot, die richtige Resource-DLL-Reihenfolge und
+die noch offenen Prüfungen. `tools/make_librelancer_config.py` erzeugt die
+passende Konfiguration aus dem SDK ohne Original-DLLs zu verteilen.

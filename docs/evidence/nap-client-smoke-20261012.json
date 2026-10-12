@@ -1,0 +1,208 @@
+{
+  "date": "2026-10-12",
+  "dataCommit": "789d44bb128c8aaf63701ce586eb10f70579dd85",
+  "clientCommit": "bcb1ef9439c990ddbc411fea8a91ab7838b596e9",
+  "packages": [
+    {
+      "id": "effects",
+      "version": 1,
+      "path": "effects.nap",
+      "size": 1082937,
+      "sha256": "ff1768d2fab0111d3242b3ae6c8b26447a8b24e2c60c9cc0bfdf55c2ccab990e",
+      "required": true,
+      "priority": 100,
+      "mountOrder": 1,
+      "dependencies": [],
+      "overrides": []
+    },
+    {
+      "id": "equipment",
+      "version": 1,
+      "path": "equipment.nap",
+      "size": 15676471,
+      "sha256": "1592f1fa712b8547af7cc8f040a2a3f76e644a3e92a423d9e6ce647e52d805b6",
+      "required": true,
+      "priority": 100,
+      "mountOrder": 2,
+      "dependencies": [],
+      "overrides": []
+    },
+    {
+      "id": "material",
+      "version": 1,
+      "path": "material.nap",
+      "size": 771306606,
+      "sha256": "e833624241d136044a662dd820ed0078524ea6cd2bf73be9ac74b88738d57c9e",
+      "required": true,
+      "priority": 100,
+      "mountOrder": 3,
+      "dependencies": [],
+      "overrides": []
+    },
+    {
+      "id": "mission",
+      "version": 1,
+      "path": "mission.nap",
+      "size": 393272,
+      "sha256": "a6eb26c9b12ec64f24c9c0705aec628f358e1bb4130bb238be66fefe0db47279",
+      "required": true,
+      "priority": 100,
+      "mountOrder": 4,
+      "dependencies": [],
+      "overrides": []
+    },
+    {
+      "id": "models",
+      "version": 1,
+      "path": "models.nap",
+      "size": 2165829424,
+      "sha256": "cacf923aba65d5fff17b4d07cb9e083299e76005843175b923d4e60d8e3894d0",
+      "required": true,
+      "priority": 100,
+      "mountOrder": 5,
+      "dependencies": [],
+      "overrides": []
+    },
+    {
+      "id": "script",
+      "version": 1,
+      "path": "script.nap",
+      "size": 5277836,
+      "sha256": "f127135a05984458c51419b8d7faf3d75ce6bbb32325d9eddbbcac9364332a36",
+      "required": true,
+      "priority": 100,
+      "mountOrder": 6,
+      "dependencies": [],
+      "overrides": []
+    },
+    {
+      "id": "sounds",
+      "version": 1,
+      "path": "sounds.nap",
+      "size": 326878434,
+      "sha256": "52ae3915bc9cee2675720dd02ad0a91e3ace4da4d616a95b9db6001f053d9618",
+      "required": true,
+      "priority": 100,
+      "mountOrder": 7,
+      "dependencies": [],
+      "overrides": []
+    },
+    {
+      "id": "surface",
+      "version": 1,
+      "path": "surface.nap",
+      "size": 1163429174,
+      "sha256": "915a6b9a58faa9882a716f82f0b96b4619df2d887e070cdcb9efa5f97dbf6873",
+      "required": true,
+      "priority": 100,
+      "mountOrder": 8,
+      "dependencies": [],
+      "overrides": []
+    },
+    {
+      "id": "system",
+      "version": 1,
+      "path": "system.nap",
+      "size": 14797,
+      "sha256": "632a50056762d6101625accae7036dc384efd72f3314e1a619727de5521aa53f",
+      "required": true,
+      "priority": 100,
+      "mountOrder": 9,
+      "dependencies": [],
+      "overrides": []
+    },
+    {
+      "id": "ui",
+      "version": 1,
+      "path": "ui.nap",
+      "size": 3443671,
+      "sha256": "25c6cbe8f76ce733b7dc8862c734876860d14ecb451b985f925e7a67ad0d8fe3",
+      "required": true,
+      "priority": 100,
+      "mountOrder": 10,
+      "dependencies": [],
+      "overrides": []
+    },
+    {
+      "id": "video",
+      "version": 1,
+      "path": "video.nap",
+      "size": 146838092,
+      "sha256": "ee81959101f89cb94ee31976e105210b3fbe3c5845c36061b20869b26b772b1c",
+      "required": true,
+      "priority": 100,
+      "mountOrder": 11,
+      "dependencies": [],
+      "overrides": []
+    },
+    {
+      "id": "world",
+      "version": 1,
+      "path": "world.nap",
+      "size": 913733,
+      "sha256": "cc44907b98b035a99e1c9d36231de762ea47158ed540f56cb2d90e149b0f4a40",
+      "required": true,
+      "priority": 100,
+      "mountOrder": 12,
+      "dependencies": [],
+      "overrides": []
+    },
+    {
+      "id": "smoke-resources",
+      "version": 1,
+      "path": "resources.nap",
+      "size": 949651,
+      "sha256": "d4e7f17854748b59f39cc49f14c45d0fb3b1ed35a21646179659b53add730807",
+      "required": true,
+      "priority": 200,
+      "mountOrder": 1,
+      "dependencies": [],
+      "overrides": [
+        "mission",
+        "script"
+      ]
+    }
+  ],
+  "totalPackageBytes": 4602034098,
+  "packageVerification": "nexus-pack verify passed for every archive",
+  "runtime": {
+    "gameDataLoaded": true,
+    "interfaceLoaded": true,
+    "visibleMainMenuText": true,
+    "noLooseDATA": true,
+    "noLooseEngineDataOverlay": true,
+    "exitCode": 124,
+    "termination": "bounded test timeout; no gameplay or menu-click acceptance claim",
+    "graphics": "OpenGL Mesa Intel HD Graphics 4600",
+    "initialLoadSeconds": 21.8433743
+  },
+  "testOnlyAdjustments": [
+    "explicit resources.dll at resource index 0",
+    "virtual data path DATA instead of dot prefix",
+    "Mission alias missions/faction_prop.ini for SDK FactionProp.ini",
+    "engine mission/script overrides declared in local resources package",
+    "startup movies disabled",
+    "HDEResources.dll unavailable and excluded only at final DLL index"
+  ],
+  "limitations": [
+    "No normalmap material binding or visual effect proof",
+    "No gameplay, cluster, Vulkan or production signed-release validation",
+    "Menu click navigation not confirmed in this run"
+  ],
+  "warnings": [
+    "newsvendor.txm UTF payload load fails; UI still loads",
+    "Startup NativeBuffer leak diagnostic not investigated"
+  ],
+  "screenshots": [
+    {
+      "file": "mainmenu.png",
+      "sha256": "6799461e24793c3431508c463606de1b3b0448adeb2caadbb5bbe0f62b7be38e",
+      "localPath": "/tmp/lancer-nap-client-smoke-20261012/mainmenu.png"
+    },
+    {
+      "file": "options.png",
+      "sha256": "ccbd6d6f5d8414aeecc99c631ea04f8e53c8e121d47f9baf69e9e122d5b337d7",
+      "localPath": "/tmp/lancer-nap-client-smoke-20261012/options.png"
+    }
+  ]
+}
