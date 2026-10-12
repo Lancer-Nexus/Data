@@ -1,0 +1,46 @@
+{
+  "date": "2026-10-12",
+  "clientCommit": "bcb1ef9439c990ddbc411fea8a91ab7838b596e9",
+  "dataBaseCommit": "1fadaa9ffeb45182e386a1255314c85454bd7443",
+  "manifestId": "local-nap-smoke-newsvendor-repaired-20261012",
+  "activeSnapshotSha256": "c6da89fd9ab6f6fb3a7d5be770ad2cdb7eb6a80c338e2f4820586aba8d64c818",
+  "hostSession": "Wayland",
+  "sdlVideoDriver": "x11",
+  "nativeInputController": "xdotool XTEST mouse down/up sent separately with 300ms dwell; Escape key down/up sent separately",
+  "result": {
+    "nativeMouseDownReceived": true,
+    "nativeMouseUpReceived": true,
+    "optionsOpened": true,
+    "mainMenuReturnedByNativeEscape": true,
+    "exitButtonRequestedExit": true,
+    "processExitCode": 0,
+    "timeoutOccurred": false,
+    "noUnhandledException": true,
+    "noLooseDATA": true
+  },
+  "observer": {
+    "sourceSha256": "dd23290e0c515ae385291f3a8e581c744126792eeeedda83e4caaec9f4d4bfa9",
+    "controllerSha256": "b931c4d7986d1cf94dc056f1212e23a4d64ee389e280b34c2cfa2f942cab0959",
+    "binarySha256": "bd90ad03f7a5f769c785280273a170346c1528903331733c2917d544f7316391",
+    "directUiActionInjection": false,
+    "purpose": "Temporary custom GameState forwards LuaMenu Update/Draw and observes Mouse events and UI root; only timeout may force termination, and it did not fire"
+  },
+  "screenshots": [
+    {
+      "file": "options-native-verified.png",
+      "localPath": "/tmp/lancer-nap-client-smoke-20261012/options-native-verified.png",
+      "sha256": "7fe1b84f3141d233be077fb864632f821dad1f18753f85fa286003ab8d4c78e9"
+    },
+    {
+      "file": "mainmenu-return-native.png",
+      "localPath": "/tmp/lancer-nap-client-smoke-20261012/mainmenu-return-native.png",
+      "sha256": "d04460fdbb006d87c2ec9a1e14deddaefc68e0845cc3613baa1db368411abbf5"
+    }
+  ],
+  "limitations": [
+    "New Game, Load Game and multiplayer navigation not tested in this run",
+    "No account login, gameplay, cluster transfer or normalmap/Vulkan validation",
+    "No proof that every short synthetic click fails; prior attempts were inconclusive",
+    "NativeBuffer startup diagnostic remains open"
+  ]
+}

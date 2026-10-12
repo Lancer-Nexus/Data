@@ -209,3 +209,6 @@ passende Konfiguration aus dem SDK ohne Original-DLLs zu verteilen.
 
 Die [Newsvendor-Reparatur](docs/newsvendor-repair-20261012.md) dokumentiert die
 wiederhergestellte HD-Datei und die UTF-Quellprüfung vor dem Import.
+
+Der [native Menü-Navigationstest](docs/native-menu-navigation-20261012.md)
+bestätigt Optionsaufruf, Rückkehr mit Escape und reguläres Beenden des NAP-Clients.
