@@ -1,0 +1,56 @@
+{
+  "date": "2026-10-12",
+  "asset": "Material/interface/neuronet/newsvendor/newsvendor.txm",
+  "before": {
+    "bytes": 41943040,
+    "sha256": "1d27e8e08550b26b94053bc769793a16af0cd60e94bc7a6ef47b09bcb780770a",
+    "outOfBoundsLeaves": 40
+  },
+  "after": {
+    "bytes": 82325060,
+    "sha256": "7d0409ddfcb5774be7b0c9f0091d44e9aa656eb0a27459a7c8cf22a784f9acdf"
+  },
+  "source": {
+    "repository": "https://github.com/FLHDE/freelancer-hd-edition",
+    "commit": "7c6186efcb408207beafed7363650308abc34637",
+    "path": "DATA/INTERFACE/NEURONET/NEWSVENDOR/newsvendor.txm",
+    "gitBlob": "c8d004a8d39994c09be18545f17f54b3bc5fb1f2",
+    "gitBlobVerified": true,
+    "oldFileIsExactPrefix": true
+  },
+  "utfBoundsAudit": {
+    "checkedUtfFiles": 3327,
+    "errors": []
+  },
+  "materialPackage": {
+    "id": "material",
+    "version": 1,
+    "path": "material-repaired.nap",
+    "size": 788202032,
+    "sha256": "c4a0044b5bdf6b317ada8ab62f18f5d98ef97ca0ab0c70cd2253b784abeb0067",
+    "required": true,
+    "priority": 100,
+    "mountOrder": 3,
+    "dependencies": [],
+    "overrides": []
+  },
+  "runtime": {
+    "gameDataLoaded": true,
+    "interfaceLoaded": true,
+    "newsvendorLoadErrorAbsent": true,
+    "noUnhandledException": true,
+    "termination": "bounded timeout exit 124",
+    "looseDATA": false
+  },
+  "limits": [
+    "No full gameplay or menu-click acceptance",
+    "No complete DDS/TGA decoding audit of all assets",
+    "NativeBuffer startup diagnostic still open",
+    "No new normalmap material binding or Vulkan implementation"
+  ],
+  "clientUtfProbe": {
+    "archiveLoadedTextures": 79,
+    "expectedTextures": 79,
+    "success": true
+  }
+}

@@ -32,18 +32,30 @@ class Node:
 
 def load(path):
     """-> (header_bytes, root). header_bytes = alles vor dem Baum."""
-    b = open(path, 'rb').read()
-    if b[:4] != b'UTF ':
+    with open(path, 'rb') as stream:
+        b = stream.read()
+    if len(b) < 40 or b[:4] != b'UTF ':
         raise ValueError('kein UTF')
-    tree_off, tree_size, _, entry_size, names_off, _, _, data_off = struct.unpack_from('<8I', b, 8)
+    tree_off, tree_size, _, entry_size, names_off, _, names_size, data_off = struct.unpack_from('<8I', b, 8)
     if entry_size != 44:
         raise ValueError(f'unerwartete Eintragsgröße {entry_size}')
 
+    if tree_off < 40 or tree_size % 44 or tree_off + tree_size > len(b):
+        raise ValueError('UTF-Baum außerhalb der Dateigrenzen')
+    if names_off < 40 or names_off + names_size > len(b) or data_off > len(b):
+        raise ValueError('UTF-Namens-/Datenblock außerhalb der Dateigrenzen')
+    visited = set()
+
     def entry(off):
+        if off in visited or off % 44 or off + 44 > tree_size:
+            raise ValueError('Ungültiger oder zyklischer UTF-Knoten')
+        visited.add(off)
         return struct.unpack_from('<8I', b, tree_off + off)
 
     def name_at(o):
-        e = b.index(b'\0', names_off + o)
+        if o >= names_size:
+            raise ValueError('UTF-Name außerhalb des Namensblocks')
+        e = b.index(b'\0', names_off + o, names_off + names_size)
         return b[names_off + o:e].decode('latin-1')
 
     def read_chain(off):
@@ -53,6 +65,8 @@ def load(path):
             if flags & 0x10:
                 n = Node(name_at(nm), flags, children=read_chain(cd) if cd else [])
             else:
+                if cd + size > len(b) - data_off:
+                    raise ValueError(f'UTF-Blatt außerhalb der Dateigrenzen: {name_at(nm)}')
                 n = Node(name_at(nm), flags, data=b[data_off + cd:data_off + cd + size])
             res.append(n)
             if nxt == 0:

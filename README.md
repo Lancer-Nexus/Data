@@ -206,3 +206,6 @@ Der [NAP-Client-Test vom 12.10.2026](docs/nap-client-smoke-20261012.md) beschrei
 den verifizierten lokalen Snapshot, die richtige Resource-DLL-Reihenfolge und
 die noch offenen Prüfungen. `tools/make_librelancer_config.py` erzeugt die
 passende Konfiguration aus dem SDK ohne Original-DLLs zu verteilen.
+
+Die [Newsvendor-Reparatur](docs/newsvendor-repair-20261012.md) dokumentiert die
+wiederhergestellte HD-Datei und die UTF-Quellprüfung vor dem Import.

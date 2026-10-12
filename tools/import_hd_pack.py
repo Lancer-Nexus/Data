@@ -25,6 +25,9 @@ import subprocess
 import sys
 import collections
 
+from atomic_file import atomic_copy, atomic_open
+import utf_write
+
 HERE = os.path.dirname(os.path.abspath(__file__))
 NAP = os.path.normpath(os.path.join(HERE, '..', 'NAP'))
 OVERRIDES = os.path.join(HERE, 'hd_overrides.txt')
@@ -52,9 +55,12 @@ def export_head(hd_repo, staging):
         shutil.rmtree(os.path.join(staging, sub), ignore_errors=True)
     # DATA vollständig, aus EXE nur freelancer.ini
     p = subprocess.Popen(['git', '-C', hd_repo, 'archive', 'HEAD', 'DATA', 'EXE/freelancer.ini'], stdout=subprocess.PIPE)
-    subprocess.run(['tar', '-x', '-C', staging], stdin=p.stdout, check=True)
-    p.wait()
-    with open(marker, 'w') as f:
+    extraction = subprocess.run(['tar', '-x', '-C', staging], stdin=p.stdout)
+    p.stdout.close()
+    if p.wait() != 0:
+        raise subprocess.CalledProcessError(p.returncode, p.args)
+    extraction.check_returncode()
+    with atomic_open(marker, 'w') as f:
         f.write(head)
     return head
 
@@ -125,6 +131,17 @@ def main():
         print('Nur Manifest (ohne --apply nichts geschrieben).')
         return
 
+    # Validate all HD source files before changing any installed asset.
+    for rel, cls, norm, action, _, src in rows:
+        if action not in ('überschreiben', 'neu', 'gleich'):
+            continue
+        if os.path.getsize(src) == 0:
+            raise ValueError(f'Leere HD-Quelldatei: {rel}')
+        with open(src, 'rb') as stream:
+            magic = stream.read(4)
+        if magic == b'UTF ':
+            utf_write.load(src)
+
     n = 0
     applied = []
     for rel, cls, norm, action, _, src in rows:
@@ -132,7 +149,7 @@ def main():
             continue
         dst = os.path.join(NAP, cls, norm)
         os.makedirs(os.path.dirname(dst), exist_ok=True)
-        shutil.copyfile(src, dst)
+        atomic_copy(src, dst)
         applied.append(f'{cls}/{norm}')
         n += 1
     existing = set()
@@ -141,7 +158,7 @@ def main():
     # alle HD-Dateien (auch bereits gleiche) gelten als Ausnahmen
     allhd = {f'{r[1]}/{r[2]}' for r in rows if r[3] in ('überschreiben', 'neu', 'gleich')}
     merged = sorted(existing | allhd)
-    with open(OVERRIDES, 'w', encoding='utf-8') as f:
+    with atomic_open(OVERRIDES, 'w', encoding='utf-8') as f:
         f.write('# HD-Dateien in NAP/, die build_nap.py nicht überschreibt und nicht entfernt (Format: Klasse/Pfad).\n')
         f.write('\n'.join(merged) + '\n')
     print(f'kopiert: {n} Dateien; Ausnahmeliste: {len(merged)} Einträge')
