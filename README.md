@@ -11,6 +11,7 @@ Datenrepository des [Lancer Nexus](https://github.com/Lancer-Nexus)-Projekts: Sp
 | `SDK/exe/` | `Freelancer.ini`, `DACOM.ini`, `dacomsrv.ini` aus dem Spielverzeichnis | ja |
 | `NAP/` | Spieldaten (Modelle, Töne, Texturen, Skripte, Videos …) als Klassencontainer | nur die Klassenordner (Inhalt ignoriert) |
 | `classes.md` | Einteilung der Spieldaten in Klassen und Regeln | ja |
+| `TODO-mehrsprachigkeit.md` | Plan für lokalisierte Text- und Soundressourcen sowie DLL-JSON in NAP | ja |
 | `missing.md` | Dateien, auf die die INIs verweisen, die aber auf der CD fehlen | ja |
 | `tools/` | Skripte zum Aufbau von `NAP/` aus der CD und zum Prüfen der INI-Dateiverweise | ja |
 | `BASE/`, `CLIENT/` | leer, für später vorgesehen | – |
