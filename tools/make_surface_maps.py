@@ -6,8 +6,8 @@ tangentiale Normalen, +Y oben, Z nach außen), kachelbar (wrap), BC5 (ATI2N, nur
 Mip-Kette (Normalen beim Verkleinern renormiert). Eine Bibliothek je Gruppe
 (NAP/Surface/fx/normalmaps_<ships|bases|solar|planets>.txm), je Karte ein Texturknoten `nm_<name>` mit einem Blatt `MIPS`.
 
-Cube Maps: prozedural (Sterne, Sonne, Nebel), 256 px je Fläche, DDS A8R8G8B8 mit Mip-Kette,
-Flächenfolge +X -X +Y -Y +Z -Z. Je Karte eine Materialbibliothek NAP/Surface/fx/<name>.mat mit
+Cube Maps: prozedural (Sterne, Sonne, Nebel), 256 px je Fläche, DDS A8R8G8B8
+oder optional DX10 RGBA16F mit GGX-vorgefilterten Specular-Mips, Flächenfolge +X -X +Y -Y +Z -Z. Je Karte eine Materialbibliothek NAP/Surface/fx/<name>.mat mit
 einem Texturknoten `<name>` und einem Blatt `CUBE` (wie `envmapbasic.mat`).
 
 Die Zuordnung steht in SDK/fx/SurfaceMaps.ini (diese Datei wird nicht erzeugt, nur geprüft).
@@ -28,6 +28,7 @@ import base64
 import io
 import json
 import os
+import re
 import struct
 import sys
 import urllib.error
@@ -129,6 +130,9 @@ CUBE_DEFAULTS = {
 CUBES = tuple(CUBE_DEFAULTS)
 NORMAL_SIZE = 1024
 CUBE_SIZE = 256
+CUBE_PREFILTER_SAMPLES = 64
+CUBE_IRRADIANCE_SIZE = 16
+CUBE_IRRADIANCE_SAMPLES = 128
 PARAMS_FILE = os.path.join(HERE, 'surface_maps_params.json')
 
 
@@ -178,6 +182,17 @@ def dds_header(w, h, mips, bpp, masks, cube=False):
     pf = struct.pack('<8I', 32, pf_flags, 0, bpp, *masks)
     caps = struct.pack('<5I', caps1, caps2, 0, 0, 0)
     return hd + pf + caps
+
+
+def dds_header_rgba16f_cube(w, h, mips):
+    """DX10 DDS cubemap with linear R16G16B16A16_FLOAT texels."""
+    flags = 0x1 | 0x2 | 0x4 | 0x1000 | (0x20000 if mips > 1 else 0)
+    caps1 = 0x1000 | (0x8 | 0x400000 if mips > 1 else 0)
+    hd = struct.pack('<4s7I44s', b'DDS ', 124, flags, h, w, w * h * 8, 0, mips, b'\0' * 44)
+    pf = struct.pack('<8I', 32, 0x4, struct.unpack('<I', b'DX10')[0], 0, 0, 0, 0, 0)
+    caps = struct.pack('<5I', caps1, 0, 0, 0, 0)
+    dx10 = struct.pack('<5I', 10, 3, 0x4, 1, 0)  # RGBA16F, TEXTURE2D, cubemap, one array element
+    return hd + pf + caps + dx10
 
 
 def encode_normal(n):
@@ -435,12 +450,14 @@ def stars(dirs, size, count, seed, tint=(1, 1, 1)):
     return out
 
 
-def make_cube(size, p):
+def make_cube(size, p, hdr=False):
     """p: Parameter (siehe CUBE_DEFAULTS). Art: space | sun | nebula."""
     dirs = face_dirs(size)
     sun_dir = np.array(p['sun_dir'], np.float64)
     sun_dir /= np.linalg.norm(sun_dir)
     star_img = stars(dirs, size, int(p['star_count']), int(p['seed']))
+    if hdr:
+        star_img = [srgb_to_linear(face) for face in star_img]
     amb = np.array(p['ambient'], np.float32)
     sun_col = np.array(p['sun_color'], np.float32)
     faces = []
@@ -465,29 +482,183 @@ def make_cube(size, p):
             a_, b_ = np.array(p.get('nebula_a', sun_col), np.float32), np.array(p.get('nebula_b', [0.2, 0.35, 0.1]), np.float32)
             col = m[..., None] * a_ + (n2 * m)[..., None] * b_
             img = col * 0.45 + amb + star_img[i] * p['star_gain']
-        faces.append(np.clip(img, 0, 1).astype(np.float32))
+        faces.append((np.maximum(img, 0) if hdr else np.clip(img, 0, 1)).astype(np.float32))
     return faces
 
 
-def encode_cube(faces):
+def srgb_to_linear(value):
+    value = np.asarray(value, dtype=np.float32)
+    return np.where(value <= 0.04045, value / 12.92, ((value + 0.055) / 1.055) ** 2.4)
+
+
+def linear_to_srgb(value):
+    value = np.maximum(np.asarray(value, dtype=np.float32), 0.0)
+    return np.where(value <= 0.0031308, value * 12.92, 1.055 * np.power(value, 1.0 / 2.4) - 0.055)
+
+
+def sample_cube(faces, directions):
+    """Bilinear direction sample using the +X,-X,+Y,-Y,+Z,-Z face convention."""
+    d = np.asarray(directions, dtype=np.float32)
+    ax = np.abs(d)
+    major = np.argmax(ax, axis=-1)
+    face_index = np.where(major == 0, np.where(d[..., 0] >= 0, 0, 1),
+                 np.where(major == 1, np.where(d[..., 1] >= 0, 2, 3),
+                          np.where(d[..., 2] >= 0, 4, 5)))
+    out = np.empty(d.shape, dtype=np.float32)
     size = faces[0].shape[0]
-    mips = 0
-    s = size
-    while s >= 1:
-        mips += 1
-        s //= 2
+    for face_id in range(6):
+        mask = face_index == face_id
+        if not np.any(mask):
+            continue
+        x, y, z = d[..., 0][mask], d[..., 1][mask], d[..., 2][mask]
+        denom = np.maximum(ax[mask].max(axis=-1), 1e-8)
+        if face_id == 0:
+            u, v = -z / denom, -y / denom
+        elif face_id == 1:
+            u, v = z / denom, -y / denom
+        elif face_id == 2:
+            u, v = x / denom, z / denom
+        elif face_id == 3:
+            u, v = x / denom, -z / denom
+        elif face_id == 4:
+            u, v = x / denom, -y / denom
+        else:
+            u, v = -x / denom, -y / denom
+        px = np.clip((u * 0.5 + 0.5) * size - 0.5, 0, size - 1)
+        py = np.clip((v * 0.5 + 0.5) * size - 0.5, 0, size - 1)
+        x0, y0 = np.floor(px).astype(np.int32), np.floor(py).astype(np.int32)
+        x1, y1 = np.minimum(x0 + 1, size - 1), np.minimum(y0 + 1, size - 1)
+        tx, ty = (px - x0)[:, None], (py - y0)[:, None]
+        image = faces[face_id]
+        c0 = image[y0, x0] * (1 - tx) + image[y0, x1] * tx
+        c1 = image[y1, x0] * (1 - tx) + image[y1, x1] * tx
+        out[mask] = c0 * (1 - ty) + c1 * ty
+    return out
+
+
+def radical_inverse_vdc(value):
+    value = ((value << 16) | (value >> 16)) & 0xFFFFFFFF
+    value = (((value & 0x55555555) << 1) | ((value & 0xAAAAAAAA) >> 1)) & 0xFFFFFFFF
+    value = (((value & 0x33333333) << 2) | ((value & 0xCCCCCCCC) >> 2)) & 0xFFFFFFFF
+    value = (((value & 0x0F0F0F0F) << 4) | ((value & 0xF0F0F0F0) >> 4)) & 0xFFFFFFFF
+    value = (((value & 0x00FF00FF) << 8) | ((value & 0xFF00FF00) >> 8)) & 0xFFFFFFFF
+    return value * 2.3283064365386963e-10
+
+
+def ggx_prefilter_mips(faces, sample_count=64, hdr=False):
+    """Create deterministic GGX prefiltered specular mips from sRGB cubemap faces."""
+    if len(faces) != 6 or any(face.shape != faces[0].shape for face in faces):
+        raise ValueError("Expected six equally sized square cubemap faces")
+    if sample_count < 8:
+        raise ValueError("sample_count must be at least 8")
+    base_size = faces[0].shape[0]
+    if faces[0].shape[1] != base_size or base_size < 2 or base_size & (base_size - 1):
+        raise ValueError("Cubemap faces must be square power-of-two images")
+    linear_faces = [np.asarray(face, dtype=np.float32) for face in faces] if hdr else [srgb_to_linear(face) for face in faces]
+    levels = [[np.array(face, dtype=np.float32, copy=True)] for face in faces]
+    max_level = base_size.bit_length() - 1
+    for level in range(1, max_level + 1):
+        size = base_size >> level
+        roughness = level / max_level
+        alpha = roughness * roughness
+        dirs = np.concatenate([face_dirs(size)[i].reshape(-1, 3) for i in range(6)], axis=0)
+        up = np.where((np.abs(dirs[:, 2]) < 0.999)[:, None],
+                      np.array([0, 0, 1], dtype=np.float32), np.array([0, 1, 0], dtype=np.float32))
+        tangent = np.cross(up, dirs)
+        tangent /= np.maximum(np.linalg.norm(tangent, axis=-1, keepdims=True), 1e-8)
+        bitangent = np.cross(dirs, tangent)
+        accum = np.zeros_like(dirs, dtype=np.float32)
+        weights = np.zeros((dirs.shape[0], 1), dtype=np.float32)
+        for i in range(sample_count):
+            phi = 2.0 * np.pi * i / sample_count
+            xi2 = radical_inverse_vdc(i)
+            cos_theta = np.sqrt((1.0 - xi2) / (1.0 + (alpha * alpha - 1.0) * xi2))
+            sin_theta = np.sqrt(max(0.0, 1.0 - cos_theta * cos_theta))
+            half_vector = (tangent * (np.cos(phi) * sin_theta) +
+                           bitangent * (np.sin(phi) * sin_theta) + dirs * cos_theta)
+            half_vector /= np.maximum(np.linalg.norm(half_vector, axis=-1, keepdims=True), 1e-8)
+            voh = np.maximum(np.sum(dirs * half_vector, axis=-1, keepdims=True), 0.0)
+            light = 2.0 * voh * half_vector - dirs
+            nol = np.maximum(np.sum(dirs * light, axis=-1, keepdims=True), 0.0)
+            accum += sample_cube(linear_faces, light) * nol
+            weights += nol
+        filtered = accum / np.maximum(weights, 1e-8)
+        encoded = filtered if hdr else np.clip(linear_to_srgb(filtered), 0.0, 1.0)
+        encoded = encoded.reshape(6, size, size, 3)
+        for face_id in range(6):
+            levels[face_id].append(encoded[face_id])
+    return levels
+
+
+def diffuse_irradiance_cube(faces, output_size=16, sample_count=128, hdr=False):
+    """Cosine-convolve the environment; output stores irradiance divided by pi."""
+    if len(faces) != 6 or any(face.shape != faces[0].shape for face in faces):
+        raise ValueError("Expected six equally sized square cubemap faces")
+    if output_size < 1 or sample_count < 8:
+        raise ValueError("output_size must be positive and sample_count at least 8")
+    linear_faces = [np.asarray(face, dtype=np.float32) for face in faces] if hdr else [srgb_to_linear(face) for face in faces]
+    dirs = np.concatenate([face_dirs(output_size)[i].reshape(-1, 3) for i in range(6)], axis=0)
+    up = np.where((np.abs(dirs[:, 2]) < 0.999)[:, None],
+                  np.array([0, 0, 1], dtype=np.float32), np.array([0, 1, 0], dtype=np.float32))
+    tangent = np.cross(up, dirs)
+    tangent /= np.maximum(np.linalg.norm(tangent, axis=-1, keepdims=True), 1e-8)
+    bitangent = np.cross(dirs, tangent)
+    accum = np.zeros_like(dirs, dtype=np.float32)
+    for i in range(sample_count):
+        radius = np.sqrt((i + 0.5) / sample_count)
+        phi = 2.0 * np.pi * radical_inverse_vdc(i)
+        z = np.sqrt(max(0.0, 1.0 - radius * radius))
+        light = (tangent * (np.cos(phi) * radius) +
+                 bitangent * (np.sin(phi) * radius) + dirs * z)
+        light /= np.maximum(np.linalg.norm(light, axis=-1, keepdims=True), 1e-8)
+        accum += sample_cube(linear_faces, light)
+    irradiance_over_pi = accum / sample_count
+    encoded = (irradiance_over_pi if hdr else np.clip(linear_to_srgb(irradiance_over_pi), 0.0, 1.0))
+    encoded = encoded.reshape(6, output_size, output_size, 3)
+    return [encoded[i] for i in range(6)]
+
+
+def _encode_rgba16f_cube(levels):
     body = bytearray()
-    for f in faces:
-        cur = f
-        while True:
+    for face_levels in levels:
+        for cur in face_levels:
+            rgba = np.empty(cur.shape[:2] + (4,), dtype='<f2')
+            rgba[..., :3] = cur
+            rgba[..., 3] = 1.0
+            body += rgba.tobytes()
+    return bytes(body)
+
+
+def encode_cube(faces, sample_count=64, hdr=False):
+    size = faces[0].shape[0]
+    mip_faces = ggx_prefilter_mips(faces, sample_count, hdr=hdr)
+    if hdr:
+        return dds_header_rgba16f_cube(size, size, len(mip_faces[0])) + _encode_rgba16f_cube(mip_faces)
+    mips = len(mip_faces[0])
+    body = bytearray()
+    for face_levels in mip_faces:
+        for cur in face_levels:
             bgra = np.zeros(cur.shape[:2] + (4,), np.uint8)
             q = np.clip(cur * 255 + 0.5, 0, 255).astype(np.uint8)
             bgra[..., 0], bgra[..., 1], bgra[..., 2], bgra[..., 3] = q[..., 2], q[..., 1], q[..., 0], 255
             body += bgra.tobytes()
-            if cur.shape[0] == 1:
-                break
-            cur = (cur[0::2, 0::2] + cur[1::2, 0::2] + cur[0::2, 1::2] + cur[1::2, 1::2]) / 4
     return dds_header(size, size, mips, 32, (0xFF0000, 0xFF00, 0xFF, 0xFF000000), cube=True) + bytes(body)
+
+
+def encode_irradiance_cube(faces, output_size=16, sample_count=128, hdr=False):
+    """Encode a compact, cosine-convolved diffuse irradiance cubemap."""
+    filtered = diffuse_irradiance_cube(faces, output_size, sample_count, hdr=hdr)
+    if hdr:
+        levels = [[face] for face in filtered]
+        return dds_header_rgba16f_cube(output_size, output_size, 1) + _encode_rgba16f_cube(levels)
+    body = bytearray()
+    for cur in filtered:
+        bgra = np.zeros(cur.shape[:2] + (4,), np.uint8)
+        q = np.clip(cur * 255 + 0.5, 0, 255).astype(np.uint8)
+        bgra[..., 0], bgra[..., 1], bgra[..., 2], bgra[..., 3] = q[..., 2], q[..., 1], q[..., 0], 255
+        body += bgra.tobytes()
+    return dds_header(output_size, output_size, 1, 32,
+                      (0xFF0000, 0xFF00, 0xFF, 0xFF000000), cube=True) + bytes(body)
 
 
 # ---- UTF ------------------------------------------------------------------
@@ -636,6 +807,8 @@ INI_HEADER = """; SurfaceMaps.ini - Zusatzkarten (Normal Maps, Cube Maps) zu Tex
 ;   file       Pfad der .mat (= material_library)
 ;   kind       Hinweis: space | sun | nebula
 ;   strength   Vorschlag fuer die Staerke der Spiegelung (0..1)
+;   prefiltered true, wenn die DDS-Mips offline mit GGX als Specular-Roughness-Stufen gefiltert wurden
+;   irradiance_file optionale, cosine-kosinusgefaltete diffuse Umgebungsfarbe (Irradiance/pi)
 
 """
 CUBE_STRENGTH = {'space': 0.35, 'sun': 0.5, 'nebula': 0.4}
@@ -654,10 +827,51 @@ def write_ini(path, normals, cubes):
         out.append(f"\n; {desc}\n[NormalMap]\ntexture = {tex}\nlibrary = surface_normalmaps_{group}\n"
                    f"map = nm_{key}\nstrength = {pr['strength']:g}\n{extra}")
     for name, pr in cubes.items():
+        irradiance_name = name.replace('envcube_', 'envirradiance_')
         out.append(f"\n[CubeMap]\nnickname = {name}\nfile = fx\\{name}.mat\nkind = {pr['kind']}\n"
-                   f"strength = {CUBE_STRENGTH[pr['kind']]:g}\n")
+                   f"strength = {CUBE_STRENGTH[pr['kind']]:g}\nprefiltered = true\n"
+                   f"irradiance_file = fx\\{irradiance_name}.mat\n")
     with open(path, 'w', encoding='utf-8', newline='\n') as f:
         f.write(''.join(out))
+
+
+def mark_cube_ini_prefiltered(path, cube_names):
+    """Set prefiltered metadata on selected existing CubeMap entries only."""
+    mark_cube_ini_value(path, cube_names, 'prefiltered', 'true')
+
+
+def mark_cube_ini_irradiance(path, cube_names):
+    """Set the matching cosine-convolved irradiance MAT path on selected cubes."""
+    mark_cube_ini_value(path, cube_names, 'irradiance_file', None)
+
+
+def mark_cube_ini_value(path, cube_names, key, value):
+    with open(path, encoding='utf-8') as f:
+        text = f.read()
+    pattern = re.compile(r'(?ims)^\[CubeMap\][^\[]*')
+    found = set()
+
+    def update(match):
+        section = match.group(0)
+        nickname = re.search(r'(?im)^\s*nickname\s*=\s*([^\s;]+)', section)
+        if not nickname or nickname.group(1).lower() not in cube_names:
+            return section
+        line = (f'irradiance_file = fx\\{nickname.group(1).replace("envcube_", "envirradiance_")}.mat'
+                if key == 'irradiance_file' else f'{key} = {value}')
+        key_pattern = re.compile(rf'(?im)^\s*{re.escape(key)}\s*=.*(?:\n|$)')
+        if key_pattern.search(section):
+            section = key_pattern.sub(lambda _: line + '\n', section, count=1)
+        else:
+            section = section.rstrip('\r\n') + '\n' + line + '\n'
+        found.add(nickname.group(1).lower())
+        return section
+
+    text = pattern.sub(update, text)
+    missing = set(cube_names) - found
+    if missing:
+        raise ValueError(f"Missing [CubeMap] metadata for: {', '.join(sorted(missing))}")
+    with open(path, 'w', encoding='utf-8', newline='\n') as f:
+        f.write(text)
 
 
 def write_report(rows, tuned, path):
@@ -697,7 +911,11 @@ def main():
     ap.add_argument('--evaluate', action='store_true', help='Karten bewerten, Bericht surface-maps-bewertung.md schreiben')
     ap.add_argument('--tune', action='store_true', help='Stärke und Glättung nach der Bewertung anpassen (impliziert --evaluate)')
     ap.add_argument('--no-params', action='store_true', help='gespeicherte Parameter ignorieren (Standardwerte)')
+    ap.add_argument('--only-cubes', action='store_true', help='nur GGX-vorgefilterte Cubemaps und deren Surface-Metadaten erzeugen')
+    ap.add_argument('--hdr-cubes', action='store_true', help='Cube Maps als lineare DX10-RGBA16F-Texturen ohne LDR-Clipping erzeugen (nur mit --only-cubes)')
     a = ap.parse_args()
+    if a.hdr_cubes and not a.only_cubes:
+        ap.error('--hdr-cubes erfordert --only-cubes')
     params = {} if a.no_params else load_params()
     llm = None
     if a.llm:
@@ -713,6 +931,38 @@ def main():
                 CUBE_DEFAULTS[k]['desc'] = v
     out_dir = os.path.join(NAP, 'Surface', 'fx')
     os.makedirs(out_dir, exist_ok=True)
+    if a.only_cubes:
+        generated = {}
+        for cube_name in CUBES:
+            params_for_cube = clamp_cube(params.get('cube', {}).get(cube_name, {}), CUBE_DEFAULTS[cube_name])
+            if llm:
+                try:
+                    answer = llm.json_answer(SYS_CUBE, f'Cube Map {cube_name}: {params_for_cube["desc"]}')
+                    params_for_cube = clamp_cube(answer, params_for_cube)
+                except Exception as error:  # noqa: BLE001
+                    print(f'  {cube_name}: LLM-Antwort verworfen ({str(error)[:80]})')
+            faces = make_cube(CUBE_SIZE, params_for_cube, hdr=a.hdr_cubes)
+            irradiance_name = cube_name.replace('envcube_', 'envirradiance_')
+            header, root = build_library({cube_name: encode_cube(faces, CUBE_PREFILTER_SAMPLES, hdr=a.hdr_cubes)}, 'CUBE')
+            target = os.path.join(out_dir, cube_name + '.mat')
+            W.save(target, header, root)
+            header, root = build_library({irradiance_name: encode_irradiance_cube(
+                faces, CUBE_IRRADIANCE_SIZE, CUBE_IRRADIANCE_SAMPLES, hdr=a.hdr_cubes)}, 'CUBE')
+            irradiance_target = os.path.join(out_dir, irradiance_name + '.mat')
+            W.save(irradiance_target, header, root)
+            generated[cube_name] = params_for_cube
+            print(f'{cube_name}.mat: {os.path.getsize(target) / 1e6:.2f} MB, GGX samples={CUBE_PREFILTER_SAMPLES}')
+            print(f'{irradiance_name}.mat: {os.path.getsize(irradiance_target) / 1e3:.1f} kB, '
+                  f'cosine samples={CUBE_IRRADIANCE_SAMPLES}, size={CUBE_IRRADIANCE_SIZE}')
+        cube_names = {name.lower() for name in generated}
+        metadata_paths = [os.path.join(ROOT, 'SDK', 'fx', 'SurfaceMaps.ini'),
+                          os.path.join(NAP, 'Surface', 'fx', 'SurfaceMaps.ini')]
+        for metadata_path in metadata_paths:
+            if os.path.isfile(metadata_path):
+                mark_cube_ini_prefiltered(metadata_path, cube_names)
+                mark_cube_ini_irradiance(metadata_path, cube_names)
+                print(f'GGX-Metadaten aktualisiert: {os.path.relpath(metadata_path, ROOT)}')
+        return
     made = []
 
     nm = {g: {} for g in GROUPS}

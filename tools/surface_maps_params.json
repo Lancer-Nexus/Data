@@ -231,7 +231,7 @@
    }
   },
   "bw_dig_site_18": {
-   "strength": 1.09,
+   "strength": 0.5,
    "smooth": 1,
    "rm": {
     "rough_mean": 0.6,
@@ -241,7 +241,7 @@
    }
   },
   "bw_dig_site_20": {
-   "strength": 4.48,
+   "strength": 2.0,
    "smooth": 1,
    "rm": {
     "rough_mean": 0.6,

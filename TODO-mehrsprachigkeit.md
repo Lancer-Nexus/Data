@@ -8,9 +8,16 @@ keine Spieldateien werden hier eingecheckt.
 
 ## Ressourcen-DLLs als NAP-JSON
 
+- [x] Runtime-Import für die sieben Retail-Resource-DLLs sowie
+  `newplayer.fl`/`mpnewcharacter.fl` ergänzt. Pro Datei wird eine lokale
+  HD-Installation bevorzugt und Retail/CD als Fallback verwendet;
+  `HDEResources.dll` kommt aus dem HD-Paket, wenn dort vorhanden. Die Dateien
+  landen lokal in `NAP/Runtime/`, bleiben ignoriert und werden beim CD-Neuaufbau
+  durch `tools/runtime_assets.txt` geschützt.
 - [ ] Lokal bereitgestellte `InfoCards.dll`, `MiscText.dll` und
   `NameResources.dll` mit einem reproduzierbaren Offline-Konverter auslesen.
-  Die Dateien sind aktuell nicht in `Data/SDK` vorhanden.
+  Die DLLs sind in `NAP/Runtime` lokal importiert, aber nicht in `Data/SDK`
+  eingecheckt.
 - [ ] Ein versioniertes UTF-8-JSON-Schema für Stringtabellen und Infocards
   festlegen. Numerische IDs, Ressourcentyp, Sprache/Region und RDL-Markup der
   Infocards erhalten; keine Texte anhand ihres Inhalts deduplizieren.

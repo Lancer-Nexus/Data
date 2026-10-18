@@ -10,7 +10,7 @@ Ziel: Zu Texturen lassen sich zusätzliche Normal Maps und Cube Maps (Umgebungss
 |---|---|
 | Generator | `tools/make_surface_maps.py` (Pillow, numpy), reproduzierbar aus dem NAP |
 | Normal Maps | 55 Karten in vier Bibliotheken `NAP/Surface/fx/normalmaps_<ships|bases|solar|planets>.txm` (22 / 12 / 6 / 15 Karten, zusammen 77 MB). Je 1024 × 1024, **BC5** (ATI2N, nur X und Y) mit Mips bis 4 × 4. Schiffe: Liberty, Kusari, Bretonia, Piraten, Zivil, Order, Nutzschiffe. Basen: Bretonia/Pygar und Liberty. Solar: Asteroiden, Geschütztürme, Torpedo, Nomaden. Planeten: 8 kachelnde Detailkarten und 7 Oberflächenkarten |
-| Cube Maps | `NAP/Surface/fx/envcube_space.mat`, `envcube_sun.mat`, `envcube_nebula.mat` (je 256 px, DDS A8R8G8B8 mit Mips, 2,1 MB), Aufbau wie `envmapbasic.mat` (Knoten `CUBE`) |
+| Cube Maps | `NAP/Surface/fx/envcube_space.mat`, `envcube_sun.mat`, `envcube_nebula.mat` (je 256 px, optional lineares DX10-RGBA16F mit Mips, GGX-Prefiltering und separater diffuser Irradiance), Aufbau wie `envmapbasic.mat` (Knoten `CUBE`) |
 | INI | `SDK/fx/SurfaceMaps.ini` mit `[Texture]`, `[NormalMap]`, `[CubeMap]`, vom Generator erzeugt |
 | Bewertung | `surface-maps-bewertung.md` (Kennzahlen je Karte, vorher/nachher) |
 | Schutz | `tools/extra_maps.txt` (`build_nap.py` überschreibt oder löscht die Dateien nicht) |
@@ -152,12 +152,23 @@ Der Massenlauf deckt jetzt auch `Material/solar/*.mat` (nicht die Unterordner Pl
 
 ## 3. Aufgaben
 
+### GGX-Cubemap-Prefiltering (2026-10-18)
+
+- [x] `--hdr-cubes` erzeugt lineare DX10-RGBA16F-Cubemaps ohne Clipping der Sonnenwerte; der Client kann diese Cubes als HalfVector4 laden und vermeidet sRGB-Decodierung im Basic- und PBR-Shader.
+- [ ] Sichtbarer ModelViewer-/Spiel-A/B mit einem HDR-Cube. Der erste NAP-only-LancerEdit-Lauf zeigte LI_ELITE, stand beim Cube-Override aber im Textured-Modus und lud daher keine Cubemap. Client-Patch 2307 kennzeichnet diesen Zustand nun als „not loaded“ und bietet den Wechsel in den Lit-Modus; den Cube-Load und die Bildwirkung noch live bestätigen.
+- [ ] Residency und GPU-Speicher für HDR-Cubes messen; ein 256-Pixel-Cube mit Mips benötigt rund 4,2 MB gegenüber rund 2,1 MB in RGBA8.
+
+- [x] `make_surface_maps.py --only-cubes` erzeugt für `envcube_space`, `envcube_sun` und `envcube_nebula` deterministische GGX-vorgefilterte Specular-Mips in linearer Farbdarstellung und setzt `prefiltered = true` in der NAP- und SDK-Surface-INI. 64 Hammersley-Samples je Ausgabepixel; Eingaben und erzeugte MATs liegen unter `NAP/`.
+- [x] Cosine-konvolvierte diffuse Irradiance (E/pi) als separate 16×16-Cubemap je Umgebung mit `irradiance_file`-Metadatum. Die Datenberechnung nutzt 128 Samples; der GGX-Reflexions-Mip-Pfad bleibt davon getrennt.
+- [x] Numerische Tests für konstante Umgebungen, gerichtete Irradiance, Highlight-Verbreiterung, sechs Cubemap-Richtungen, DDS-Mip-Kette und idempotente Metadaten.
+- [ ] Retail-Orientierung, sichtbare Roughness-Abstimmung und GPU-Kosten im Client abnehmen.
+
 Engine (Client, patch-only):
 
 - [ ] `fx/SurfaceMaps.ini` einlesen; Aufnahme in die Ladeliste, z. B. neuer Schlüssel in `[Data]` der `Freelancer.ini` (nicht gesetzt, der Original-Client würde ihn ignorieren).
 - [ ] `[NormalMap]`: zur Diffuse-Textur (`Dt_name`, Groß-/Kleinschreibung egal) `Nm_name` aus der Bibliothek ergänzen, `strength` als Faktor auf die Abweichung anwenden. Fehlende Karte: still ohne Normal Map.
 - [ ] Tangentenraum der Karten (+Y oben, Z nach außen) gegen den Shader prüfen; bei umgekehrtem Grün das Vorzeichen in der Engine, nicht in den Daten ändern.
-- [ ] `[CubeMap]` nur als Katalog. Zuweisung weiter in `Shiparch.ini`/`SolarArch.ini`.
+- [x] `[CubeMap]` als Katalog mit optionalen `prefiltered`- und `irradiance_file`-Metadaten; Zuweisung weiter in `Shiparch.ini`/`SolarArch.ini`.
 - [ ] Sichtprüfung: Schiff (`li_fighter`) mit `envcube_space`, eine Station, ein Planet.
 - [ ] Beurteilen, ob der PBR-Pfad für Freelancer-Texturen ohne `Mt_name`/`Rt_name` passt oder ein eigener Pfad nur für Normal Maps nötig ist.
 

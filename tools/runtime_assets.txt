@@ -1,0 +1,12 @@
+# Character-start templates and resource DLLs imported from local installations.
+# Keep these files when build_nap.py prunes assets absent from the CD data CABs.
+Runtime/newplayer.fl
+Runtime/mpnewcharacter.fl
+Runtime/resources.dll
+Runtime/infocards.dll
+Runtime/misctext.dll
+Runtime/nameresources.dll
+Runtime/equipresources.dll
+Runtime/offerbriberesources.dll
+Runtime/misctextinfo2.dll
+Runtime/hderesources.dll

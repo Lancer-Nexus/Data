@@ -17,13 +17,15 @@ Die Pfade in den INIs (`SDK/`) bleiben unverändert gültig. Geprüft: alle Verw
 | `Effects` | 626 | `.ale`, `.pte`, Ordner `fx/` |
 | `Material` | 263 | `.mat`, `.txm`, `.tga`, `.bmp` |
 | `Video` | 3 | `.wmv`, Ordner `movies/` (aus dem HD-Pack: `fl_intro`, `da_logo_final`, `mgs_logo_final`) |
+| `Mission` | 0 Nicht-INI-Dateien | INIs und Missionsressourcen aus `SDK/`, synchronisiert nach `missions/` |
 | `Surface` | 41 | Zusatzkarten zu Texturen (Normal, Roughness, Metallic, Cube Maps) und ihre INIs `fx/SurfaceMaps*.ini`; nicht aus der CD, erzeugt mit `tools/make_surface_maps*.py` |
 | `Equipment` | 4 | Schriftdateien `fonts/*.ttf` aus dem HD-Pack |
 | `System` | 1 | Ordner `ai/`, `.db` |
 | `World` | 1 | übrige Dateien aus `universe/`, `solar/`, `bases/`, `randommissions/` |
+| `Runtime` | 2 + Ressourcen-DLLs | Charakter-Startvorlagen und Resource-DLLs aus lokalen Installationen; HD-Edition hat pro Datei Vorrang vor Retail/CD; Import mit `tools/import_nap_runtime.py` |
 
 Stand: 7369 Dateien ohne INIs (CD-Daten plus HD-Pack, Stand nach der Phase 6) und dazu 41 Zusatzkarten in `Surface`. Dazu kommen 1266 INIs aus `SDK/`, die `tools/sync_inis_to_nap.py` in die Klassen kopiert (`Mission` besteht nur aus INIs). Die Zuordnung erfolgt nach Dateiendung, bei übrigen Dateien nach dem ersten Ordner. Die Klasse `Equipment` entstand mit dem HD-Pack (Zuordnung in `build_nap.py`, Tabelle `DIR_CLASS`).
 
-Nicht im Container: `exe/` und `dlls/` (Programmdateien, nicht Teil der Daten).
+Nicht im Container: Programmdateien aus `exe/` und `dlls/`. `Runtime` enthält nur zwei benötigte `.fl`-Charaktervorlagen und die von `Freelancer.ini` referenzierten Resource-DLLs; andere ausführbare Dateien und DLLs bleiben ausgeschlossen.
 
 Fehlende Dateien: siehe [missing.md](missing.md). Texturen im Zustand HD oder hochskaliert: siehe `TODO-texturen-upscale.md`.

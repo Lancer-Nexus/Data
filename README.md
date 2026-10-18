@@ -37,9 +37,9 @@ Alle Änderungen gegenüber der CD sind in `SDK/changelog.md` dokumentiert.
 NAP/Sounds/audio/…/x.ogg   →   im Spiel: audio/…/x.ogg
 ```
 
-Die Klassen sind in [`classes.md`](classes.md) beschrieben: `Models`, `Sounds`, `Script`, `UI`, `Effects`, `Material`, `Video`, `Equipment`, `Surface`, `Mission`, `System`, `World`.
+Die Klassen sind in [`classes.md`](classes.md) beschrieben: `Models`, `Sounds`, `Script`, `UI`, `Effects`, `Material`, `Video`, `Equipment`, `Surface`, `Mission`, `System`, `World` und `Runtime`.
 
-Von `NAP/` werden nur die Klassenordner ins Repo übernommen (mit einer leeren `.gitkeep`). Die Dateien darin stammen aus der Original-CD und dem HD-Pack, sind groß (rund 5,5 GB) und bleiben per `.gitignore` außerhalb.
+Von `NAP/` werden nur die Klassenordner ins Repo übernommen (mit einer leeren `.gitkeep`). Die Dateien darin stammen aus der Original-CD und dem HD-Pack, sind groß (rund 5,5 GB) und bleiben per `.gitignore` außerhalb. `Runtime` nimmt zwei Charakter-Startvorlagen und Resource-DLLs aus lokalen Installationen auf; Quelldateien und NAP-Archive werden nicht eingecheckt.
 
 ## Anleitung: NAP aus der CD aufbauen
 
@@ -91,6 +91,17 @@ Von `NAP/` werden nur die Klassenordner ins Repo übernommen (mit einer leeren `
    die INIs aus `SDK/`; HD-Dateien, die nur in NAP liegen, sind darin nicht
    enthalten. Daher bleibt der vollständige NAP-Lauf maßgeblich für `missing.md`.
 
+### Laufzeitdateien ergänzen
+
+Nach dem CD-Aufbau Startvorlagen und Ressourcen-DLLs aus lokalen Installationen ergänzen. Pro Datei hat die HD-Installation Vorrang; fehlende Dateien kommen aus der Retail/CD-Installation:
+
+```bash
+python3 tools/import_nap_runtime.py --hd-install-root /pfad/zur/HD-Edition --cd-install-root /pfad/zur/Retail --dry-run
+python3 tools/import_nap_runtime.py --hd-install-root /pfad/zur/HD-Edition --cd-install-root /pfad/zur/Retail
+```
+
+`--hd-install-root` ist optional, `--cd-install-root` erforderlich. Das Werkzeug verlangt beide Startvorlagen und alle sieben Retail-Ressourcen-DLLs. `HDEResources.dll` ist optional und wird nur aus der HD-Installation importiert. Alle Quellen werden vor dem atomaren Kopieren geprüft. `tools/runtime_assets.txt` schützt die Dateien vor dem Entfernen durch `build_nap.py`.
+
 ### Optionen von `build_nap.py`
 
 | Option | Wirkung |
@@ -120,6 +131,7 @@ Die Klasse einer INI richtet sich nach ihrem Hauptordner (`audio` → `Sounds`, 
 | Werkzeug | Zweck | Aufruf |
 |---|---|---|
 | `build_nap.py` | `NAP/` aus der ISO aufbauen, normalisieren, Klassen zuordnen | `python3 tools/build_nap.py --source <ISO>` (`--dry-run` zum Testen) |
+| `import_nap_runtime.py` | Startvorlagen und Ressourcen-DLLs mit HD-Vorrang, Retail-Fallback nach `NAP/Runtime/` kopieren | `python3 tools/import_nap_runtime.py --cd-install-root <Retail> [--hd-install-root <HD>]` (`--dry-run` zum Prüfen) |
 | `sync_inis_to_nap.py` | INIs aus `SDK/` in die Klassencontainer kopieren | `python3 tools/sync_inis_to_nap.py` |
 | `import_hd_pack.py` | HD-Pack (Daten) nach `NAP/` übernehmen, mit Manifest | `python3 tools/import_hd_pack.py --hd-repo <Pfad>` (`--apply` zum Schreiben) |
 | `import_hd_inis.py` | HD-INIs normalisiert in `SDK/` übernehmen | `python3 tools/import_hd_inis.py` (`--apply` zum Schreiben) |
@@ -127,7 +139,7 @@ Die Klasse einer INI richtet sich nach ihrem Hauptordner (`audio` → `Sounds`, 
 | `check_textures.py` | Texturmaße und Verweise prüfen, schreibt `textur-pruefung.md` | `python3 tools/check_textures.py` |
 | `extract_textures.py` | Originaltexturen als PNG herauslösen (für KI-Hochskalierung), mit `manifest.csv` | `python3 tools/extract_textures.py --out <Ordner>` (braucht Pillow) |
 | `convert_audio.py` | WAV-Dateien in FLAC (PCM) bzw. Ogg Vorbis (MP3-in-WAV) wandeln, INI-Verweise umstellen | `python3 tools/convert_audio.py --stage <Ordner> [--apply --backup <Ordner>]` (braucht ffmpeg) |
-| `make_surface_maps.py` | Normal-, Roughness- und Metallic-Maps (aus Texturen abgeleitet, BC5/BC4, mit Bewertung und Anpassung) und prozedurale Cube Maps erzeugen, Zusatzkarten per `SDK/fx/SurfaceMaps.ini` | `python3 tools/make_surface_maps.py [--preview <Ordner>] [--llm http://localhost:1234/v1]` (Pillow, numpy; `--llm` optional, OpenAI-kompatible API wie LM Studio) |
+| `make_surface_maps.py` | Normal-, Roughness- und Metallic-Maps sowie prozedurale GGX-Specular-Cubemaps plus cosine-konvolvierte diffuse Irradiance erzeugen; `--only-cubes` erneuert nur diese Cubes und Surface-Metadaten | `python3 tools/make_surface_maps.py [--only-cubes] [--preview <Ordner>] [--llm http://localhost:1234/v1]` (Pillow, numpy; `--llm` optional, OpenAI-kompatible API wie LM Studio) |
 | `make_surface_maps_bulk.py` | Normal Maps für alle geeigneten Schiffs-, Basis- und Solar-Texturen (Tore, Trümmer) (Massenlauf, BC5, `SDK/fx/SurfaceMapsShips.ini`/`SurfaceMapsBases.ini`/`SurfaceMapsSolar.ini`) | `python3 tools/make_surface_maps_bulk.py [--jobs 8] [--dry-run]` |
 | `check_refs.py` | Alle Datei-Verweise der INIs gegen `NAP/` prüfen, schreibt `missing.md` | `python3 tools/check_refs.py` |
 | `scale_shape_inis.py` | `[Shape]`-Koordinaten in INIs an hochskalierte Texturen anpassen | `python3 tools/scale_shape_inis.py` (`--dry-run`) |
@@ -152,7 +164,7 @@ Der Bericht gilt für den jeweiligen Stand. Nach Änderungen an Texturen oder IN
 ## Bekannte Grenzen
 
 - **Fehlende Dateien:** `missing.md` wird mit `tools/check_ini_references.py` aus dem vollständigen NAP-Datenbestand erzeugt. Frühere Zählungen sind veraltet; ein Rohdatenlauf berücksichtigt keine ausschließlich im NAP vorhandenen HD-Dateien.
-- **Programmdateien:** `exe/` und `dlls/` der CD sind nicht Teil von `NAP/`. Sie liegen nur im lokalen Ordner `Freelancer-Daten` und werden von den Skripten nicht verarbeitet.
+- **Programmdateien:** `exe/` und `dlls/` der CD sind nicht Teil von `NAP/`. Zwei `.fl`-Startvorlagen und die in `Freelancer.ini` verwendeten Ressourcen-DLLs werden separat importiert; andere EXE-Dateien bleiben außen vor.
 - **Groß-/Kleinschreibung:** Alles ist klein geschrieben. Dateien, die intern (in `.thn`, `.page` oder `.3db`) mit anderer Schreibweise referenziert werden, werden nicht geprüft.
 - **Version:** Die CD enthält Version 1.0. Die Korrekturen aus 1.3 und 1.3.1 kommen aus `SDK/`, nicht aus der CD. Die Werte des HD-Packs haben bei Abweichungen Vorrang.
 
@@ -212,3 +224,6 @@ wiederhergestellte HD-Datei und die UTF-Quellprüfung vor dem Import.
 
 Der [native Menü-Navigationstest](docs/native-menu-navigation-20261012.md)
 bestätigt Optionsaufruf, Rückkehr mit Escape und reguläres Beenden des NAP-Clients.
+
+Die am 13.10.2026 ergänzten [Runtime-Daten](docs/nap-runtime-assets-20261013.md)
+halten Importweg, Prüfsummen und den Client-Lauf fest.

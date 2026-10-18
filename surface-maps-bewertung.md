@@ -1,6 +1,6 @@
 # Bewertung der Normal Maps
 
-Erzeugt von `tools/make_surface_maps.py --evaluate` bzw. `--tune`. Die Kennzahlen beschreiben die erzeugten Karten, nicht ihre Wirkung im Spiel.
+Die Kennzahlen werden mit den Bewertungsfunktionen aus `tools/make_surface_maps.py` berechnet und beschreiben die Karten, nicht allein ihre Wirkung im Spiel. Die beiden Pygar-Stärken wurden nach einem kontrollierten ModelViewer-Lauf visuell kalibriert; der zugehörige Laufzeitbefund steht am Ende dieses Dokuments.
 
 | Kennzahl | Bedeutung | Zielbereich |
 |---|---|---|
@@ -35,8 +35,8 @@ Erzeugt von `tools/make_surface_maps.py --evaluate` bzw. `--tune`. Die Kennzahle
 | `ut_panels01` | `utility_panels_01.tga` | 0.51 | 1 | 6.0° / 27.9° | 0.0 % | 17 % | 0.33 | – | gut |
 | `ut_liner1` | `liner1_256.tga` | 0.50 | 1 | 5.7° / 29.2° | 0.0 % | 15 % | 0.32 | – | gut |
 | `bw_dig_site_16` | `dig_site_16.tga` | 0.73 | 1 | 6.1° / 27.9° | 0.0 % | 31 % | 0.31 | – | gut |
-| `bw_dig_site_18` | `dig_site_18.tga` | 1.09 | 1 | 6.7° / 27.9° | 0.2 % | 15 % | 0.31 | – | gut |
-| `bw_dig_site_20` | `dig_site_20.tga` | 4.48 | 1 | 8.3° / 28.0° | 0.1 % | 8 % | 0.33 | – | gut |
+| `bw_dig_site_18` | `dig_site_18.tga` | 0.50 | 1 | 3.2° / 13.7° | 0.0 % | 38 % | 0.31 | – | gut |
+| `bw_dig_site_20` | `dig_site_20.tga` | 2.00 | 1 | 3.9° / 13.4° | 0.0 % | 20 % | 0.33 | – | gut |
 | `li_ceiling_gen01` | `ceiling_gen01.tga021111195321` | 2.30 | 1 | 9.1° / 28.0° | 0.0 % | 3 % | 0.35 | – | gut |
 | `bw_pygar_door` | `pygar_door.tga` | 2.39 | 1 | 12.0° / 28.0° | 0.4 % | 1 % | 0.38 | – | gut |
 | `bw_pygar_generator` | `pygar_generator.tga` | 0.95 | 1 | 7.6° / 28.1° | 0.1 % | 8 % | 0.32 | – | gut |
@@ -68,7 +68,15 @@ Erzeugt von `tools/make_surface_maps.py --evaluate` bzw. `--tune`. Die Kennzahle
 | `pbody_icewhiteblue` | `icewhiteblue01` | 1.56 | 1 | 10.1° / 28.0° | 0.0 % | 11 % | 0.31 | – | gut |
 | `pbody_indust01` | `indust01` | 0.97 | 1 | 7.2° / 28.0° | 0.0 % | 17 % | 0.37 | – | gut |
 
-## Vor der Anpassung
+## Visuelle Laufzeitkalibrierung (2026-10-18)
+
+Ein Same-Session-A/B des Modells `bw_pygar_airlock.cmp` zeigte bei den ursprünglichen Werten auffällige Streifen und flimmernde Highlights. Einzelkartenläufe ordneten den größten sichtbaren Beitrag `dig_site_18.tga` (Stärke 1,09) zu; `dig_site_20.tga` (4,48) wirkte auf der Decke, `dig_site_16.tga` (0,73) veränderte in der getesteten Ansicht keine Pixel. Ein gemeinsamer Kandidat mit den Stärken **0,73 / 0,50 / 2,00** erhielt reliefartige Details mit deutlich weniger Flimmern als der ursprüngliche Satz. Im Viewport-Crop 500×505 betrug das Normalmap-Ein/Aus-RMSE `0.0242191` gegenüber `0.0441831` mit den Originalwerten. Die aktiven Stärken stehen nun in `SDK/fx/SurfaceMaps.ini`, der gleichlautenden Kopie `NAP/Surface/fx/SurfaceMaps.ini` und `tools/surface_maps_params.json`.
+
+Die Kandidatenarchive bestanden `nexus-pack verify`; alle 14 Einträge des aktiven Testmanifests stimmten bei Größe und SHA-256. Das Testarchiv enthielt ausschließlich die geänderte `SurfaceMaps.ini` und wurde aus einem QA-Verzeichnis unter `Data/NAP/` gebaut. Der A/B isoliert Normalmaps (roughness/metallic und Reflexionen aus, diffuse IBL an) in LancerEdit unter Mesa llvmpipe. Er ersetzt keine Abnahme im Spiel oder an weiteren Bretonia-Basen. Screenshots und vollständige Laufbedingungen stehen im Client-Bericht `docs/evidence/renderer/bw-pygar-map-isolation-ab-20261018/README.md`.
+
+## Frühere automatische Tune-Prüfung
+
+Die folgende Tabelle dokumentiert den Generatorlauf vor der visuellen Laufzeitkalibrierung; sie ist nicht der aktuelle Parametersatz.
 
 | Karte | Stärke → | Glättung → | p95 vorher → nachher | Urteil vorher |
 |---|---|---|---|---|

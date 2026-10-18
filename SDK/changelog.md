@@ -12,6 +12,24 @@
 
 ## Lancer Nexus Erweiterungen
 
+### Dynamisches Licht für dauerhaftes Engine-Feuer (2026-10-16)
+
+45 Engine-Feuerdefinitionen in `fx/Effects.ini` referenzieren jetzt die
+wiederholte Lichtkurve `engine_fire_warm`. Kleine Feuer nutzen eine Lichtweite
+von 7,5, große von 25, entsprechend den bestehenden `EffectType`-Radien.
+Zusätzlich nutzt `gf_continuous_fire` dieselbe Kurve mit Radius 20; dieser
+Effekt wird von 52 Fuse-Aktionen an Hardpoints gestartet.
+Der Client wendet diese Daten für angehängte Effekte optional als dynamisches
+Licht an. Die Werte benötigen noch eine visuelle Laufzeitkalibrierung.
+
+### Surface-Map-Kataloge (2026-10-14)
+
+`exe/Freelancer.ini` verweist jetzt im Abschnitt `[Data]` auf die vier
+Zusatzkartenkataloge. Der Lancer-Nexus-Client kann damit die Profile `minimal`,
+`standard` und `full` mit den vorhandenen Normal-, Roughness-, Metallic- und
+Cube-Map-Daten laden. Das Profil `original` bleibt der Standard und schließt
+alle Zusatzkarten aus; der Original-Client ignoriert die unbekannten Einträge.
+
 ### Mehrspur-Playlists in generischen Bars (2026-10-12)
 
 Nach erfolgreichem Client-Lauf wurden 131 Bar-Raum-INIs so angepasst, dass jede
